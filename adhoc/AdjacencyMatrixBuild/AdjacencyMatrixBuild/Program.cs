@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Collections;
 
 namespace AdjacencyMatrixBuild
 {
@@ -21,17 +22,20 @@ namespace AdjacencyMatrixBuild
             IN3LP_TestEntities ite = new IN3LP_TestEntities();
 
             //Retreive data, setup data storage mechanism
-            var Data = ite.Sources.OrderBy(s => s.SourceId).Select(s => new {Source = s, Citations = s.Sources}).ToArray();
+            SourceAndCitations[] Data = ite.Sources.OrderBy(s => s.SourceId).Select(s => new SourceAndCitations{Source = s, Citations = s.Sources}).ToArray();
             int Dimension = Data.Count();
             
             Console.WriteLine("Retrieved {0} sources", Dimension);
             Console.WriteLine("Retrieved sources: {0:F} MB", GetCurrentMemoryUsage());
             bool[,] AdjacencyMatrix = new bool[Dimension, Dimension];
 
+            
             //Correlate each index in the matrix with a particular source id
             Dictionary<int, int> SourceIdToIndex = new Dictionary<int, int>(Dimension);
+            Dictionary<int, int> IndexToSourceId = new Dictionary<int, int>(Dimension);
             for (int i = 0; i < Dimension; i++)
             {
+                IndexToSourceId[i] = Data[i].Source.SourceId;
                 SourceIdToIndex[Data[i].Source.SourceId] = i;
             }
 
@@ -50,25 +54,44 @@ namespace AdjacencyMatrixBuild
             GC.Collect();
             Console.WriteLine("Created adjacency matrix: {0:F} MB", GetCurrentMemoryUsage());
             int CitationCount = 0;
-            for (int i = 0; i < Dimension; i++)
+            for (int i = 89; i < Dimension; i++)
             {
-                for (int j = 0; j < Dimension; j++)
-                {
-                    if (AdjacencyMatrix[i, j])
-                    {
-                        //Console.WriteLine("{0} cites {1}", i, j);
-                        CitationCount++;
-                        if (i == j)
-                        {
-                            //Console.WriteLine("{0} cites itself", i);
-                        }
-                    }
-                }
+                ExportMatrix(Data, IndexToSourceId, AdjacencyMatrix, Dimension, 0, i);
+                Console.ReadLine();
             }
             GC.Collect();
             Console.WriteLine("Accessed adjacency matrix: {0:F} MB", GetCurrentMemoryUsage());
             Console.WriteLine("Citation count: {0}", CitationCount);
             Console.Read();
+        }
+
+        public static void ExportMatrix(SourceAndCitations[] Sources, Dictionary<int, int> IndexToSourceId, bool[,] AdjacencyMatrix, int Dimension, int Level = 0, int FocalIndex = 0)
+        {
+            if (Level > 10)
+            {
+                //return;
+            }
+            if (Level > 0)
+            {
+                for (int i = 1; i < Level; i++)
+                {
+                    Console.Write("|");
+                }
+                Console.Write("|-");
+            }
+            Console.WriteLine("{0}", IndexToSourceId[FocalIndex]);
+            for (int i = 0; i < Dimension; i++)
+            {
+                //AdjacencyMatrix[FocalIndex, i], if we want the graph of all the papers this one cites, and the ones those cite, etc.
+                if (AdjacencyMatrix[i, FocalIndex])
+                {
+                    ExportMatrix(Sources, IndexToSourceId, AdjacencyMatrix, Dimension, Level + 1, i);
+                }
+            }
+            if (Level == 0)
+            {
+                Console.WriteLine("Source ID: {0}, Index: {1}", IndexToSourceId[FocalIndex], FocalIndex);
+            }
         }
     }
 }
