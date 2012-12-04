@@ -1,3 +1,6 @@
 /webUI/*.suo
 /webUI/WebUI/bin/*.dll
 /webUI/WebUI/bin/*.refresh
+/adhoc/AdjacencyMatrixBuild/*.suo
+/adhoc/AdjacencyMatrixBuild/AdjacencyMatrixBuild/obj
+/adhoc/AdjacencyMatrixBuild/AdjacencyMatrixBuild/bin

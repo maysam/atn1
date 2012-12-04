@@ -1,0 +1,431 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="IN3LP_TestModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="IN3LP_TestModelStoreContainer">
+          <EntitySet Name="Author" EntityType="IN3LP_TestModel.Store.Author" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CitationReference" EntityType="IN3LP_TestModel.Store.CitationReference" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Editor" EntityType="IN3LP_TestModel.Store.Editor" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Journal" EntityType="IN3LP_TestModel.Store.Journal" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Source" EntityType="IN3LP_TestModel.Store.Source" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="fk_CitationReference_Source" Association="IN3LP_TestModel.Store.fk_CitationReference_Source">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="CitationReference" EntitySet="CitationReference" />
+          </AssociationSet>
+          <AssociationSet Name="fk_CitationReference_Source_2" Association="IN3LP_TestModel.Store.fk_CitationReference_Source_2">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="CitationReference" EntitySet="CitationReference" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Source_Author" Association="IN3LP_TestModel.Store.fk_Source_Author">
+            <End Role="Author" EntitySet="Author" />
+            <End Role="Source" EntitySet="Source" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Source_Editor" Association="IN3LP_TestModel.Store.fk_Source_Editor">
+            <End Role="Editor" EntitySet="Editor" />
+            <End Role="Source" EntitySet="Source" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Source_Journal" Association="IN3LP_TestModel.Store.fk_Source_Journal">
+            <End Role="Journal" EntitySet="Journal" />
+            <End Role="Source" EntitySet="Source" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="AuthorId" />
+          </Key>
+          <Property Name="AuthorId" Type="int" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="100" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="64" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="64" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+          <Property Name="AuthorsOrder" Type="smallint" />
+          <Property Name="ProgramId" Type="int" />
+        </EntityType>
+        <EntityType Name="CitationReference">
+          <Key>
+            <PropertyRef Name="SourceId" />
+            <PropertyRef Name="CitationId" />
+          </Key>
+          <Property Name="SourceId" Type="int" Nullable="false" />
+          <Property Name="CitationId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Editor">
+          <Key>
+            <PropertyRef Name="EditorId" />
+          </Key>
+          <Property Name="EditorId" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="64" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="64" />
+          <Property Name="EditorsOrder" Type="smallint" />
+          <Property Name="ProgramId" Type="int" />
+        </EntityType>
+        <EntityType Name="Journal">
+          <Key>
+            <PropertyRef Name="JournalId" />
+          </Key>
+          <Property Name="JournalId" Type="int" Nullable="false" />
+          <Property Name="JournalName" Type="nvarchar" MaxLength="256" />
+          <Property Name="ExternalURL" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Source">
+          <Key>
+            <PropertyRef Name="SourceId" />
+          </Key>
+          <Property Name="SourceId" Type="int" Nullable="false" />
+          <Property Name="Sourcetype" Type="nvarchar" MaxLength="50" />
+          <Property Name="ProquestId" Type="int" Nullable="false" />
+          <Property Name="ISIKey" Type="int" Nullable="false" />
+          <Property Name="ArticleTitle" Type="nvarchar" MaxLength="512" />
+          <Property Name="BookTitle" Type="nvarchar" MaxLength="512" />
+          <Property Name="ISSN" Type="nvarchar" MaxLength="50" />
+          <Property Name="IDS" Type="nvarchar" MaxLength="50" />
+          <Property Name="Year" Type="int" />
+          <Property Name="Edition" Type="nvarchar" MaxLength="128" />
+          <Property Name="Volume" Type="nvarchar" MaxLength="32" />
+          <Property Name="Issue" Type="nvarchar" MaxLength="50" />
+          <Property Name="SpecialIssues" Type="nvarchar" MaxLength="50" />
+          <Property Name="Publisher" Type="text" />
+          <Property Name="Language" Type="nvarchar" MaxLength="50" />
+          <Property Name="Pages" Type="nvarchar" MaxLength="128" />
+          <Property Name="DocumentType" Type="nvarchar" MaxLength="50" />
+          <Property Name="LocationOfText" Type="nvarchar" MaxLength="250" />
+          <Property Name="LocationOfPdf" Type="nvarchar" MaxLength="250" />
+          <Property Name="ExternalURL" Type="nvarchar" MaxLength="512" />
+          <Property Name="ReferencesNum" Type="int" />
+          <Property Name="CitedNum" Type="int" />
+          <Property Name="TimeStamp" Type="nvarchar" MaxLength="20" />
+          <Property Name="Abstract" Type="text" />
+          <Property Name="DocumentDownloadAttempted" Type="bit" />
+          <Property Name="JournalId" Type="int" />
+          <Property Name="AuthorId" Type="int" />
+          <Property Name="EditorId" Type="int" />
+        </EntityType>
+        <Association Name="fk_CitationReference_Source">
+          <End Role="Source" Type="IN3LP_TestModel.Store.Source" Multiplicity="1" />
+          <End Role="CitationReference" Type="IN3LP_TestModel.Store.CitationReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CitationReference">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_CitationReference_Source_2">
+          <End Role="Source" Type="IN3LP_TestModel.Store.Source" Multiplicity="1" />
+          <End Role="CitationReference" Type="IN3LP_TestModel.Store.CitationReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CitationReference">
+              <PropertyRef Name="CitationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Source_Author">
+          <End Role="Author" Type="IN3LP_TestModel.Store.Author" Multiplicity="0..1" />
+          <End Role="Source" Type="IN3LP_TestModel.Store.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="AuthorId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="AuthorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Source_Editor">
+          <End Role="Editor" Type="IN3LP_TestModel.Store.Editor" Multiplicity="0..1" />
+          <End Role="Source" Type="IN3LP_TestModel.Store.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Editor">
+              <PropertyRef Name="EditorId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="EditorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Source_Journal">
+          <End Role="Journal" Type="IN3LP_TestModel.Store.Journal" Multiplicity="0..1" />
+          <End Role="Source" Type="IN3LP_TestModel.Store.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Journal">
+              <PropertyRef Name="JournalId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="JournalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="IN3LP_TestModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="IN3LP_TestEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Authors" EntityType="IN3LP_TestModel.Author" />
+          <EntitySet Name="Editors" EntityType="IN3LP_TestModel.Editor" />
+          <EntitySet Name="Journals" EntityType="IN3LP_TestModel.Journal" />
+          <EntitySet Name="Sources" EntityType="IN3LP_TestModel.Source" />
+          <AssociationSet Name="fk_Source_Author" Association="IN3LP_TestModel.fk_Source_Author">
+            <End Role="Author" EntitySet="Authors" />
+            <End Role="Source" EntitySet="Sources" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Source_Editor" Association="IN3LP_TestModel.fk_Source_Editor">
+            <End Role="Editor" EntitySet="Editors" />
+            <End Role="Source" EntitySet="Sources" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Source_Journal" Association="IN3LP_TestModel.fk_Source_Journal">
+            <End Role="Journal" EntitySet="Journals" />
+            <End Role="Source" EntitySet="Sources" />
+          </AssociationSet>
+          <AssociationSet Name="CitationReference" Association="IN3LP_TestModel.CitationReference">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="Source1" EntitySet="Sources" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="AuthorId" />
+          </Key>
+          <Property Name="AuthorId" Type="Int32" Nullable="false" />
+          <Property Name="FullName" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="FirstName" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <Property Name="LastName" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <Property Name="Email" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="AuthorsOrder" Type="Int16" />
+          <Property Name="ProgramId" Type="Int32" />
+          <NavigationProperty Name="Sources" Relationship="IN3LP_TestModel.fk_Source_Author" FromRole="Author" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Editor">
+          <Key>
+            <PropertyRef Name="EditorId" />
+          </Key>
+          <Property Name="EditorId" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <Property Name="LastName" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <Property Name="EditorsOrder" Type="Int16" />
+          <Property Name="ProgramId" Type="Int32" />
+          <NavigationProperty Name="Sources" Relationship="IN3LP_TestModel.fk_Source_Editor" FromRole="Editor" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Journal">
+          <Key>
+            <PropertyRef Name="JournalId" />
+          </Key>
+          <Property Name="JournalId" Type="Int32" Nullable="false" />
+          <Property Name="JournalName" Type="String" MaxLength="256" Unicode="true" FixedLength="false" />
+          <Property Name="ExternalURL" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Sources" Relationship="IN3LP_TestModel.fk_Source_Journal" FromRole="Journal" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Source">
+          <Key>
+            <PropertyRef Name="SourceId" />
+          </Key>
+          <Property Name="SourceId" Type="Int32" Nullable="false" />
+          <Property Name="Sourcetype" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="ProquestId" Type="Int32" Nullable="false" />
+          <Property Name="ISIKey" Type="Int32" Nullable="false" />
+          <Property Name="ArticleTitle" Type="String" MaxLength="512" Unicode="true" FixedLength="false" />
+          <Property Name="BookTitle" Type="String" MaxLength="512" Unicode="true" FixedLength="false" />
+          <Property Name="ISSN" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="IDS" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Year" Type="Int32" />
+          <Property Name="Edition" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Volume" Type="String" MaxLength="32" Unicode="true" FixedLength="false" />
+          <Property Name="Issue" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="SpecialIssues" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Publisher" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="Language" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Pages" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="DocumentType" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="LocationOfText" Type="String" MaxLength="250" Unicode="true" FixedLength="false" />
+          <Property Name="LocationOfPdf" Type="String" MaxLength="250" Unicode="true" FixedLength="false" />
+          <Property Name="ExternalURL" Type="String" MaxLength="512" Unicode="true" FixedLength="false" />
+          <Property Name="ReferencesNum" Type="Int32" />
+          <Property Name="CitedNum" Type="Int32" />
+          <Property Name="TimeStamp" Type="String" MaxLength="20" Unicode="true" FixedLength="false" />
+          <Property Name="Abstract" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="DocumentDownloadAttempted" Type="Boolean" />
+          <Property Name="JournalId" Type="Int32" />
+          <Property Name="AuthorId" Type="Int32" />
+          <Property Name="EditorId" Type="Int32" />
+          <NavigationProperty Name="Author" Relationship="IN3LP_TestModel.fk_Source_Author" FromRole="Source" ToRole="Author" />
+          <NavigationProperty Name="Editor" Relationship="IN3LP_TestModel.fk_Source_Editor" FromRole="Source" ToRole="Editor" />
+          <NavigationProperty Name="Journal" Relationship="IN3LP_TestModel.fk_Source_Journal" FromRole="Source" ToRole="Journal" />
+          <NavigationProperty Name="Source1" Relationship="IN3LP_TestModel.CitationReference" FromRole="Source" ToRole="Source1" />
+          <NavigationProperty Name="Sources" Relationship="IN3LP_TestModel.CitationReference" FromRole="Source1" ToRole="Source" />
+        </EntityType>
+        <Association Name="fk_Source_Author">
+          <End Role="Author" Type="IN3LP_TestModel.Author" Multiplicity="0..1" />
+          <End Role="Source" Type="IN3LP_TestModel.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="AuthorId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="AuthorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Source_Editor">
+          <End Role="Editor" Type="IN3LP_TestModel.Editor" Multiplicity="0..1" />
+          <End Role="Source" Type="IN3LP_TestModel.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Editor">
+              <PropertyRef Name="EditorId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="EditorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Source_Journal">
+          <End Role="Journal" Type="IN3LP_TestModel.Journal" Multiplicity="0..1" />
+          <End Role="Source" Type="IN3LP_TestModel.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Journal">
+              <PropertyRef Name="JournalId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="JournalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CitationReference">
+          <End Role="Source" Type="IN3LP_TestModel.Source" Multiplicity="*" />
+          <End Role="Source1" Type="IN3LP_TestModel.Source" Multiplicity="*" />
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="IN3LP_TestModelStoreContainer" CdmEntityContainer="IN3LP_TestEntities">
+          <EntitySetMapping Name="Authors">
+            <EntityTypeMapping TypeName="IN3LP_TestModel.Author">
+              <MappingFragment StoreEntitySet="Author">
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="AuthorsOrder" ColumnName="AuthorsOrder" />
+                <ScalarProperty Name="ProgramId" ColumnName="ProgramId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Editors">
+            <EntityTypeMapping TypeName="IN3LP_TestModel.Editor">
+              <MappingFragment StoreEntitySet="Editor">
+                <ScalarProperty Name="EditorId" ColumnName="EditorId" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="EditorsOrder" ColumnName="EditorsOrder" />
+                <ScalarProperty Name="ProgramId" ColumnName="ProgramId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Journals">
+            <EntityTypeMapping TypeName="IN3LP_TestModel.Journal">
+              <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="JournalId" ColumnName="JournalId" />
+                <ScalarProperty Name="JournalName" ColumnName="JournalName" />
+                <ScalarProperty Name="ExternalURL" ColumnName="ExternalURL" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sources">
+            <EntityTypeMapping TypeName="IN3LP_TestModel.Source">
+              <MappingFragment StoreEntitySet="Source">
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="Sourcetype" ColumnName="Sourcetype" />
+                <ScalarProperty Name="ProquestId" ColumnName="ProquestId" />
+                <ScalarProperty Name="ISIKey" ColumnName="ISIKey" />
+                <ScalarProperty Name="ArticleTitle" ColumnName="ArticleTitle" />
+                <ScalarProperty Name="BookTitle" ColumnName="BookTitle" />
+                <ScalarProperty Name="ISSN" ColumnName="ISSN" />
+                <ScalarProperty Name="IDS" ColumnName="IDS" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Edition" ColumnName="Edition" />
+                <ScalarProperty Name="Volume" ColumnName="Volume" />
+                <ScalarProperty Name="Issue" ColumnName="Issue" />
+                <ScalarProperty Name="SpecialIssues" ColumnName="SpecialIssues" />
+                <ScalarProperty Name="Publisher" ColumnName="Publisher" />
+                <ScalarProperty Name="Language" ColumnName="Language" />
+                <ScalarProperty Name="Pages" ColumnName="Pages" />
+                <ScalarProperty Name="DocumentType" ColumnName="DocumentType" />
+                <ScalarProperty Name="LocationOfText" ColumnName="LocationOfText" />
+                <ScalarProperty Name="LocationOfPdf" ColumnName="LocationOfPdf" />
+                <ScalarProperty Name="ExternalURL" ColumnName="ExternalURL" />
+                <ScalarProperty Name="ReferencesNum" ColumnName="ReferencesNum" />
+                <ScalarProperty Name="CitedNum" ColumnName="CitedNum" />
+                <ScalarProperty Name="TimeStamp" ColumnName="TimeStamp" />
+                <ScalarProperty Name="Abstract" ColumnName="Abstract" />
+                <ScalarProperty Name="DocumentDownloadAttempted" ColumnName="DocumentDownloadAttempted" />
+                <ScalarProperty Name="JournalId" ColumnName="JournalId" />
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
+                <ScalarProperty Name="EditorId" ColumnName="EditorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="CitationReference" TypeName="IN3LP_TestModel.CitationReference" StoreEntitySet="CitationReference">
+            <EndProperty Name="Source">
+              <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+            </EndProperty>
+            <EndProperty Name="Source1">
+              <ScalarProperty Name="SourceId" ColumnName="CitationId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="IN3LP">
+        <EntityTypeShape EntityType="IN3LP_TestModel.Author" Width="1.5" PointX="0.75" PointY="3.875" Height="2.5571907552083331" IsExpanded="true" />
+        <EntityTypeShape EntityType="IN3LP_TestModel.Editor" Width="1.5" PointX="0.75" PointY="0.75" Height="2.1725878906249996" IsExpanded="true" />
+        <EntityTypeShape EntityType="IN3LP_TestModel.Journal" Width="1.5" PointX="0.75" PointY="7.625" Height="1.7879850260416674" IsExpanded="true" />
+        <EntityTypeShape EntityType="IN3LP_TestModel.Source" Width="1.5" PointX="3" PointY="1.375" Height="7.3647265624999969" IsExpanded="true" />
+        <AssociationConnector Association="IN3LP_TestModel.fk_Source_Author" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="5.1535953776041667" />
+          <ConnectorPoint PointX="3" PointY="5.1535953776041667" />
+        </AssociationConnector>
+        <AssociationConnector Association="IN3LP_TestModel.fk_Source_Editor" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="2.1487939453125" />
+          <ConnectorPoint PointX="3" PointY="2.1487939453125" />
+        </AssociationConnector>
+        <AssociationConnector Association="IN3LP_TestModel.fk_Source_Journal" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="8.182363281249998" />
+          <ConnectorPoint PointX="3" PointY="8.182363281249998" />
+        </AssociationConnector>
+        <AssociationConnector Association="IN3LP_TestModel.CitationReference" ManuallyRouted="false">
+          <ConnectorPoint PointX="3.5319230769230767" PointY="8.739726562499996" />
+          <ConnectorPoint PointX="3.5319230769230767" PointY="8.989726562499996" />
+          <ConnectorPoint PointX="3.9784615384615383" PointY="8.989726562499996" />
+          <ConnectorPoint PointX="3.9784615384615383" PointY="8.739726562499996" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
