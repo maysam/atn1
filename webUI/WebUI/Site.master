@@ -62,9 +62,9 @@
                 <nav>
                     <ul id="menu">
                         <!-- <li><a runat="server" href="~/">Home</a></li> -->
-                        <li><a runat="server" >Networks</a></li>
+                        <li><a runat="server" href="~/networks.aspx">Networks</a></li>
                         <li><a runat="server" href="~/launcher.aspx">Launcher</a></li>
-                        <li><a runat="server" >Help</a></li>
+                        <li><a runat="server" href="~/help.aspx">Help</a></li>
                         <!-- <li><a runat="server" href="~/Contact.aspx">Contact</a></li> -->
                     </ul>
                 </nav>

@@ -124,9 +124,36 @@ public partial class launcher : System.Web.UI.Page
     {
         string networkName;
         networkName = txtNetworkName.Text;
+  
+        TextBox txtPaperNameTemp;
+        TextBox txtMSAcademicSearchIdTemp;
+
+        string[] paperNames = new string[DataSourceGrid.Rows.Count];
+        string[] msAcademicSearchIds = new string[DataSourceGrid.Rows.Count];
+
+        //header row makes iterator 1, footer row makes iterator only go up to count - 1
+        for(int itr = 0; itr < DataSourceGrid.Rows.Count; itr++)
+        {
+            txtPaperNameTemp = DataSourceGrid.Rows[itr].Cells[1].FindControl("txtPaperName") as TextBox;
+            paperNames[itr] = txtPaperNameTemp.Text;
+
+            txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[3].FindControl("txtMsAcademicSearchId") as TextBox;
+            msAcademicSearchIds[itr] = txtMSAcademicSearchIdTemp.Text;
+        }
+        
 
         string crawlerString;
-        crawlerString = "alert('" + txtNetworkName.Text + "');";
+        crawlerString = "alert('" +
+                txtNetworkName.Text + "\\n" +
+                "paper name     MS Academic Search ID \\n";
+
+        for (int itr = 0; itr < paperNames.Count(); itr++)
+        {
+            crawlerString += paperNames[itr]+ "    " + msAcademicSearchIds[itr] + "\\n";
+        }
+        crawlerString += "');";
+        
+
         ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
     } 
 }
