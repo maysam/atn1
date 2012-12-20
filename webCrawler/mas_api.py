@@ -81,7 +81,7 @@ class MASExample(object):
         self.api = MAS(app_id)
 
     def author(self, author_id):
-        resp = self.api.author({"AuthorID": author, "StartIdx": 1, "EndIdx": 1})
+        resp = self.api.author({"AuthorID": author_id, "StartIdx": 1, "EndIdx": 1})
         try:
             return resp['Author']['Result'][0]
         except IndexError:
