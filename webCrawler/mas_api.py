@@ -55,7 +55,7 @@ class MAS(object):
     def __init__(self):
         self.app_id = MAS_APPID
 
-    @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
+    #@rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
     def request(self, params):
         params['AppId'] = self.app_id
         print "PARAMS", params
@@ -78,6 +78,9 @@ class MAS(object):
             print self.error_messages[result_code]
         return resp_data[result_objects]
 
+    # These methods will likely be deprecated when the 
+    # general API object is later introduced.
+
     @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
     def get_publication_id(self, params):
         pass
@@ -92,6 +95,9 @@ class MAS(object):
 
     @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
     def get_citing_papers(self, publication_id):
+        #start_idx = 1
+        #end_idx = 1
+        #params = {'PublicationID':publication_id,'CitationCount'}
         pass
 
     @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
@@ -115,3 +121,8 @@ class MASExample(object):
             print "Unknown Error"
             raise
 
+api = MAS()
+
+params = {'ResultObjects':api.result_objects[1],'FulltextQuery':'data mining',
+                'StartIdx':1, 'EndIdx':1, 'PublicationContentType':"Title,Author"}
+print api.request(params)
