@@ -20,6 +20,7 @@ class rate_limited(object):
                 time_delta = datetime.datetime.now() - self.__last_reset
                 time_delta = int(time_delta.total_seconds()) + 1
                 if time_delta <= self.__time_interval:
+                    print "Rate limit reached! Sleeping for %i seconds..."%time_interval
                     time.sleep(self.__time_interval - time_delta + 1)
                     self.__numcalls = 0
                     self.numcalls = 0
