@@ -2,6 +2,8 @@ import functools
 import requests
 import logging
 
+import suds
+
 from util import rate_limited
 
 from config import MAS_APPID
@@ -121,8 +123,3 @@ class MASExample(object):
             print "Unknown Error"
             raise
 
-api = MAS()
-
-params = {'ResultObjects':api.result_objects[1],'FulltextQuery':'data mining',
-                'StartIdx':1, 'EndIdx':1, 'PublicationContentType':"Title,Author"}
-print api.request(params)
