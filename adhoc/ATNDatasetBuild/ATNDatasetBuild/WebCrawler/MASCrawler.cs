@@ -5,11 +5,14 @@ using System.Text;
 using Crawler.MAS;
 using System.Diagnostics;
 using Crawler.Persistence;
+using System.Threading;
 
 namespace Crawler.WebCrawler
 {
     public class MASCrawler : ICrawler
     {
+        private const int RetryDelayMilliseconds = 5000;
+        private const int RetryLimit = 5;
         private const int MaxResultSize = 100;
         private const string MASAppId = "d34a7152-9c60-4c50-80b3-24435cb20a27";
         private RateLimit _limiter;
@@ -31,6 +34,10 @@ namespace Crawler.WebCrawler
             //Get publication data
             request.ResultObjects = ObjectType.Publication;
             request.ReferenceType = Relationship;
+
+            request.PublicationID = UInt32.Parse(CanonicalId);
+            request.StartIdx = 1;
+            request.EndIdx = request.StartIdx + MaxResultSize;
 
             //Get response
             _limiter.AddRequest();
@@ -59,11 +66,13 @@ namespace Crawler.WebCrawler
         }
         public string[] GetCitationsBySourceId(string PaperId)
         {
+            Trace.WriteLine(string.Format("Getting citations for publication {0}", PaperId), "Informational");
             return GetReferences(PaperId, ReferenceRelationship.Citation);
         }
 
         public string[] GetReferencesBySourceId(string PaperId)
         {
+            Trace.WriteLine(string.Format("Getting references for publication {0}", PaperId), "Informational");
             return GetReferences(PaperId, ReferenceRelationship.Reference);
         }
 
@@ -72,14 +81,36 @@ namespace Crawler.WebCrawler
             Request request = new Request();
             request.AppID = MASAppId;
             request.OrderBy = OrderType.Year;
+            request.StartIdx = 1;
+            request.EndIdx = 1;
+            
+            request.PublicationID = UInt32.Parse(PaperId);
 
             request.ResultObjects = ObjectType.Publication;
             request.PublicationContent = new PublicationContentType[] { PublicationContentType.AllInfo };
 
             _limiter.AddRequest();
-            Response response = _client.Search(request);
-            Publication RetrievedPublication = response.Publication.Result.SingleOrDefault();
+            Publication RetrievedPublication = null;
+            Response response = null;
+            for (int i = 1; i <= RetryLimit; i++)
+            {
+                try
+                {
+                    response = _client.Search(request);
+                    RetrievedPublication = response.Publication.Result.SingleOrDefault();
+                    break;
+                }
+                catch (Exception e)
+                {
+                    if (i == RetryLimit)
+                    {
+                        throw e;
+                    }
+                    Thread.Sleep(RetryDelayMilliseconds);
+                }
+            }
 
+            Trace.WriteLine(string.Format("Retrieved source {0}", PaperId), "Informational");
 
             CompleteSource cs = new CompleteSource();
 
@@ -89,7 +120,8 @@ namespace Crawler.WebCrawler
             CanonicalPaper.DataSourceId = (int)CrawlerDataSource.MicrosoftAcademicSearch;
             CanonicalPaper.MasID = Int32.Parse(PaperId);
             CanonicalPaper.Year = RetrievedPublication.Year;
-            CanonicalPaper.SerializedDataSourceResponse = JsonHelper.JsonSerializer(response);
+            CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(response);
+            CanonicalPaper.DOI = RetrievedPublication.DOI;
 
             List<Persistence.Author> Authors = new List<Persistence.Author>(RetrievedPublication.Author.Length);
             foreach (var Author in RetrievedPublication.Author)
@@ -104,13 +136,16 @@ namespace Crawler.WebCrawler
             }
 
             Persistence.Journal Journal = new Persistence.Journal();
-            Journal.JournalName = RetrievedPublication.Journal.FullName;
+            if(RetrievedPublication.Journal != null)
+            {
+                Journal.JournalName = RetrievedPublication.Journal.FullName;
+                cs.Journal = Journal;
+            }
 
             cs.IsDetached = true;
             cs.Authors = Authors.ToArray();
             cs.Source = CanonicalPaper;
-            cs.Journal = Journal;
-
+            
             return cs;
         }
     }

@@ -139,6 +139,7 @@
           <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="DateRetreieved" Type="datetime" Nullable="false" />
+          <Property Name="ReferencesRetrieved" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DataSource">
           <Key>
@@ -178,8 +179,8 @@
           <Key>
             <PropertyRef Name="JournalId" />
           </Key>
-          <Property Name="JournalId" Type="int" Nullable="false" />
-          <Property Name="JournalName" Type="varchar" MaxLength="256" />
+          <Property Name="JournalId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="JournalName" Type="varchar" Nullable="false" MaxLength="256" />
           <Property Name="ExternalURL" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Source">
@@ -190,6 +191,7 @@
           <Property Name="SourceType" Type="int" Nullable="false" />
           <Property Name="DataSourceId" Type="int" Nullable="false" />
           <Property Name="MasID" Type="bigint" />
+          <Property Name="DOI" Type="varchar" MaxLength="100" />
           <Property Name="ProquestId" Type="int" />
           <Property Name="ArticleTitle" Type="nvarchar(max)" />
           <Property Name="BookTitle" Type="nvarchar(max)" />
@@ -535,6 +537,7 @@
           <Property Type="DateTime" Name="DateRetreieved" Nullable="false" />
           <NavigationProperty Name="Crawl" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Crawl" />
           <NavigationProperty Name="Source" Relationship="ATNModel.Source_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Source" />
+          <Property Type="Boolean" Name="ReferencesRetrieved" Nullable="false" />
         </EntityType>
         <EntityType Name="DataSource">
           <Key>
@@ -584,7 +587,7 @@
             <PropertyRef Name="JournalId" />
           </Key>
           <Property Type="Int32" Name="JournalId" Nullable="false" />
-          <Property Type="String" Name="JournalName" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="JournalName" MaxLength="256" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Type="String" Name="ExternalURL" MaxLength="500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Sources" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Journal" ToRole="Source" />
         </EntityType>
@@ -621,6 +624,7 @@
           <NavigationProperty Name="Source1" Relationship="ATNModel.CitationReference" FromRole="Source" ToRole="Source1" />
           <NavigationProperty Name="Sources" Relationship="ATNModel.CitationReference" FromRole="Source1" ToRole="Source" />
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Source_CrawlQueue_FK1" FromRole="Source" ToRole="CrawlQueue" />
+          <Property Type="String" Name="DOI" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="Author_AuthorReference_FK1">
           <End Type="ATNModel.Author" Role="Author" Multiplicity="1" />
@@ -846,6 +850,7 @@
           <EntitySetMapping Name="CrawlResults">
             <EntityTypeMapping TypeName="ATNModel.CrawlResult">
               <MappingFragment StoreEntitySet="CrawlResult">
+                <ScalarProperty Name="ReferencesRetrieved" ColumnName="ReferencesRetrieved" />
                 <ScalarProperty Name="DateRetreieved" ColumnName="DateRetreieved" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
@@ -904,6 +909,7 @@
           <EntitySetMapping Name="Sources">
             <EntityTypeMapping TypeName="ATNModel.Source">
               <MappingFragment StoreEntitySet="Source">
+                <ScalarProperty Name="DOI" ColumnName="DOI" />
                 <ScalarProperty Name="SerializedDataSourceResponse" ColumnName="SerializedDataSourceResponse" />
                 <ScalarProperty Name="JournalId" ColumnName="JournalId" />
                 <ScalarProperty Name="Abstract" ColumnName="Abstract" />

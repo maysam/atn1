@@ -16,11 +16,19 @@ namespace Crawler.Persistence
             _journals = new Journals();
         }
 
+        public void AddReference(long SourceId, long CitesSourceId)
+        {
+            Source CitingSource = Context.Sources.SingleOrDefault(s => s.SourceId == SourceId);
+            Source CitedSource = Context.Sources.SingleOrDefault(s => s.SourceId == CitesSourceId);
+            CitingSource.Sources.Add(CitedSource);
+            Context.SaveChanges();
+        }
+
         public CompleteSource GetCompleteSourceByCanonicalId(CrawlerDataSource DataSource, string CanonicalId)
         {
 
             SourceRetrievalService SourceRetrival = new SourceRetrievalService();
-            Source RetrievedSource = SourceRetrival.GetSourceByCanonicalId(DataSource, CanonicalId);
+            Source RetrievedSource = SourceRetrival.GetSourceByDataSourceSpecificId(DataSource, CanonicalId);
 
             CompleteSource cs = new CompleteSource();
             cs.IsDetached = false;
@@ -46,7 +54,10 @@ namespace Crawler.Persistence
                     SourceToAdd.Journal = _journals.GetJournalFromDetachedJournal(SourceToAdd.Journal);
                 }
 
-                SourceToAdd.Source.JournalId = SourceToAdd.Journal.JournalId;
+                if (SourceToAdd.Journal != null)
+                {
+                    SourceToAdd.Source.JournalId = SourceToAdd.Journal.JournalId;
+                }
                 Context.Sources.AddObject(SourceToAdd.Source);
                 Context.SaveChanges();
 

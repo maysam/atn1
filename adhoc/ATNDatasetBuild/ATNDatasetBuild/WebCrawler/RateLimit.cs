@@ -9,8 +9,8 @@ namespace Crawler.WebCrawler
 {
     public class RateLimit
     {
-        private TimeSpan RequestInterval = new TimeSpan(0, 0, 30);
-        private const int RequestsPerInterval = 30;
+        private TimeSpan RequestInterval = new TimeSpan(0, 0, 60);
+        private const int RequestsPerInterval = 60;
         private Stopwatch _watch;
         private uint _requests;
         public uint CurrentRequests
@@ -60,14 +60,14 @@ namespace Crawler.WebCrawler
             if (_requests >= RequestsPerInterval && _watch.Elapsed <= RequestInterval)
             {
                 TimeSpan WaitSpan = RequestInterval - _watch.Elapsed;
-                Console.WriteLine("Hit rate limit wall, waiting {0} before continuing.", WaitSpan);
+                Trace.WriteLine(string.Format("Hit rate limit wall, waiting {0} before continuing.", WaitSpan), "Informational");
                 Thread.Sleep(WaitSpan);
                 _watch.Restart();
                 _requests = 0;
             }
             else if (_watch.Elapsed > RequestInterval)
             {
-                Console.WriteLine("Restting rate limit.");
+                Trace.WriteLine("Restting rate limit.", "Informational");
                 _requests = 0;
                 _watch.Restart();
             }

@@ -60,7 +60,7 @@
     <Compile Include="Persistence\Sources.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThirdParty\JsonHelper.cs" />
+    <Compile Include="ThirdParty\XmlHelper.cs" />
     <Compile Include="WebCrawler\CompleteDetachedSource.cs" />
     <Compile Include="WebCrawler\ICrawler.cs" />
     <Compile Include="WebCrawler\RateLimit.cs" />

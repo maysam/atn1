@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Crawler.Persistence
 {
-    public enum CrawlerState { Started = 0, CanonicalPaperComplete = 1, EnqueueingCitationsComplete = 2, EnqueueingReferencesComplete = 3, Complete = 4 };
+    public enum CrawlerState { Started = 0, CanonicalPaperComplete = 1, EnqueueingCitationsComplete = 2, RetrievingCitationsComplete = 3, EnqueueingReferencesComplete = 4, RetrievingReferencesComplete = 5, Complete = 6 };
     public enum CrawlReferenceDirection { None = 0, Citation = 1, Reference = 2 };
     public class CrawlerProgress : DatabaseInterface
     {
@@ -55,28 +55,48 @@ namespace Crawler.Persistence
             Context.SaveChanges();
         }
 
-        public void QueueCrawl(int CrawlId, string DataSourceSpecificId, long? ReferencesSourceId, CrawlReferenceDirection Direction)
+        public void QueueCrawl(int CrawlId, string[] DataSourceSpecificIds, long? ReferencesSourceId, CrawlReferenceDirection Direction)
         {
-            CrawlQueue cq = new CrawlQueue();
-            cq.CrawlId = CrawlId;
-            cq.DataSourceSpecificId = DataSourceSpecificId;
-            cq.CrawlReferenceDirection = (short)Direction;
-            if (Direction != CrawlReferenceDirection.None)
+            foreach (string DataSourceSpecificId in DataSourceSpecificIds)
             {
-                if (ReferencesSourceId.HasValue)
+                CrawlQueue cq = new CrawlQueue();
+                cq.CrawlId = CrawlId;
+                cq.DataSourceSpecificId = DataSourceSpecificId;
+                cq.CrawlReferenceDirection = (short)Direction;
+                if (Direction != CrawlReferenceDirection.None)
                 {
-                    cq.ReferencesSourceId = ReferencesSourceId;
+                    if (ReferencesSourceId.HasValue)
+                    {
+                        cq.ReferencesSourceId = ReferencesSourceId;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Cannot specify a reference direction without specifying a referenced source");
+                    }
                 }
-                else
+                else if (ReferencesSourceId.HasValue)
                 {
-                    throw new ArgumentException("Cannot specify a reference direction without specifying a referenced source");
+                    throw new ArgumentException("Cannot specify a referenced source without a reference direction");
                 }
+                Context.CrawlQueues.AddObject(cq);
             }
-            else if (ReferencesSourceId.HasValue)
-            {
-                throw new ArgumentException("Cannot specify a referenced source without a reference direction");
-            }
-            Context.CrawlQueues.AddObject(cq);
+            Context.SaveChanges();
+        }
+
+        public CrawlQueue[] GetPendingCrawlsForCrawlId(int CrawlId)
+        {
+            return Context.CrawlQueues.Where(c => c.CrawlId == CrawlId).ToArray();
+        }
+
+        public void CompleteQueueItem(CrawlQueue cq, long SourceId)
+        {
+            Context.CrawlQueues.DeleteObject(cq);
+            CrawlResult cr = new CrawlResult();
+            cr.CrawlId = cq.CrawlId;
+            cr.DataSourceSpecificId = cq.DataSourceSpecificId;
+            cr.DateRetreieved = DateTime.Now;
+            cr.SourceId = SourceId;
+            Context.CrawlResults.AddObject(cr);
             Context.SaveChanges();
         }
     }

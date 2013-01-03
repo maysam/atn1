@@ -1299,7 +1299,8 @@ namespace Crawler.Persistence
         /// <param name="dataSourceSpecificId">Initial value of the DataSourceSpecificId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
         /// <param name="dateRetreieved">Initial value of the DateRetreieved property.</param>
-        public static CrawlResult CreateCrawlResult(global::System.Int64 crawlResultId, global::System.Int32 crawlId, global::System.String dataSourceSpecificId, global::System.Int64 sourceId, global::System.DateTime dateRetreieved)
+        /// <param name="referencesRetrieved">Initial value of the ReferencesRetrieved property.</param>
+        public static CrawlResult CreateCrawlResult(global::System.Int64 crawlResultId, global::System.Int32 crawlId, global::System.String dataSourceSpecificId, global::System.Int64 sourceId, global::System.DateTime dateRetreieved, global::System.Boolean referencesRetrieved)
         {
             CrawlResult crawlResult = new CrawlResult();
             crawlResult.CrawlResultId = crawlResultId;
@@ -1307,6 +1308,7 @@ namespace Crawler.Persistence
             crawlResult.DataSourceSpecificId = dataSourceSpecificId;
             crawlResult.SourceId = sourceId;
             crawlResult.DateRetreieved = dateRetreieved;
+            crawlResult.ReferencesRetrieved = referencesRetrieved;
             return crawlResult;
         }
 
@@ -1436,6 +1438,30 @@ namespace Crawler.Persistence
         private global::System.DateTime _DateRetreieved;
         partial void OnDateRetreievedChanging(global::System.DateTime value);
         partial void OnDateRetreievedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean ReferencesRetrieved
+        {
+            get
+            {
+                return _ReferencesRetrieved;
+            }
+            set
+            {
+                OnReferencesRetrievedChanging(value);
+                ReportPropertyChanging("ReferencesRetrieved");
+                _ReferencesRetrieved = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ReferencesRetrieved");
+                OnReferencesRetrievedChanged();
+            }
+        }
+        private global::System.Boolean _ReferencesRetrieved;
+        partial void OnReferencesRetrievedChanging(global::System.Boolean value);
+        partial void OnReferencesRetrievedChanged();
 
         #endregion
 
@@ -2300,10 +2326,12 @@ namespace Crawler.Persistence
         /// Create a new Journal object.
         /// </summary>
         /// <param name="journalId">Initial value of the JournalId property.</param>
-        public static Journal CreateJournal(global::System.Int32 journalId)
+        /// <param name="journalName">Initial value of the JournalName property.</param>
+        public static Journal CreateJournal(global::System.Int32 journalId, global::System.String journalName)
         {
             Journal journal = new Journal();
             journal.JournalId = journalId;
+            journal.JournalName = journalName;
             return journal;
         }
 
@@ -2341,7 +2369,7 @@ namespace Crawler.Persistence
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
         public global::System.String JournalName
         {
@@ -2353,7 +2381,7 @@ namespace Crawler.Persistence
             {
                 OnJournalNameChanging(value);
                 ReportPropertyChanging("JournalName");
-                _JournalName = StructuralObject.SetValidValue(value, true);
+                _JournalName = StructuralObject.SetValidValue(value, false);
                 ReportPropertyChanged("JournalName");
                 OnJournalNameChanged();
             }
@@ -2930,6 +2958,30 @@ namespace Crawler.Persistence
         private global::System.String _SerializedDataSourceResponse;
         partial void OnSerializedDataSourceResponseChanging(global::System.String value);
         partial void OnSerializedDataSourceResponseChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String DOI
+        {
+            get
+            {
+                return _DOI;
+            }
+            set
+            {
+                OnDOIChanging(value);
+                ReportPropertyChanging("DOI");
+                _DOI = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("DOI");
+                OnDOIChanged();
+            }
+        }
+        private global::System.String _DOI;
+        partial void OnDOIChanging(global::System.String value);
+        partial void OnDOIChanged();
 
         #endregion
 

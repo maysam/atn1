@@ -12,12 +12,13 @@ namespace Crawler.Persistence
 
         }
 
-        public Source GetSourceByCanonicalId(CrawlerDataSource DataSource, string CanonicalId)
+        public Source GetSourceByDataSourceSpecificId(CrawlerDataSource DataSource, string DataSourceSpecificId)
         {
             switch (DataSource)
             {
                 case CrawlerDataSource.MicrosoftAcademicSearch:
-                    return Context.Sources.Where(s => s.DataSourceId == (int)CrawlerDataSource.MicrosoftAcademicSearch && s.MasID.Value == Int64.Parse(CanonicalId)).SingleOrDefault();
+                    long SourceId =  Int64.Parse(DataSourceSpecificId);
+                    return Context.Sources.Where(s => s.DataSourceId == (int)CrawlerDataSource.MicrosoftAcademicSearch && s.MasID.Value == SourceId).SingleOrDefault();
                 default:
                     throw new NotImplementedException();
             }
