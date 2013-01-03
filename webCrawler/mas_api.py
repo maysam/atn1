@@ -2,6 +2,10 @@ import functools
 import requests
 import logging
 
+import suds
+
+from util import rate_limited
+
 from config import MAS_APPID
 from config import MAS_RATE_LIMIT
 
@@ -50,9 +54,10 @@ class MAS(object):
 
             return functools.partial(function, k)
 
-    def __init__(self, app_id):
-        self.app_id = app_id
+    def __init__(self):
+        self.app_id = MAS_APPID
 
+    #@rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
     def request(self, params):
         params['AppId'] = self.app_id
         print "PARAMS", params
@@ -66,22 +71,49 @@ class MAS(object):
             print "Response JSON", resp.json
             raise
 
-        # Check that the request is successfull
+        # Check that the request is successful
         try:
             result_code = resp_data['ResultCode']
             assert result_code == 0
 
-        # Print meaningful error message
         except AssertionError:
             print self.error_messages[result_code]
         return resp_data[result_objects]
 
+    # These methods will likely be deprecated when the 
+    # general API object is later introduced.
+
+    @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
+    def get_publication_id(self, params):
+        pass
+
+    # MAS API will only return 100 results per query,
+    # therefore it is necessary to have a rate-limited
+    # function that breaks the process of getting citing
+    # papers into smaller, still-rate-limited tasks.
+    @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
+    def __get_next_citing_papers(self, publication_id, start_idx):
+        pass
+
+    @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
+    def get_citing_papers(self, publication_id):
+        #start_idx = 1
+        #end_idx = 1
+        #params = {'PublicationID':publication_id,'CitationCount'}
+        pass
+
+    @rate_limited(MAS_RATE_LIMIT[0],MAS_RATE_LIMIT[1])
+    def get_paper_data(self, publication_id):
+        pass
+
+
+
 class MASExample(object):
-    def __init__(self, app_id):
-        self.api = MAS(app_id)
+    def __init__(self):
+        self.api = MAS()
 
     def author(self, author_id):
-        resp = self.api.author({"AuthorID": author, "StartIdx": 1, "EndIdx": 1})
+        resp = self.api.author({"AuthorID": author_id, "StartIdx": 1, "EndIdx": 1})
         try:
             return resp['Author']['Result'][0]
         except IndexError:
