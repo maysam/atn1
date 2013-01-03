@@ -4,3 +4,6 @@
 /adhoc/AdjacencyMatrixBuild/*.suo
 /adhoc/AdjacencyMatrixBuild/AdjacencyMatrixBuild/obj
 /adhoc/AdjacencyMatrixBuild/AdjacencyMatrixBuild/bin
+/adhoc/ATNDatasetBuild/ATNDatasetBuild/obj/x86/Debug/*.cache
+/adhoc/ATNDatasetBuild/ATNDatasetBuild/obj
+/adhoc/ATNDatasetBuild/ATNDatasetBuild/bin
