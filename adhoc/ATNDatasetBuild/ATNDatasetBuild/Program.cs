@@ -24,7 +24,7 @@ namespace Crawler
             CompleteSource cds = null;
             if (Crawl.CrawlState == (short)CrawlerState.Started)
             {
-                Trace.WriteLine("Crawl data note present, initiating crawl", "Informational");
+                Trace.WriteLine("Crawl data not present, initiating crawl", "Informational");
                 cds = crawler.GetSourceById(DataSourceSpecificCanonicalIds.First().ToString());
                 Sources.AddDetachedSource(cds);
                 foreach (uint MasId in DataSourceSpecificCanonicalIds)

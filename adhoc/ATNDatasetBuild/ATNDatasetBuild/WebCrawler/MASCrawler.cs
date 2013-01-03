@@ -37,7 +37,7 @@ namespace Crawler.WebCrawler
 
             request.PublicationID = UInt32.Parse(CanonicalId);
             request.StartIdx = 1;
-            request.EndIdx = request.StartIdx + MaxResultSize;
+            request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
             //Get response
             _limiter.AddRequest();
@@ -56,7 +56,7 @@ namespace Crawler.WebCrawler
                     PublicationIdsCitingCanonicalPaper.Add(p.ID);
                 }
                 request.StartIdx += MaxResultSize;
-                request.EndIdx = request.StartIdx + MaxResultSize;
+                request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
                 _limiter.AddRequest();
                 response = _client.Search(request);
