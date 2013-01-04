@@ -49,20 +49,33 @@ namespace Crawler.WebCrawler
             uint ResultCount = response.Publication.TotalItem;
             Trace.WriteLine(string.Format("Received first response, {0} papers total.", ResultCount), "Informational");
 
+            int AttemptCount = 0;
             while (RetrievedItems < ResultCount)
             {
-                Trace.WriteLine(string.Format("Retrieving papers {0} through {1}", request.StartIdx, request.EndIdx), "Informational");
-                RetrievedItems += response.Publication.Result.Length;
-                foreach (var p in response.Publication.Result)
+                try
                 {
-                    Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
-                    PublicationIdsCitingCanonicalPaper.Add(p.ID);
-                }
-                request.StartIdx += MaxResultSize;
-                request.EndIdx = request.StartIdx + MaxResultSize - 1;
+                    Trace.WriteLine(string.Format("Retrieving papers {0} through {1}", request.StartIdx, request.EndIdx), "Informational");
+                    RetrievedItems += response.Publication.Result.Length;
+                    foreach (var p in response.Publication.Result)
+                    {
+                        Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
+                        PublicationIdsCitingCanonicalPaper.Add(p.ID);
+                    }
+                    request.StartIdx += MaxResultSize;
+                    request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
-                _limiter.AddRequest();
-                response = _client.Search(request);
+                    _limiter.AddRequest();
+                    response = _client.Search(request);
+                }
+                catch (Exception e)
+                {
+                    AttemptCount++;
+                    if (AttemptCount == RetryLimit)
+                    {
+                        throw e;
+                    }
+                    Thread.Sleep(RetryDelayMilliseconds);
+                }
             }
 
             return PublicationIdsCitingCanonicalPaper.Select(val => val.ToString()).ToArray();
@@ -86,7 +99,7 @@ namespace Crawler.WebCrawler
             request.OrderBy = OrderType.Year;
             request.StartIdx = 1;
             request.EndIdx = 1;
-            
+
             request.PublicationID = UInt32.Parse(PaperId);
 
             request.ResultObjects = ObjectType.Publication;
@@ -139,7 +152,7 @@ namespace Crawler.WebCrawler
             }
 
             Persistence.Journal Journal = new Persistence.Journal();
-            if(RetrievedPublication.Journal != null)
+            if (RetrievedPublication.Journal != null)
             {
                 Journal.JournalName = RetrievedPublication.Journal.FullName;
                 cs.Journal = Journal;
@@ -148,23 +161,8 @@ namespace Crawler.WebCrawler
             cs.IsDetached = true;
             cs.Authors = Authors.ToArray();
             cs.Source = CanonicalPaper;
-            
+
             return cs;
-        }
-
-        string[] ICrawler.GetCitationsBySourceId(string CanonicalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        string[] ICrawler.GetReferencesBySourceId(string PaperId)
-        {
-            throw new NotImplementedException();
-        }
-
-        CompleteSource ICrawler.GetSourceById(string PaperId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

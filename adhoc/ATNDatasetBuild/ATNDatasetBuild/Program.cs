@@ -11,7 +11,7 @@ namespace Crawler
 {
     class Program
     {
-        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 37035751 };
+        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 44554959 };
 
         static void Main(string[] args)
         {
@@ -28,11 +28,15 @@ namespace Crawler
             {
                 Trace.WriteLine("Crawl data not present, initiating crawl", "Informational");
                 Source AttachedCannonicalSource = SourceRetrieval.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, DataSourceSpecificCanonicalIds.First().ToString());
-                
+
                 if (AttachedCannonicalSource == null)
                 {
-                   CanonicalSource = crawler.GetSourceById(DataSourceSpecificCanonicalIds.First().ToString());
-                   AttachedCannonicalSource = Sources.AddDetachedSource(CanonicalSource);
+                    CanonicalSource = crawler.GetSourceById(DataSourceSpecificCanonicalIds.First().ToString());
+                    AttachedCannonicalSource = Sources.AddDetachedSource(CanonicalSource);
+                }
+                else
+                {
+                    CanonicalSource = Sources.GetCompleteSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, AttachedCannonicalSource.MasID.Value.ToString());
                 }
 
                 //If there are multiple copies of the same source added, correlate each unique data-source ID to the canonical source ID
