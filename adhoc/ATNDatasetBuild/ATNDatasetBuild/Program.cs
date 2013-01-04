@@ -11,7 +11,7 @@ namespace Crawler
 {
     class Program
     {
-        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 1265954 };
+        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 37035751 };
 
         static void Main(string[] args)
         {
@@ -26,7 +26,11 @@ namespace Crawler
             {
                 Trace.WriteLine("Crawl data not present, initiating crawl", "Informational");
                 cds = crawler.GetSourceById(DataSourceSpecificCanonicalIds.First().ToString());
-                Sources.AddDetachedSource(cds);
+                Source CanonicalSource = SourceRetrieval.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, DataSourceSpecificCanonicalIds.First().ToString());
+                if (CanonicalSource == null)
+                {
+                   CanonicalSource = Sources.AddDetachedSource(cds);
+                }
                 foreach (uint MasId in DataSourceSpecificCanonicalIds)
                 {
                     CrawlerProgress.StoreCanonicalResult(Crawl.CrawlId, MasId.ToString(), cds.Source.SourceId);
@@ -50,7 +54,7 @@ namespace Crawler
                 {
                     string[] PublicationIdsCitingCanonicalPaper = crawler.GetCitationsBySourceId(MasId.ToString());
                     CrawlerProgress.QueueCrawl(Crawl.CrawlId, PublicationIdsCitingCanonicalPaper, cds.Source.SourceId, CrawlReferenceDirection.Citation);
-                    Trace.WriteLine(string.Format("Queued {1} citations", PublicationIdsCitingCanonicalPaper.Length));
+                    Trace.WriteLine(string.Format("Queued {0} citations", PublicationIdsCitingCanonicalPaper.Length));
                 }
                 CrawlerProgress.UpdateCrawlerState(Crawl, CrawlerState.EnqueueingCitationsComplete);
                 Trace.WriteLine("Citation queueing complete", "Informational");
@@ -73,7 +77,15 @@ namespace Crawler
                             SourceToComplete = SourceToAdd.Source;
                             Trace.WriteLine("Source does not exist in database, adding.", "Informational");
                         }
-                        Sources.AddReference(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
+                        try
+                        {
+                            Sources.AddReference(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
+                        }
+                        catch
+                        {
+                            Sources = new Sources();
+                            Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value), "Informational");
+                        }
                         CrawlerProgress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId);
                         Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
                     }
@@ -116,8 +128,16 @@ namespace Crawler
                             SourceToComplete = SourceToAdd.Source;
                             Trace.WriteLine("Source does not exist in database, adding.", "Informational");
                         }
-                        Sources.AddReference(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
-                        CrawlerProgress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId);
+                        try
+                        {
+                            Sources.AddReference(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
+                        }
+                        catch
+                        {
+                            Sources = new Sources();
+                            Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId), "Informational");
+                        }
+                        CrawlerProgress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId, true);
                         Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
                     }
                 }

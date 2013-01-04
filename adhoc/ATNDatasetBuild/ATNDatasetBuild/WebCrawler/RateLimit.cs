@@ -10,7 +10,7 @@ namespace Crawler.WebCrawler
     public class RateLimit
     {
         private TimeSpan RequestInterval = new TimeSpan(0, 0, 60);
-        private const int RequestsPerInterval = 60;
+        private const int RequestsPerInterval = 150;
         private Stopwatch _watch;
         private uint _requests;
         public uint CurrentRequests

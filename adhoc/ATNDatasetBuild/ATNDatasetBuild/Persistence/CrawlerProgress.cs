@@ -88,7 +88,7 @@ namespace Crawler.Persistence
             return Context.CrawlQueues.Where(c => c.CrawlId == CrawlId).ToArray();
         }
 
-        public void CompleteQueueItem(CrawlQueue cq, long SourceId)
+        public void CompleteQueueItem(CrawlQueue cq, long SourceId, bool ReferencesRetrieved = false)
         {
             Context.CrawlQueues.DeleteObject(cq);
             CrawlResult cr = new CrawlResult();
@@ -96,6 +96,7 @@ namespace Crawler.Persistence
             cr.DataSourceSpecificId = cq.DataSourceSpecificId;
             cr.DateRetreieved = DateTime.Now;
             cr.SourceId = SourceId;
+            cr.ReferencesRetrieved = ReferencesRetrieved;
             Context.CrawlResults.AddObject(cr);
             Context.SaveChanges();
         }
