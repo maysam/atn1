@@ -4,6 +4,11 @@
 /adhoc/AdjacencyMatrixBuild/*.suo
 /adhoc/AdjacencyMatrixBuild/AdjacencyMatrixBuild/obj
 /adhoc/AdjacencyMatrixBuild/AdjacencyMatrixBuild/bin
-/adhoc/ATNDatasetBuild/ATNDatasetBuild/obj/x86/Debug/*.cache
-/adhoc/ATNDatasetBuild/ATNDatasetBuild/obj
-/adhoc/ATNDatasetBuild/ATNDatasetBuild/bin
+/adhoc/ATNDatasetBuild/*.suo
+/adhoc/ATNDatasetBuild/ATN.Crawler/obj/x86/Debug/*.cache
+/adhoc/ATNDatasetBuild/ATN.Crawler/obj
+/adhoc/ATNDatasetBuild/ATN.Crawler/bin
+/adhoc/ATNDatasetBuild/ATN.Data/obj
+/adhoc/ATNDatasetBuild/ATN.Data/bin
+/adhoc/ATNDatasetBuild/ATN.Export/obj
+/adhoc/ATNDatasetBuild/ATN.Export/bin

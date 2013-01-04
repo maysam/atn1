@@ -1,0 +1,1002 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ATNModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="ATNModelStoreContainer">
+          <EntitySet Name="Author" EntityType="ATNModel.Store.Author" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="AuthorsReference" EntityType="ATNModel.Store.AuthorsReference" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CitationsReference" EntityType="ATNModel.Store.CitationsReference" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Crawl" EntityType="ATNModel.Store.Crawl" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CrawlQueue" EntityType="ATNModel.Store.CrawlQueue" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="CrawlResult" EntityType="ATNModel.Store.CrawlResult" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="DataSource" EntityType="ATNModel.Store.DataSource" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Editor" EntityType="ATNModel.Store.Editor" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="EditorsReference" EntityType="ATNModel.Store.EditorsReference" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Journal" EntityType="ATNModel.Store.Journal" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Source" EntityType="ATNModel.Store.Source" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="Author_AuthorsReference_FK1" Association="ATNModel.Store.Author_AuthorsReference_FK1">
+            <End Role="Author" EntitySet="Author" />
+            <End Role="AuthorsReference" EntitySet="AuthorsReference" />
+          </AssociationSet>
+          <AssociationSet Name="Crawl_CrawlQueue_FK1" Association="ATNModel.Store.Crawl_CrawlQueue_FK1">
+            <End Role="Crawl" EntitySet="Crawl" />
+            <End Role="CrawlQueue" EntitySet="CrawlQueue" />
+          </AssociationSet>
+          <AssociationSet Name="Crawl_CrawlResult_FK1" Association="ATNModel.Store.Crawl_CrawlResult_FK1">
+            <End Role="Crawl" EntitySet="Crawl" />
+            <End Role="CrawlResult" EntitySet="CrawlResult" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Author_FK1" Association="ATNModel.Store.DataSource_Author_FK1">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="Author" EntitySet="Author" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Crawl_FK1" Association="ATNModel.Store.DataSource_Crawl_FK1">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="Crawl" EntitySet="Crawl" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Editor_FK1" Association="ATNModel.Store.DataSource_Editor_FK1">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="Editor" EntitySet="Editor" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Source_FK1" Association="ATNModel.Store.DataSource_Source_FK1">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="Source" EntitySet="Source" />
+          </AssociationSet>
+          <AssociationSet Name="Editor_EditorsReference_FK1" Association="ATNModel.Store.Editor_EditorsReference_FK1">
+            <End Role="Editor" EntitySet="Editor" />
+            <End Role="EditorsReference" EntitySet="EditorsReference" />
+          </AssociationSet>
+          <AssociationSet Name="JournalName_Source_FK1" Association="ATNModel.Store.JournalName_Source_FK1">
+            <End Role="Journal" EntitySet="Journal" />
+            <End Role="Source" EntitySet="Source" />
+          </AssociationSet>
+          <AssociationSet Name="Source_AuthorsReference_FK1" Association="ATNModel.Store.Source_AuthorsReference_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="AuthorsReference" EntitySet="AuthorsReference" />
+          </AssociationSet>
+          <AssociationSet Name="Source_CitationsReference_FK1" Association="ATNModel.Store.Source_CitationsReference_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="CitationsReference" EntitySet="CitationsReference" />
+          </AssociationSet>
+          <AssociationSet Name="Source_CitationsReference_FK2" Association="ATNModel.Store.Source_CitationsReference_FK2">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="CitationsReference" EntitySet="CitationsReference" />
+          </AssociationSet>
+          <AssociationSet Name="Source_CrawlQueue_FK1" Association="ATNModel.Store.Source_CrawlQueue_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="CrawlQueue" EntitySet="CrawlQueue" />
+          </AssociationSet>
+          <AssociationSet Name="Source_CrawlResult_FK1" Association="ATNModel.Store.Source_CrawlResult_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="CrawlResult" EntitySet="CrawlResult" />
+          </AssociationSet>
+          <AssociationSet Name="Source_EditorsReference_FK1" Association="ATNModel.Store.Source_EditorsReference_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="EditorsReference" EntitySet="EditorsReference" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="AuthorId" />
+          </Key>
+          <Property Name="AuthorId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="384" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LastName" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="Email" Type="varchar" MaxLength="50" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
+          <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="AuthorsReference">
+          <Key>
+            <PropertyRef Name="AuthorReferenceId" />
+          </Key>
+          <Property Name="AuthorReferenceId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AuthorId" Type="bigint" Nullable="false" />
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CitationsReference">
+          <Key>
+            <PropertyRef Name="SourceId" />
+            <PropertyRef Name="CitesSourceId" />
+          </Key>
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+          <Property Name="CitesSourceId" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Crawl">
+          <Key>
+            <PropertyRef Name="CrawlId" />
+          </Key>
+          <Property Name="CrawlId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
+          <Property Name="CanonicalIds" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CrawlState" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CrawlQueue">
+          <Key>
+            <PropertyRef Name="CrawQueueId" />
+          </Key>
+          <Property Name="CrawQueueId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CrawlId" Type="int" Nullable="false" />
+          <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="256" />
+          <Property Name="CrawlReferenceDirection" Type="smallint" Nullable="false" />
+          <Property Name="ReferencesSourceId" Type="bigint" />
+        </EntityType>
+        <EntityType Name="CrawlResult">
+          <Key>
+            <PropertyRef Name="CrawlResultId" />
+          </Key>
+          <Property Name="CrawlResultId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CrawlId" Type="int" Nullable="false" />
+          <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+          <Property Name="DateRetreieved" Type="datetime" Nullable="false" />
+          <Property Name="ReferenceRetrieved" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSource">
+          <Key>
+            <PropertyRef Name="DataSourceId" />
+          </Key>
+          <Property Name="DataSourceId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="DataSourceName" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Editor">
+          <Key>
+            <PropertyRef Name="EditorId" />
+          </Key>
+          <Property Name="EditorId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="128" />
+          <Property Name="LastName" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
+          <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="EditorsReference">
+          <Key>
+            <PropertyRef Name="EditorReferenceId" />
+          </Key>
+          <Property Name="EditorReferenceId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="EditorId" Type="bigint" Nullable="false" />
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Journal">
+          <Key>
+            <PropertyRef Name="JournalId" />
+          </Key>
+          <Property Name="JournalId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="JournalName" Type="varchar" Nullable="false" MaxLength="256" />
+          <Property Name="ExternalURL" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Source">
+          <Key>
+            <PropertyRef Name="SourceId" />
+          </Key>
+          <Property Name="SourceId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SourceType" Type="int" Nullable="false" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
+          <Property Name="MasID" Type="bigint" />
+          <Property Name="ProquestId" Type="int" />
+          <Property Name="DOI" Type="varchar" MaxLength="50" />
+          <Property Name="ArticleTitle" Type="nvarchar(max)" />
+          <Property Name="BookTitle" Type="nvarchar(max)" />
+          <Property Name="ISSN" Type="int" />
+          <Property Name="IDS" Type="int" />
+          <Property Name="Year" Type="int" />
+          <Property Name="Edition" Type="nvarchar" MaxLength="128" />
+          <Property Name="Volume" Type="nvarchar" MaxLength="128" />
+          <Property Name="Issue" Type="nvarchar" MaxLength="128" />
+          <Property Name="Publisher" Type="nvarchar" MaxLength="128" />
+          <Property Name="Language" Type="varchar" MaxLength="50" />
+          <Property Name="Pages" Type="nvarchar" MaxLength="128" />
+          <Property Name="ExternalURL" Type="varchar" MaxLength="1024" />
+          <Property Name="Abstract" Type="text" />
+          <Property Name="JournalId" Type="int" />
+          <Property Name="SerializedDataSourceResponse" Type="xml" Nullable="false" />
+        </EntityType>
+        <Association Name="Author_AuthorsReference_FK1">
+          <End Role="Author" Type="ATNModel.Store.Author" Multiplicity="1" />
+          <End Role="AuthorsReference" Type="ATNModel.Store.AuthorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="AuthorId" />
+            </Principal>
+            <Dependent Role="AuthorsReference">
+              <PropertyRef Name="AuthorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Crawl_CrawlQueue_FK1">
+          <End Role="Crawl" Type="ATNModel.Store.Crawl" Multiplicity="1" />
+          <End Role="CrawlQueue" Type="ATNModel.Store.CrawlQueue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Crawl">
+              <PropertyRef Name="CrawlId" />
+            </Principal>
+            <Dependent Role="CrawlQueue">
+              <PropertyRef Name="CrawlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Crawl_CrawlResult_FK1">
+          <End Role="Crawl" Type="ATNModel.Store.Crawl" Multiplicity="1" />
+          <End Role="CrawlResult" Type="ATNModel.Store.CrawlResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Crawl">
+              <PropertyRef Name="CrawlId" />
+            </Principal>
+            <Dependent Role="CrawlResult">
+              <PropertyRef Name="CrawlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Author_FK1">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="Author" Type="ATNModel.Store.Author" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Author">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Crawl_FK1">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="Crawl" Type="ATNModel.Store.Crawl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Crawl">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Editor_FK1">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="Editor" Type="ATNModel.Store.Editor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Editor">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Source_FK1">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Editor_EditorsReference_FK1">
+          <End Role="Editor" Type="ATNModel.Store.Editor" Multiplicity="1" />
+          <End Role="EditorsReference" Type="ATNModel.Store.EditorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Editor">
+              <PropertyRef Name="EditorId" />
+            </Principal>
+            <Dependent Role="EditorsReference">
+              <PropertyRef Name="EditorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="JournalName_Source_FK1">
+          <End Role="Journal" Type="ATNModel.Store.Journal" Multiplicity="0..1" />
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Journal">
+              <PropertyRef Name="JournalId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="JournalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_AuthorsReference_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="AuthorsReference" Type="ATNModel.Store.AuthorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="AuthorsReference">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_CitationsReference_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="CitationsReference" Type="ATNModel.Store.CitationsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CitationsReference">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_CitationsReference_FK2">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="CitationsReference" Type="ATNModel.Store.CitationsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CitationsReference">
+              <PropertyRef Name="CitesSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_CrawlQueue_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="0..1" />
+          <End Role="CrawlQueue" Type="ATNModel.Store.CrawlQueue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CrawlQueue">
+              <PropertyRef Name="ReferencesSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_CrawlResult_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="CrawlResult" Type="ATNModel.Store.CrawlResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CrawlResult">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_EditorsReference_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="EditorsReference" Type="ATNModel.Store.EditorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="EditorsReference">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ATNModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="ATNEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Authors" EntityType="ATNModel.Author" />
+          <EntitySet Name="AuthorsReferences" EntityType="ATNModel.AuthorsReference" />
+          <EntitySet Name="Crawls" EntityType="ATNModel.Crawl" />
+          <EntitySet Name="CrawlQueues" EntityType="ATNModel.CrawlQueue" />
+          <EntitySet Name="CrawlResults" EntityType="ATNModel.CrawlResult" />
+          <EntitySet Name="DataSources" EntityType="ATNModel.DataSource" />
+          <EntitySet Name="Editors" EntityType="ATNModel.Editor" />
+          <EntitySet Name="EditorsReferences" EntityType="ATNModel.EditorsReference" />
+          <EntitySet Name="Sources" EntityType="ATNModel.Source" />
+          <AssociationSet Name="Author_AuthorsReference_FK1" Association="ATNModel.Author_AuthorsReference_FK1">
+            <End Role="Author" EntitySet="Authors" />
+            <End Role="AuthorsReference" EntitySet="AuthorsReferences" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Author_FK1" Association="ATNModel.DataSource_Author_FK1">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="Author" EntitySet="Authors" />
+          </AssociationSet>
+          <AssociationSet Name="Source_AuthorsReference_FK1" Association="ATNModel.Source_AuthorsReference_FK1">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="AuthorsReference" EntitySet="AuthorsReferences" />
+          </AssociationSet>
+          <AssociationSet Name="Crawl_CrawlQueue_FK1" Association="ATNModel.Crawl_CrawlQueue_FK1">
+            <End Role="Crawl" EntitySet="Crawls" />
+            <End Role="CrawlQueue" EntitySet="CrawlQueues" />
+          </AssociationSet>
+          <AssociationSet Name="Crawl_CrawlResult_FK1" Association="ATNModel.Crawl_CrawlResult_FK1">
+            <End Role="Crawl" EntitySet="Crawls" />
+            <End Role="CrawlResult" EntitySet="CrawlResults" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Crawl_FK1" Association="ATNModel.DataSource_Crawl_FK1">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="Crawl" EntitySet="Crawls" />
+          </AssociationSet>
+          <AssociationSet Name="Source_CrawlQueue_FK1" Association="ATNModel.Source_CrawlQueue_FK1">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="CrawlQueue" EntitySet="CrawlQueues" />
+          </AssociationSet>
+          <AssociationSet Name="Source_CrawlResult_FK1" Association="ATNModel.Source_CrawlResult_FK1">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="CrawlResult" EntitySet="CrawlResults" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Editor_FK1" Association="ATNModel.DataSource_Editor_FK1">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="Editor" EntitySet="Editors" />
+          </AssociationSet>
+          <AssociationSet Name="DataSource_Source_FK1" Association="ATNModel.DataSource_Source_FK1">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="Source" EntitySet="Sources" />
+          </AssociationSet>
+          <AssociationSet Name="Editor_EditorsReference_FK1" Association="ATNModel.Editor_EditorsReference_FK1">
+            <End Role="Editor" EntitySet="Editors" />
+            <End Role="EditorsReference" EntitySet="EditorsReferences" />
+          </AssociationSet>
+          <AssociationSet Name="Source_EditorsReference_FK1" Association="ATNModel.Source_EditorsReference_FK1">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="EditorsReference" EntitySet="EditorsReferences" />
+          </AssociationSet>
+          <AssociationSet Name="CitationsReference" Association="ATNModel.CitationsReference">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="Source1" EntitySet="Sources" />
+          </AssociationSet>
+          <EntitySet Name="Journals" EntityType="ATNModel.Journal" />
+          <AssociationSet Name="JournalName_Source_FK1" Association="ATNModel.JournalName_Source_FK1">
+            <End Role="Journal" EntitySet="Journals" />
+            <End Role="Source" EntitySet="Sources" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="AuthorId" />
+          </Key>
+          <Property Type="Int64" Name="AuthorId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="FullName" MaxLength="384" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="FirstName" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Email" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AuthorsReferences" Relationship="ATNModel.Author_AuthorsReference_FK1" FromRole="Author" ToRole="AuthorsReference" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Author_FK1" FromRole="Author" ToRole="DataSource" />
+        </EntityType>
+        <EntityType Name="AuthorsReference">
+          <Key>
+            <PropertyRef Name="AuthorReferenceId" />
+          </Key>
+          <Property Type="Int64" Name="AuthorReferenceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="AuthorId" Nullable="false" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <NavigationProperty Name="Author" Relationship="ATNModel.Author_AuthorsReference_FK1" FromRole="AuthorsReference" ToRole="Author" />
+          <NavigationProperty Name="Source" Relationship="ATNModel.Source_AuthorsReference_FK1" FromRole="AuthorsReference" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Crawl">
+          <Key>
+            <PropertyRef Name="CrawlId" />
+          </Key>
+          <Property Type="Int32" Name="CrawlId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <Property Type="String" Name="CanonicalIds" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int16" Name="CrawlState" Nullable="false" />
+          <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="Crawl" ToRole="CrawlQueue" />
+          <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="Crawl" ToRole="CrawlResult" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="Crawl" ToRole="DataSource" />
+        </EntityType>
+        <EntityType Name="CrawlQueue">
+          <Key>
+            <PropertyRef Name="CrawQueueId" />
+          </Key>
+          <Property Type="Int64" Name="CrawQueueId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="CrawlId" Nullable="false" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Type="Int16" Name="CrawlReferenceDirection" Nullable="false" />
+          <Property Type="Int64" Name="ReferencesSourceId" />
+          <NavigationProperty Name="Crawl" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="CrawlQueue" ToRole="Crawl" />
+          <NavigationProperty Name="Source" Relationship="ATNModel.Source_CrawlQueue_FK1" FromRole="CrawlQueue" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="CrawlResult">
+          <Key>
+            <PropertyRef Name="CrawlResultId" />
+          </Key>
+          <Property Type="Int64" Name="CrawlResultId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="CrawlId" Nullable="false" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <Property Type="DateTime" Name="DateRetreieved" Nullable="false" />
+          <Property Type="Boolean" Name="ReferenceRetrieved" Nullable="false" />
+          <NavigationProperty Name="Crawl" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Crawl" />
+          <NavigationProperty Name="Source" Relationship="ATNModel.Source_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="DataSource">
+          <Key>
+            <PropertyRef Name="DataSourceId" />
+          </Key>
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="DataSourceName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Authors" Relationship="ATNModel.DataSource_Author_FK1" FromRole="DataSource" ToRole="Author" />
+          <NavigationProperty Name="Crawls" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="DataSource" ToRole="Crawl" />
+          <NavigationProperty Name="Editors" Relationship="ATNModel.DataSource_Editor_FK1" FromRole="DataSource" ToRole="Editor" />
+          <NavigationProperty Name="Sources" Relationship="ATNModel.DataSource_Source_FK1" FromRole="DataSource" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Editor">
+          <Key>
+            <PropertyRef Name="EditorId" />
+          </Key>
+          <Property Type="Int64" Name="EditorId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="FirstName" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Editor_FK1" FromRole="Editor" ToRole="DataSource" />
+          <NavigationProperty Name="EditorsReferences" Relationship="ATNModel.Editor_EditorsReference_FK1" FromRole="Editor" ToRole="EditorsReference" />
+        </EntityType>
+        <EntityType Name="EditorsReference">
+          <Key>
+            <PropertyRef Name="EditorReferenceId" />
+          </Key>
+          <Property Type="Int64" Name="EditorReferenceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="EditorId" Nullable="false" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <NavigationProperty Name="Editor" Relationship="ATNModel.Editor_EditorsReference_FK1" FromRole="EditorsReference" ToRole="Editor" />
+          <NavigationProperty Name="Source" Relationship="ATNModel.Source_EditorsReference_FK1" FromRole="EditorsReference" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Source">
+          <Key>
+            <PropertyRef Name="SourceId" />
+          </Key>
+          <Property Type="Int64" Name="SourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="SourceType" Nullable="false" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <Property Type="Int64" Name="MasID" />
+          <Property Type="Int32" Name="ProquestId" />
+          <Property Type="String" Name="DOI" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ArticleTitle" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="BookTitle" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="ISSN" />
+          <Property Type="Int32" Name="IDS" />
+          <Property Type="Int32" Name="Year" />
+          <Property Type="String" Name="Edition" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Volume" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Issue" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Publisher" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Language" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Pages" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ExternalURL" MaxLength="1024" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Abstract" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="JournalId" />
+          <Property Type="String" Name="SerializedDataSourceResponse" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AuthorsReferences" Relationship="ATNModel.Source_AuthorsReference_FK1" FromRole="Source" ToRole="AuthorsReference" />
+          <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Source_CrawlQueue_FK1" FromRole="Source" ToRole="CrawlQueue" />
+          <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Source_CrawlResult_FK1" FromRole="Source" ToRole="CrawlResult" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Source_FK1" FromRole="Source" ToRole="DataSource" />
+          <NavigationProperty Name="EditorsReferences" Relationship="ATNModel.Source_EditorsReference_FK1" FromRole="Source" ToRole="EditorsReference" />
+          <NavigationProperty Name="Source1" Relationship="ATNModel.CitationsReference" FromRole="Source" ToRole="Source1" />
+          <NavigationProperty Name="Sources" Relationship="ATNModel.CitationsReference" FromRole="Source1" ToRole="Source" />
+          <NavigationProperty Name="Journal" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Source" ToRole="Journal" />
+        </EntityType>
+        <Association Name="Author_AuthorsReference_FK1">
+          <End Type="ATNModel.Author" Role="Author" Multiplicity="1" />
+          <End Type="ATNModel.AuthorsReference" Role="AuthorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Author">
+              <PropertyRef Name="AuthorId" />
+            </Principal>
+            <Dependent Role="AuthorsReference">
+              <PropertyRef Name="AuthorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Author_FK1">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.Author" Role="Author" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Author">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_AuthorsReference_FK1">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="1" />
+          <End Type="ATNModel.AuthorsReference" Role="AuthorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="AuthorsReference">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Crawl_CrawlQueue_FK1">
+          <End Type="ATNModel.Crawl" Role="Crawl" Multiplicity="1" />
+          <End Type="ATNModel.CrawlQueue" Role="CrawlQueue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Crawl">
+              <PropertyRef Name="CrawlId" />
+            </Principal>
+            <Dependent Role="CrawlQueue">
+              <PropertyRef Name="CrawlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Crawl_CrawlResult_FK1">
+          <End Type="ATNModel.Crawl" Role="Crawl" Multiplicity="1" />
+          <End Type="ATNModel.CrawlResult" Role="CrawlResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Crawl">
+              <PropertyRef Name="CrawlId" />
+            </Principal>
+            <Dependent Role="CrawlResult">
+              <PropertyRef Name="CrawlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Crawl_FK1">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.Crawl" Role="Crawl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Crawl">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_CrawlQueue_FK1">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="0..1" />
+          <End Type="ATNModel.CrawlQueue" Role="CrawlQueue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CrawlQueue">
+              <PropertyRef Name="ReferencesSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_CrawlResult_FK1">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="1" />
+          <End Type="ATNModel.CrawlResult" Role="CrawlResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="CrawlResult">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Editor_FK1">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.Editor" Role="Editor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Editor">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DataSource_Source_FK1">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Editor_EditorsReference_FK1">
+          <End Type="ATNModel.Editor" Role="Editor" Multiplicity="1" />
+          <End Type="ATNModel.EditorsReference" Role="EditorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Editor">
+              <PropertyRef Name="EditorId" />
+            </Principal>
+            <Dependent Role="EditorsReference">
+              <PropertyRef Name="EditorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_EditorsReference_FK1">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="1" />
+          <End Type="ATNModel.EditorsReference" Role="EditorsReference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="EditorsReference">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CitationsReference">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
+          <End Type="ATNModel.Source" Role="Source1" Multiplicity="*" />
+        </Association>
+        <EntityType Name="Journal">
+          <Key>
+            <PropertyRef Name="JournalId" />
+          </Key>
+          <Property Type="Int32" Name="JournalId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="JournalName" Nullable="false" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ExternalURL" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Sources" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Journal" ToRole="Source" />
+        </EntityType>
+        <Association Name="JournalName_Source_FK1">
+          <End Type="ATNModel.Journal" Role="Journal" Multiplicity="0..1" />
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Journal">
+              <PropertyRef Name="JournalId" />
+            </Principal>
+            <Dependent Role="Source">
+              <PropertyRef Name="JournalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ATNModelStoreContainer" CdmEntityContainer="ATNEntities">
+          <EntitySetMapping Name="Authors">
+            <EntityTypeMapping TypeName="ATNModel.Author">
+              <MappingFragment StoreEntitySet="Author">
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AuthorsReferences">
+            <EntityTypeMapping TypeName="ATNModel.AuthorsReference">
+              <MappingFragment StoreEntitySet="AuthorsReference">
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="AuthorId" ColumnName="AuthorId" />
+                <ScalarProperty Name="AuthorReferenceId" ColumnName="AuthorReferenceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Crawls">
+            <EntityTypeMapping TypeName="ATNModel.Crawl">
+              <MappingFragment StoreEntitySet="Crawl">
+                <ScalarProperty Name="CrawlState" ColumnName="CrawlState" />
+                <ScalarProperty Name="CanonicalIds" ColumnName="CanonicalIds" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+                <ScalarProperty Name="CrawlId" ColumnName="CrawlId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CrawlQueues">
+            <EntityTypeMapping TypeName="ATNModel.CrawlQueue">
+              <MappingFragment StoreEntitySet="CrawlQueue">
+                <ScalarProperty Name="ReferencesSourceId" ColumnName="ReferencesSourceId" />
+                <ScalarProperty Name="CrawlReferenceDirection" ColumnName="CrawlReferenceDirection" />
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
+                <ScalarProperty Name="CrawlId" ColumnName="CrawlId" />
+                <ScalarProperty Name="CrawQueueId" ColumnName="CrawQueueId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CrawlResults">
+            <EntityTypeMapping TypeName="ATNModel.CrawlResult">
+              <MappingFragment StoreEntitySet="CrawlResult">
+                <ScalarProperty Name="ReferenceRetrieved" ColumnName="ReferenceRetrieved" />
+                <ScalarProperty Name="DateRetreieved" ColumnName="DateRetreieved" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
+                <ScalarProperty Name="CrawlId" ColumnName="CrawlId" />
+                <ScalarProperty Name="CrawlResultId" ColumnName="CrawlResultId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataSources">
+            <EntityTypeMapping TypeName="ATNModel.DataSource">
+              <MappingFragment StoreEntitySet="DataSource">
+                <ScalarProperty Name="DataSourceName" ColumnName="DataSourceName" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Editors">
+            <EntityTypeMapping TypeName="ATNModel.Editor">
+              <MappingFragment StoreEntitySet="Editor">
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="EditorId" ColumnName="EditorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EditorsReferences">
+            <EntityTypeMapping TypeName="ATNModel.EditorsReference">
+              <MappingFragment StoreEntitySet="EditorsReference">
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="EditorId" ColumnName="EditorId" />
+                <ScalarProperty Name="EditorReferenceId" ColumnName="EditorReferenceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sources">
+            <EntityTypeMapping TypeName="ATNModel.Source">
+              <MappingFragment StoreEntitySet="Source">
+                <ScalarProperty Name="SerializedDataSourceResponse" ColumnName="SerializedDataSourceResponse" />
+                <ScalarProperty Name="JournalId" ColumnName="JournalId" />
+                <ScalarProperty Name="Abstract" ColumnName="Abstract" />
+                <ScalarProperty Name="ExternalURL" ColumnName="ExternalURL" />
+                <ScalarProperty Name="Pages" ColumnName="Pages" />
+                <ScalarProperty Name="Language" ColumnName="Language" />
+                <ScalarProperty Name="Publisher" ColumnName="Publisher" />
+                <ScalarProperty Name="Issue" ColumnName="Issue" />
+                <ScalarProperty Name="Volume" ColumnName="Volume" />
+                <ScalarProperty Name="Edition" ColumnName="Edition" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="IDS" ColumnName="IDS" />
+                <ScalarProperty Name="ISSN" ColumnName="ISSN" />
+                <ScalarProperty Name="BookTitle" ColumnName="BookTitle" />
+                <ScalarProperty Name="ArticleTitle" ColumnName="ArticleTitle" />
+                <ScalarProperty Name="DOI" ColumnName="DOI" />
+                <ScalarProperty Name="ProquestId" ColumnName="ProquestId" />
+                <ScalarProperty Name="MasID" ColumnName="MasID" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+                <ScalarProperty Name="SourceType" ColumnName="SourceType" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="CitationsReference" TypeName="ATNModel.CitationsReference" StoreEntitySet="CitationsReference">
+            <EndProperty Name="Source1">
+              <ScalarProperty Name="SourceId" ColumnName="CitesSourceId" />
+            </EndProperty>
+            <EndProperty Name="Source">
+              <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="Journals">
+            <EntityTypeMapping TypeName="ATNModel.Journal">
+              <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="ExternalURL" ColumnName="ExternalURL" />
+                <ScalarProperty Name="JournalName" ColumnName="JournalName" />
+                <ScalarProperty Name="JournalId" ColumnName="JournalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="ATNModel">
+        <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="3.5" Height="2.7494921875000102" />
+        <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="10.5" Height="1.9802864583333388" />
+        <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="3" PointY="7" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.CrawlQueue" Width="1.5" PointX="5.25" PointY="14.125" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.CrawlResult" Width="1.5" PointX="8.25" PointY="12" Height="2.5571907552083388" />
+        <EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="10.375" Height="2.172587890624996" />
+        <EntityTypeShape EntityType="ATNModel.Editor" Width="1.5" PointX="3" PointY="10.125" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.EditorsReference" Width="1.5" PointX="8.25" PointY="15.875" Height="1.9802864583333388" />
+        <EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="3" PointY="13.125" Height="6.4032194010416674" />
+        <AssociationConnector Association="ATNModel.Author_AuthorsReference_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="4.8747460937500051" />
+          <ConnectorPoint PointX="6" PointY="4.8747460937500051" />
+          <ConnectorPoint PointX="6" PointY="10.5" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.DataSource_Author_FK1" >
+          <ConnectorPoint PointX="1.5" PointY="10.375" />
+          <ConnectorPoint PointX="1.5" PointY="4.8747460937500051" />
+          <ConnectorPoint PointX="3" PointY="4.8747460937500051" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Source_AuthorsReference_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="13.126152846153847" />
+          <ConnectorPoint PointX="4.875" PointY="12.751152846153847" />
+          <ConnectorPoint PointX="4.875" PointY="12.856439304487186" />
+          <ConnectorPoint PointX="5.0035744349011209" PointY="12.727864869586062" />
+          <ConnectorPoint PointX="5.1214255650988791" PointY="12.610013739388306" />
+          <ConnectorPoint PointX="5.2511528461538459" PointY="12.480286458333339" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Crawl_CrawlQueue_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="9.3025806306089756" />
+          <ConnectorPoint PointX="5.0625" PointY="9.8650806306089756" />
+          <ConnectorPoint PointX="5.0625" PointY="15.307444661458334" />
+          <ConnectorPoint PointX="5.25" PointY="15.307444661458334" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Crawl_CrawlResult_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="5.916666666666667" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="6.083333333333333" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="9" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="9" PointY="12" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.DataSource_Crawl_FK1" >
+          <ConnectorPoint PointX="1.9062525" PointY="10.375" />
+          <ConnectorPoint PointX="1.9062525" PointY="8.1824446614583337" />
+          <ConnectorPoint PointX="3" PointY="8.1824446614583337" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Source_CrawlQueue_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="14.653722330729167" />
+          <ConnectorPoint PointX="4.854166666666667" PointY="14.653722330729165" />
+          <ConnectorPoint PointX="5.145833333333333" PointY="14.653722330729167" />
+          <ConnectorPoint PointX="5.25" PointY="14.653722330729167" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Source_CrawlResult_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="13.625578923076917" />
+          <ConnectorPoint PointX="4.854166666666667" PointY="13.625578923076915" />
+          <ConnectorPoint PointX="5.145833333333333" PointY="13.625578923076917" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="13.625578923076917" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="13.625578923076917" />
+          <ConnectorPoint PointX="8.25" PointY="13.625578923076917" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.DataSource_Editor_FK1" >
+          <ConnectorPoint PointX="2.25" PointY="11.432444661458334" />
+          <ConnectorPoint PointX="3" PointY="11.432444661458334" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.DataSource_Source_FK1" >
+          <ConnectorPoint PointX="1.5" PointY="12.547587890624996" />
+          <ConnectorPoint PointX="1.5" PointY="16.422760416666669" />
+          <ConnectorPoint PointX="3" PointY="16.422760416666669" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Editor_EditorsReference_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="12.427580630608976" />
+          <ConnectorPoint PointX="4.9375" PointY="12.865080630608976" />
+          <ConnectorPoint PointX="4.9375" PointY="17.203837390625004" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="17.203837390625004" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="17.203837390625004" />
+          <ConnectorPoint PointX="8.25" PointY="17.203837390625004" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.Source_EditorsReference_FK1" >
+          <ConnectorPoint PointX="4.5" PointY="16.815613356770836" />
+          <ConnectorPoint PointX="4.854166666666667" PointY="16.815613356770836" />
+          <ConnectorPoint PointX="5.020833333333333" PointY="16.815613356770836" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="16.815613356770836" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="16.815613356770836" />
+          <ConnectorPoint PointX="8.25" PointY="16.815613356770836" />
+        </AssociationConnector>
+        <AssociationConnector Association="ATNModel.CitationsReference" >
+          <ConnectorPoint PointX="3.5319230769230767" PointY="19.720520833333335" />
+          <ConnectorPoint PointX="3.5319230769230767" PointY="19.970520833333339" />
+          <ConnectorPoint PointX="3.9784615384615383" PointY="19.970520833333339" />
+          <ConnectorPoint PointX="3.9784615384615383" PointY="19.720520833333335" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="ATNModel.Journal" Width="1.5" PointX="5.375" PointY="0.875" Height="1.7879850260416674" />
+        <AssociationConnector Association="ATNModel.JournalName_Source_FK1" >
+          <ConnectorPoint PointX="6.84375" PointY="2.6629850260416674" />
+          <ConnectorPoint PointX="6.84375" PointY="18.462179111979172" />
+          <ConnectorPoint PointX="4.5" PointY="18.462179111979172" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
