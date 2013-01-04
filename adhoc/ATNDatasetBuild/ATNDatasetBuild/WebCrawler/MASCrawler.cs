@@ -9,6 +9,9 @@ using System.Threading;
 
 namespace Crawler.WebCrawler
 {
+    /// <summary>
+    /// An implementation of the ICrawler interface which is capable of using Microsoft Academic Search as a data source
+    /// </summary>
     public class MASCrawler : ICrawler
     {
         private const int RetryDelayMilliseconds = 5000;
@@ -147,6 +150,21 @@ namespace Crawler.WebCrawler
             cs.Source = CanonicalPaper;
             
             return cs;
+        }
+
+        string[] ICrawler.GetCitationsBySourceId(string CanonicalId)
+        {
+            throw new NotImplementedException();
+        }
+
+        string[] ICrawler.GetReferencesBySourceId(string PaperId)
+        {
+            throw new NotImplementedException();
+        }
+
+        CompleteSource ICrawler.GetSourceById(string PaperId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

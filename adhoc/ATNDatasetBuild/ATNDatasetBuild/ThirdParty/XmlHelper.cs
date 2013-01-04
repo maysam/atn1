@@ -8,6 +8,12 @@ using System.Xml.Serialization;
 
 public class XmlHelper
 {
+    /// <summary>
+    /// Serializes the passed object into an XML string
+    /// </summary>
+    /// <typeparam name="T">The type of object being passed</typeparam>
+    /// <param name="t">The object which to serailize</param>
+    /// <returns>A serialized XML representation of the passed object</returns>
     public static string XmlSerialize<T>(T t)
     {
         XmlSerializer xs = new XmlSerializer(typeof(T));

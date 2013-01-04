@@ -6,6 +6,9 @@ using Crawler.WebCrawler;
 
 namespace Crawler.Persistence
 {
+    /// <summary>
+    /// A service for interacting with Source objects from the persistence-model
+    /// </summary>
     public class Sources : DatabaseInterface
     {
         Authors _authors;
@@ -16,7 +19,12 @@ namespace Crawler.Persistence
             _journals = new Journals();
         }
 
-        public void AddReference(long SourceId, long CitesSourceId)
+        /// <summary>
+        /// Adds a citation from one Source to another
+        /// </summary>
+        /// <param name="SourceId">The citing Source</param>
+        /// <param name="CitesSourceId">The cited Source</param>
+        public void AddCitation(long SourceId, long CitesSourceId)
         {
             Source CitingSource = Context.Sources.SingleOrDefault(s => s.SourceId == SourceId);
             Source CitedSource = Context.Sources.SingleOrDefault(s => s.SourceId == CitesSourceId);
@@ -24,11 +32,17 @@ namespace Crawler.Persistence
             Context.SaveChanges();
         }
 
-        public CompleteSource GetCompleteSourceByCanonicalId(CrawlerDataSource DataSource, string CanonicalId)
+        /// <summary>
+        /// Retrieve a full representation of a Source
+        /// </summary>
+        /// <param name="DataSource">The data-source from which to retrieve the Source</param>
+        /// <param name="DataSourceSpecificId">The data-source specific identifier of the Source to be retrieved</param>
+        /// <returns>A complete representation of the desired Source</returns>
+        public CompleteSource GetCompleteSourceByDataSourceSpecificId(CrawlerDataSource DataSource, string DataSourceSpecificId)
         {
 
             SourceRetrievalService SourceRetrival = new SourceRetrievalService();
-            Source RetrievedSource = SourceRetrival.GetSourceByDataSourceSpecificId(DataSource, CanonicalId);
+            Source RetrievedSource = SourceRetrival.GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificId);
 
             CompleteSource cs = new CompleteSource();
             cs.IsDetached = false;
@@ -39,6 +53,12 @@ namespace Crawler.Persistence
 
             return cs;
         }
+
+        /// <summary>
+        /// Adds a detached CompleteSource object
+        /// </summary>
+        /// <param name="SourceToAdd">A complete representation of the Source to add</param>
+        /// <returns>An attached Source object corresponding to the complete Source representation</returns>
         public Source AddDetachedSource(CompleteSource SourceToAdd)
         {
             if (SourceToAdd.IsDetached)

@@ -5,8 +5,19 @@ using System.Text;
 
 namespace Crawler.Persistence
 {
+    /// <summary>
+    /// A representation of the progress of a given crawl
+    /// </summary>
     public enum CrawlerState { Started = 0, CanonicalPaperComplete = 1, EnqueueingCitationsComplete = 2, RetrievingCitationsComplete = 3, EnqueueingReferencesComplete = 4, RetrievingReferencesComplete = 5, Complete = 6 };
+    
+    /// <summary>
+    /// A representation of which direction a crawl reference goes; with None meaning the given queue item is not for a reference relationship
+    /// </summary>
     public enum CrawlReferenceDirection { None = 0, Citation = 1, Reference = 2 };
+
+    /// <summary>
+    /// A service for intiating crawls, queueing and dequeing crawl items, and completing crawls
+    /// </summary>
     public class CrawlerProgress : DatabaseInterface
     {
         public CrawlerProgress()
@@ -18,12 +29,12 @@ namespace Crawler.Persistence
         /// </summary>
         /// <param name="DataSource">The data source for which this crawl is being performed on</param>
         /// <param name="CanonicalIds">The data-source specific id or ids for the canonical papers being crawled</param>
-        /// <returns></returns>
+        /// <returns>A persistence-model attached copy of the newly-initiated or previously-initiated crawl</returns>
         public Crawl StartCrawl(CrawlerDataSource DataSource, string[] CanonicalIds)
         {
             string ConcatedCanonicalIds = string.Join(",", CanonicalIds);
 
-            Crawl PotentiallyExistingCrawl = Context.Crawls.Where(c => c.CanonicalIds == ConcatedCanonicalIds).SingleOrDefault();
+            Crawl PotentiallyExistingCrawl = Context.Crawls.Where(c => c.CanonicalIds == ConcatedCanonicalIds && c.DataSourceId == (int)DataSource).SingleOrDefault();
             if (PotentiallyExistingCrawl == null)
             {
                 PotentiallyExistingCrawl = new Crawl();
@@ -37,12 +48,23 @@ namespace Crawler.Persistence
             return PotentiallyExistingCrawl;
         }
 
+        /// <summary>
+        /// Update the given Crawl object with the provided CrawlerState
+        /// </summary>
+        /// <param name="Crawler">Crawl object to update</param>
+        /// <param name="State">The new state for the given Crawl object</param>
         public void UpdateCrawlerState(Crawl Crawler, CrawlerState State)
         {
             Crawler.CrawlState = (short)State;
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Stores the translation between a data-source specific identifier, and it's persistence-model SourceId
+        /// </summary>
+        /// <param name="CrawlId">The Crawl with which this canonical paper is a part of</param>
+        /// <param name="DataSourceSpecificCanonicalId">A canonical paper ID for the given Crawl</param>
+        /// <param name="SourceId">The persistence-model SourceId of the given canonical paper ID</param>
         public void StoreCanonicalResult(int CrawlId, string DataSourceSpecificCanonicalId, long SourceId)
         {
             CrawlResult CanonicalCrawl = new CrawlResult();
@@ -55,6 +77,13 @@ namespace Crawler.Persistence
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Queue a list of data-source specific IDs for crawling for the given Crawl
+        /// </summary>
+        /// <param name="CrawlId">The Crawl which these data-source specific IDs pertain to</param>
+        /// <param name="DataSourceSpecificIds">The data-source specific IDs to Crawl</param>
+        /// <param name="ReferencesSourceId">The referenced persistent-model source, if any</param>
+        /// <param name="Direction">The direction of the persistence-model reference, if any</param>
         public void QueueCrawl(int CrawlId, string[] DataSourceSpecificIds, long? ReferencesSourceId, CrawlReferenceDirection Direction)
         {
             foreach (string DataSourceSpecificId in DataSourceSpecificIds)
@@ -83,17 +112,28 @@ namespace Crawler.Persistence
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Retrieves a list of pending CrawlQueue items for the given CrawlId
+        /// </summary>
+        /// <param name="CrawlId">The Crawl to retrieve CrawlQueue items for</param>
+        /// <returns>The pending CrawlQueue items for the given CrawlId</returns>
         public CrawlQueue[] GetPendingCrawlsForCrawlId(int CrawlId)
         {
             return Context.CrawlQueues.Where(c => c.CrawlId == CrawlId).ToArray();
         }
 
-        public void CompleteQueueItem(CrawlQueue cq, long SourceId, bool ReferencesRetrieved = false)
+        /// <summary>
+        /// Deletes the given CrawlQueue item from the queue, and stores the translation between its data-source specific identifier and the persistence-model SourceId
+        /// </summary>
+        /// <param name="CrawlQueueItem">The CrawlQueue item to mark complete</param>
+        /// <param name="SourceId">The persistence-model SourceId corresponding the the given CrawlQueue item</param>
+        /// <param name="ReferencesRetrieved">Whether the CrawlQueue item should be marked as having its references retrieved</param>
+        public void CompleteQueueItem(CrawlQueue CrawlQueueItem, long SourceId, bool ReferencesRetrieved = false)
         {
-            Context.CrawlQueues.DeleteObject(cq);
+            Context.CrawlQueues.DeleteObject(CrawlQueueItem);
             CrawlResult cr = new CrawlResult();
-            cr.CrawlId = cq.CrawlId;
-            cr.DataSourceSpecificId = cq.DataSourceSpecificId;
+            cr.CrawlId = CrawlQueueItem.CrawlId;
+            cr.DataSourceSpecificId = CrawlQueueItem.DataSourceSpecificId;
             cr.DateRetreieved = DateTime.Now;
             cr.SourceId = SourceId;
             cr.ReferencesRetrieved = ReferencesRetrieved;

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Crawler.Persistence
 {
+    /// <summary>
+    /// A service for interacting with Journal objects from the persistence model
+    /// </summary>
     public class Journals : DatabaseInterface
     {
         public Journals()
@@ -12,6 +15,11 @@ namespace Crawler.Persistence
 
         }
 
+        /// <summary>
+        /// Determines if the passed Journal exists in the persistence-model, and adds it if it does not
+        /// </summary>
+        /// <param name="DetachedJournal">The Journal for which to check existence</param>
+        /// <returns>A persistence-model attached copy of the passed Journal</returns>
         public Journal GetJournalFromDetachedJournal(Journal DetachedJournal)
         {
             Journal PersistentJournal = Context.Journals.Where(j => j.JournalName.ToLower().Trim() == DetachedJournal.JournalName.ToLower().Trim()).SingleOrDefault();
