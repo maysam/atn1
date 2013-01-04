@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Objects;
 
 namespace ATN.Data
 {
@@ -32,7 +33,7 @@ namespace ATN.Data
         {
             Source CitingSource = Context.Sources.SingleOrDefault(s => s.SourceId == SourceId);
             Source CitedSource = Context.Sources.SingleOrDefault(s => s.SourceId == CitesSourceId);
-            CitedSource.Sources.Add(CitingSource);
+            CitedSource.CitingSources.Add(CitingSource);
             Context.SaveChanges();
         }
 
@@ -96,6 +97,11 @@ namespace ATN.Data
                 SourceToAdd.IsDetached = false;
             }
             return SourceToAdd.Source;
+        }
+        public ObjectSet<Source> GetReferences(long SourceId)
+        {
+            return null;
+            //return Context.Sources.Where(s => s.s
         }
     }
 }

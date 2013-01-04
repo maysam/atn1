@@ -31,7 +31,7 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "DataSource_Source_FK1", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Editor_EditorsReference_FK1", "Editor", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Editor), "EditorsReference", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.EditorsReference), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Source_EditorsReference_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "EditorsReference", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.EditorsReference), true)]
-[assembly: EdmRelationshipAttribute("ATNModel", "CitationsReference", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Source1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source))]
+[assembly: EdmRelationshipAttribute("ATNModel", "CitationsReference", "Reference", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Citation", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source))]
 [assembly: EdmRelationshipAttribute("ATNModel", "JournalName_Source_FK1", "Journal", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ATN.Data.Journal), "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), true)]
 
 #endregion
@@ -2918,18 +2918,18 @@ namespace ATN.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "CitationsReference", "Source1")]
-        public EntityCollection<Source> Source1
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "CitationsReference", "Citation")]
+        public EntityCollection<Source> References
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.CitationsReference", "Source1");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.CitationsReference", "Citation");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.CitationsReference", "Source1", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.CitationsReference", "Citation", value);
                 }
             }
         }
@@ -2940,18 +2940,18 @@ namespace ATN.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "CitationsReference", "Source")]
-        public EntityCollection<Source> Sources
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "CitationsReference", "Reference")]
+        public EntityCollection<Source> CitingSources
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.CitationsReference", "Source");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.CitationsReference", "Reference");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.CitationsReference", "Source", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.CitationsReference", "Reference", value);
                 }
             }
         }

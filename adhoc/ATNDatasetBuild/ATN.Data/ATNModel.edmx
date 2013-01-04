@@ -438,8 +438,8 @@
             <End Role="EditorsReference" EntitySet="EditorsReferences" />
           </AssociationSet>
           <AssociationSet Name="CitationsReference" Association="ATNModel.CitationsReference">
-            <End Role="Source" EntitySet="Sources" />
-            <End Role="Source1" EntitySet="Sources" />
+            <End Role="Reference" EntitySet="Sources" />
+            <End Role="Citation" EntitySet="Sources" />
           </AssociationSet>
           <EntitySet Name="Journals" EntityType="ATNModel.Journal" />
           <AssociationSet Name="JournalName_Source_FK1" Association="ATNModel.JournalName_Source_FK1">
@@ -571,8 +571,8 @@
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Source_CrawlResult_FK1" FromRole="Source" ToRole="CrawlResult" />
           <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Source_FK1" FromRole="Source" ToRole="DataSource" />
           <NavigationProperty Name="EditorsReferences" Relationship="ATNModel.Source_EditorsReference_FK1" FromRole="Source" ToRole="EditorsReference" />
-          <NavigationProperty Name="Source1" Relationship="ATNModel.CitationsReference" FromRole="Source" ToRole="Source1" />
-          <NavigationProperty Name="Sources" Relationship="ATNModel.CitationsReference" FromRole="Source1" ToRole="Source" />
+          <NavigationProperty Name="References" Relationship="ATNModel.CitationsReference" FromRole="Reference" ToRole="Citation" />
+          <NavigationProperty Name="CitingSources" Relationship="ATNModel.CitationsReference" FromRole="Citation" ToRole="Reference" />
           <NavigationProperty Name="Journal" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Source" ToRole="Journal" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
@@ -720,8 +720,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="CitationsReference">
-          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
-          <End Type="ATNModel.Source" Role="Source1" Multiplicity="*" />
+          <End Type="ATNModel.Source" Role="Reference" Multiplicity="*" />
+          <End Type="ATNModel.Source" Role="Citation" Multiplicity="*" />
         </Association>
         <EntityType Name="Journal">
           <Key>
@@ -861,10 +861,10 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="CitationsReference" TypeName="ATNModel.CitationsReference" StoreEntitySet="CitationsReference">
-            <EndProperty Name="Source1">
+            <EndProperty Name="Citation">
               <ScalarProperty Name="SourceId" ColumnName="CitesSourceId" />
             </EndProperty>
-            <EndProperty Name="Source">
+            <EndProperty Name="Reference">
               <ScalarProperty Name="SourceId" ColumnName="SourceId" />
             </EndProperty>
           </AssociationSetMapping>
