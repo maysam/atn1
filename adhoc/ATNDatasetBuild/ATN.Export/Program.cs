@@ -13,7 +13,7 @@ namespace ATN.Export
         static void Main(string[] args)
         {
             CrawlerProgress Progress = new CrawlerProgress();
-            string[] MasIds = Progress.GetCanonicalIdsForCrawl(CrawlerDataSource.MicrosoftAcademicSearch, 1);
+            string[] MasIds = Progress.GetCanonicalIdsForCrawl(CrawlerDataSource.MicrosoftAcademicSearch, 2);
             SourceRetrievalService Retrival = new SourceRetrievalService();
             Source CanonicalSource = Retrival.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MasIds.First());
 
@@ -69,9 +69,9 @@ namespace ATN.Export
             }
 
             //Write reference nodes
-            foreach (var Citation in CanonicalSource.CitingSources)
+            foreach (var Citation in CanonicalSource.CitingSources.ToArray())
             {
-                foreach (var Reference in Citation.References)
+                foreach (var Reference in Citation.References.ToArray())
                 {
                     XGMMLWriter.WriteStartElement("node");
                     XGMMLWriter.WriteAttributeString("label", Reference.ArticleTitle);

@@ -43,13 +43,32 @@ namespace ATN.Crawler.WebCrawler
             request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
             //Get response
-            _limiter.AddRequest();
-            Response response = _client.Search(request);
+            int AttemptCount = 0;
+            bool InitialRequestSucceeded = false;
             int RetrievedItems = 0;
-            uint ResultCount = response.Publication.TotalItem;
+            uint ResultCount = 0;
+            Response response = null;
+            while(!InitialRequestSucceeded && AttemptCount < RetryLimit)
+            {
+                try
+                {
+                    _limiter.AddRequest();
+                    response = _client.Search(request);
+                    ResultCount = response.Publication.TotalItem;
+                }
+                catch (Exception e)
+                {
+                    AttemptCount++;
+                    if (AttemptCount == RetryLimit)
+                    {
+                        throw e;
+                    }
+                    Thread.Sleep(AttemptCount * RetryDelayMilliseconds);
+                }
+            }
             Trace.WriteLine(string.Format("Received first response, {0} papers total.", ResultCount), "Informational");
 
-            int AttemptCount = 0;
+            AttemptCount = 0;
             while (RetrievedItems < ResultCount)
             {
                 try
@@ -74,7 +93,10 @@ namespace ATN.Crawler.WebCrawler
                     {
                         throw e;
                     }
-                    Thread.Sleep(RetryDelayMilliseconds);
+                    Thread.Sleep(AttemptCount * RetryDelayMilliseconds);
+
+                    _limiter.AddRequest();
+                    response = _client.Search(request);
                 }
             }
 
@@ -122,7 +144,7 @@ namespace ATN.Crawler.WebCrawler
                     {
                         throw e;
                     }
-                    Thread.Sleep(RetryDelayMilliseconds);
+                    Thread.Sleep(i * RetryDelayMilliseconds);
                 }
             }
 
