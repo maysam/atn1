@@ -26,6 +26,12 @@ namespace ATN.Crawler.WebCrawler
             _limiter = new RateLimit();
             _client = new APIServiceClient();
         }
+
+        public CrawlerDataSource GetDataSource()
+        {
+            return CrawlerDataSource.MicrosoftAcademicSearch;
+        }
+
         private string[] GetReferences(string CanonicalId, ReferenceRelationship Relationship)
         {
             List<uint> PublicationIdsCitingCanonicalPaper = new List<uint>();

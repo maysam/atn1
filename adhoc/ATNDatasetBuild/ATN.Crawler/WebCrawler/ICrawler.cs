@@ -9,6 +9,11 @@ namespace ATN.Crawler.WebCrawler
     public interface ICrawler
     {
         /// <summary>
+        /// Get the data source associated with the crawler implementation
+        /// </summary>
+        /// <returns>A CrawlerDataSource corresponding to the crawler being used</returns>
+        CrawlerDataSource GetDataSource();
+        /// <summary>
         /// Get the data-source specific identifiers listed as citing the provided canonical paper
         /// </summary>
         /// <param name="CanonicalId">The data-source specific identifier of the canonical paper with which to retrieve citations for</param>

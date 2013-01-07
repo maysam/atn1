@@ -11,14 +11,14 @@ namespace ATN.Crawler
 {
     class Program
     {
-        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 36978289, 36978290 };
+        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 2085496 };
 
         static void Main(string[] args)
         {
-            CrawlerProgress CrawlerProgress = new CrawlerProgress();
-            Crawl Crawl = CrawlerProgress.StartCrawl(CrawlerDataSource.MicrosoftAcademicSearch, DataSourceSpecificCanonicalIds.Select(id => id.ToString()).ToArray());
-
             ICrawler crawler = new MASCrawler();
+            CrawlerProgress CrawlerProgress = new CrawlerProgress();
+            Crawl Crawl = CrawlerProgress.StartCrawl(crawler.GetDataSource(), DataSourceSpecificCanonicalIds.Select(id => id.ToString()).ToArray());
+
             Sources Sources = new Sources();
             SourceRetrievalService SourceRetrieval = new SourceRetrievalService();
 
@@ -27,7 +27,7 @@ namespace ATN.Crawler
             if (Crawl.CrawlState == (short)CrawlerState.Started)
             {
                 Trace.WriteLine("Crawl data not present, initiating crawl", "Informational");
-                Source AttachedCannonicalSource = SourceRetrieval.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, DataSourceSpecificCanonicalIds.First().ToString());
+                Source AttachedCannonicalSource = SourceRetrieval.GetSourceByDataSourceSpecificId(crawler.GetDataSource(), DataSourceSpecificCanonicalIds.First().ToString());
 
                 if (AttachedCannonicalSource == null)
                 {
@@ -36,7 +36,7 @@ namespace ATN.Crawler
                 }
                 else
                 {
-                    CanonicalSource = Sources.GetCompleteSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, AttachedCannonicalSource.MasID.Value.ToString());
+                    CanonicalSource = Sources.GetCompleteSourceByDataSourceSpecificId(crawler.GetDataSource(), AttachedCannonicalSource.MasID.Value.ToString());
                 }
 
                 //If there are multiple copies of the same source added, correlate each unique data-source ID to the canonical source ID
@@ -55,7 +55,7 @@ namespace ATN.Crawler
                 //Find the canonical source from the database, stopping once one is found
                 for (int i = 0; i < DataSourceSpecificCanonicalIds.Length && CanonicalSource == null; i++)
                 {
-                    CanonicalSource = Sources.GetCompleteSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, DataSourceSpecificCanonicalIds[i].ToString());
+                    CanonicalSource = Sources.GetCompleteSourceByDataSourceSpecificId(crawler.GetDataSource(), DataSourceSpecificCanonicalIds[i].ToString());
                 }
             }
 
@@ -91,7 +91,7 @@ namespace ATN.Crawler
                     if(CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
                     {
                         //See if the given data-source specific ID exists in the database, if not retrieve it from the data source and store it
-                        Source SourceToComplete = SourceRetrieval.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, CrawlsToComplete[i].DataSourceSpecificId);
+                        Source SourceToComplete = SourceRetrieval.GetSourceByDataSourceSpecificId(crawler.GetDataSource(), CrawlsToComplete[i].DataSourceSpecificId);
                         if (SourceToComplete == null)
                         {
                             CompleteSource SourceToAdd = crawler.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
@@ -159,7 +159,7 @@ namespace ATN.Crawler
                     if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
                     {
                         //See if the given data-source specific ID exists in the database, if not retrieve it from the data source and store it
-                        Source SourceToComplete = SourceRetrieval.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, CrawlsToComplete[i].DataSourceSpecificId);
+                        Source SourceToComplete = SourceRetrieval.GetSourceByDataSourceSpecificId(crawler.GetDataSource(), CrawlsToComplete[i].DataSourceSpecificId);
                         if (SourceToComplete == null)
                         {
                             CompleteSource SourceToAdd = crawler.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
