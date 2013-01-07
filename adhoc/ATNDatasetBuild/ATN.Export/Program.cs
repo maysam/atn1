@@ -50,7 +50,7 @@ namespace ATN.Export
                         XGMMLWriter.WriteStartElement("att");
                         XGMMLWriter.WriteAttributeString("name", "size");
                         XGMMLWriter.WriteAttributeString("type", "integer");
-                        XGMMLWriter.WriteAttributeString("value", "64");
+                        XGMMLWriter.WriteAttributeString("value", CanonicalSource.CitingSources.Count.ToString());
                         XGMMLWriter.WriteEndElement();
                     XGMMLWriter.WriteEndElement();
 
@@ -63,23 +63,26 @@ namespace ATN.Export
                     XGMMLWriter.WriteStartElement("att");
                     XGMMLWriter.WriteAttributeString("name", "size");
                     XGMMLWriter.WriteAttributeString("type", "integer");
-                    XGMMLWriter.WriteAttributeString("value", "32");
+                    XGMMLWriter.WriteAttributeString("value", Source.CitingSources.Count.ToString());
                     XGMMLWriter.WriteEndElement();
                 XGMMLWriter.WriteEndElement();
             }
 
             //Write reference nodes
-            foreach (var Citation in CanonicalSource.CitingSources.ToArray())
+            var Citations = CanonicalSource.CitingSources.ToArray();
+            for(int i = 0; i < Citations.Length; i++)
             {
-                foreach (var Reference in Citation.References.ToArray())
+                Console.WriteLine("Writing references for citation {0}/{1}", i + 1, Citations.Length);
+                var References = Citations[i].References.ToArray();
+                for (int j = 0; j < References.Length; j++)
                 {
                     XGMMLWriter.WriteStartElement("node");
-                    XGMMLWriter.WriteAttributeString("label", Reference.ArticleTitle);
-                    XGMMLWriter.WriteAttributeString("id", Reference.SourceId.ToString());
+                    XGMMLWriter.WriteAttributeString("label", References[j].ArticleTitle);
+                    XGMMLWriter.WriteAttributeString("id", References[j].SourceId.ToString());
                         XGMMLWriter.WriteStartElement("att");
                         XGMMLWriter.WriteAttributeString("name", "size");
                         XGMMLWriter.WriteAttributeString("type", "integer");
-                        XGMMLWriter.WriteAttributeString("value", "16");
+                        XGMMLWriter.WriteAttributeString("value", References[j].CitingSources.Count.ToString());
                         XGMMLWriter.WriteEndElement();
                     XGMMLWriter.WriteEndElement();
                 }

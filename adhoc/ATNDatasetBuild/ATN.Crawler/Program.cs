@@ -11,7 +11,7 @@ namespace ATN.Crawler
 {
     class Program
     {
-        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 1265954, 1279051 };
+        static uint[] DataSourceSpecificCanonicalIds = new uint[] { 36978289, 36978290 };
 
         static void Main(string[] args)
         {

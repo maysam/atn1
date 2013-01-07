@@ -55,6 +55,7 @@ namespace ATN.Crawler.WebCrawler
                     _limiter.AddRequest();
                     response = _client.Search(request);
                     ResultCount = response.Publication.TotalItem;
+                    InitialRequestSucceeded = true;
                 }
                 catch (Exception e)
                 {
