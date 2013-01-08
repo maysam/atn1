@@ -115,6 +115,22 @@ namespace ATN.Data
                 }
                 Context.CrawlQueues.AddObject(cq);
             }
+        }
+
+        public void CommitQueue()
+        {
+            var Entries = Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Added)
+                .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Deleted))
+                .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Detached))
+                .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Modified));
+            foreach (var Entry in Entries)
+            {
+                Type t = Entry.Entity.GetType();
+                if (t != typeof(CrawlQueue) && t != typeof(CrawlResult))
+                {
+                    throw new Exception("CrawlQueue commit did not succeed. There were pending changes in entites other than the crawl queue.");
+                }
+            }
             Context.SaveChanges();
         }
 
