@@ -38,6 +38,36 @@ namespace ATN.Data
         }
 
         /// <summary>
+        /// Retrieves the unique Source corresponding to the given data source and passed data-source specific identifier
+        /// </summary>
+        /// <param name="DataSource">The data-source from which to retrieve</param>
+        /// <param name="DataSourceSpecificId">The data-source specific identifier for which to retrieve</param>
+        /// <returns>A unique Source corresponding to the given data source and data-source specific identifier</returns>
+        public Source GetSourceByDataSourceSpecificId(CrawlerDataSource DataSource, string DataSourceSpecificId)
+        {
+            switch (DataSource)
+            {
+                case CrawlerDataSource.MicrosoftAcademicSearch:
+                    return Context.Sources.Where(s => s.DataSourceId == (int)CrawlerDataSource.MicrosoftAcademicSearch && s.DataSourceSpecificId == DataSourceSpecificId).SingleOrDefault();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificId)
+        {
+            Source SourceToReturn = null;
+
+            //Find the canonical source from the database, stopping once one is found
+            for (int i = 0; i < DataSourceSpecificId.Length && SourceToReturn == null; i++)
+            {
+                SourceToReturn = GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificId[i]);
+            }
+
+            return SourceToReturn;
+        }
+
+        /// <summary>
         /// Retrieve a full representation of a Source
         /// </summary>
         /// <param name="DataSource">The data-source from which to retrieve the Source</param>
@@ -45,9 +75,7 @@ namespace ATN.Data
         /// <returns>A complete representation of the desired Source</returns>
         public CompleteSource GetCompleteSourceByDataSourceSpecificId(CrawlerDataSource DataSource, string DataSourceSpecificId)
         {
-
-            SourceRetrievalService SourceRetrival = new SourceRetrievalService();
-            Source RetrievedSource = SourceRetrival.GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificId);
+            Source RetrievedSource = GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificId);
 
             CompleteSource cs = new CompleteSource();
             cs.IsDetached = false;
@@ -97,11 +125,6 @@ namespace ATN.Data
                 SourceToAdd.IsDetached = false;
             }
             return SourceToAdd.Source;
-        }
-        public ObjectSet<Source> GetReferences(long SourceId)
-        {
-            return null;
-            //return Context.Sources.Where(s => s.s
         }
     }
 }

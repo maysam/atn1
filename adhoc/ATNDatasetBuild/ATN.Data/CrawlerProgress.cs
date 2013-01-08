@@ -8,7 +8,9 @@ namespace ATN.Data
     /// <summary>
     /// A representation of the progress of a given crawl
     /// </summary>
-    public enum CrawlerState { Started = 0, CanonicalPaperComplete = 1, EnqueueingCitationsComplete = 2, RetrievingCitationsComplete = 3, EnqueueingReferencesComplete = 4, RetrievingReferencesComplete = 5, Complete = 6 };
+    public enum CrawlerState { Started = 0, CanonicalPaperComplete = 1, EnqueueingCitationsComplete = 2, RetrievingCitationsComplete = 3,
+        EnqueueingReferencesComplete = 4, Complete = 5, ScheduledCrawlEnqueueingCitationsComplete = 6,
+        ScheduledCrawlRetrievingCitationsComplete = 7, ScheduledCrawlEnqueueingReferencesComplete = 8};
     
     /// <summary>
     /// A representation of which direction a crawl reference goes; with None meaning the given queue item is not for a reference relationship
@@ -25,6 +27,22 @@ namespace ATN.Data
 
         }
 
+        public string[] GetCitationsAndReferencesForCrawl(CrawlerDataSource DataSource, int CrawlId)
+        {
+            return Context.Crawls.SingleOrDefault(c => c.DataSourceId == (int)DataSource && c.CrawlId == CrawlId).CrawlResults.Select(cr => cr.DataSourceSpecificId).ToArray();
+        }
+
+        public Crawl[] GetExistingCrawls()
+        {
+            return Context.Crawls.ToArray();
+        }
+
+        /// <summary>
+        /// Returns the data-source specific canonical identifiers for the given CrawlId and DataSource
+        /// </summary>
+        /// <param name="DataSource">The data-source to retrieve the canonical ids for</param>
+        /// <param name="CrawlId">The CrawlId to retrieve the canonical ids for</param>
+        /// <returns>All canonical IDs associated with the given DataSource and CrawlId</returns>
         public string[] GetCanonicalIdsForCrawl(CrawlerDataSource DataSource, int CrawlId)
         {
             return Context.Crawls.Where(c => c.CrawlId == CrawlId && c.DataSourceId == (int)DataSource).SingleOrDefault().CanonicalIds.Split(',').ToArray();
@@ -61,6 +79,7 @@ namespace ATN.Data
         /// <param name="State">The new state for the given Crawl object</param>
         public void UpdateCrawlerState(Crawl Crawler, CrawlerState State)
         {
+            Crawler.DateCrawled = DateTime.Now;
             Crawler.CrawlState = (short)State;
             Context.SaveChanges();
         }
@@ -84,7 +103,8 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Queue a list of data-source specific IDs for crawling for the given Crawl
+        /// Queue a list of data-source specific IDs for crawling for the given Crawl. After enqueueing all citations or
+        /// references for a crawl, calling the CommitQueue() method is required to commit the changes to the database
         /// </summary>
         /// <param name="CrawlId">The Crawl which these data-source specific IDs pertain to</param>
         /// <param name="DataSourceSpecificIds">The data-source specific IDs to Crawl</param>
@@ -117,10 +137,13 @@ namespace ATN.Data
             }
         }
 
+        /// <summary>
+        /// Commits the list of pending 
+        /// </summary>
         public void CommitQueue()
         {
             var Entries = Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Added)
-                .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Detached))
+                .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Deleted))
                 .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Modified));
             foreach (var Entry in Entries)
             {

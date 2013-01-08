@@ -163,7 +163,7 @@ namespace ATN.Crawler.WebCrawler
             CanonicalPaper.Abstract = RetrievedPublication.Abstract;
             CanonicalPaper.ArticleTitle = RetrievedPublication.Title;
             CanonicalPaper.DataSourceId = (int)CrawlerDataSource.MicrosoftAcademicSearch;
-            CanonicalPaper.MasID = Int32.Parse(PaperId);
+            CanonicalPaper.DataSourceSpecificId = PaperId;
             CanonicalPaper.Year = RetrievedPublication.Year;
             CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(response);
             CanonicalPaper.DOI = RetrievedPublication.DOI;

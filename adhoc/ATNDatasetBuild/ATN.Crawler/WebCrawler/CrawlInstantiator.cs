@@ -8,9 +8,11 @@ namespace ATN.Crawler.WebCrawler
 {
     public static class CrawlInstantiator
     {
-        public static ICrawler InstantiateCrawler(CrawlerDataSource DataSource)
+        private static Dictionary<CrawlerDataSource, ICrawler> DataSourceCrawlerTranslations;
+        private static void PopulateTranslations()
         {
-            return ConfigurationReader.GetConfigurationValue<string>("DataSourceObjectTranslations")
+            DataSourceCrawlerTranslations = 
+                ConfigurationReader.GetConfigurationValue<string>("DataSourceObjectTranslations")
                 .Split(
                     new string[] { "," },
                     StringSplitOptions.RemoveEmptyEntries
@@ -21,10 +23,34 @@ namespace ATN.Crawler.WebCrawler
                     StringSplitOptions.RemoveEmptyEntries)
                 ).ToDictionary(
                     s => (CrawlerDataSource)Int32.Parse(s[0]),
-                    (s) => (ICrawler)Activator.CreateInstance(
+                    s => (ICrawler)Activator.CreateInstance(
                         Type.GetType("ATN.Crawler.WebCrawler." + s[1])
-                        )
-                )[DataSource];
+                    )
+                );
+        }
+        public static ICrawler InstantiateCrawler(CrawlerDataSource DataSource)
+        {
+            if (DataSourceCrawlerTranslations != null)
+            {
+                return DataSourceCrawlerTranslations[DataSource];
+            }
+            else
+            {
+                PopulateTranslations();
+                return DataSourceCrawlerTranslations[DataSource];
+            }
+        }
+        public static Dictionary<CrawlerDataSource, ICrawler> RetrieveCrawlerTranslations()
+        {
+            if (DataSourceCrawlerTranslations != null)
+            {
+                return DataSourceCrawlerTranslations;
+            }
+            else
+            {
+                PopulateTranslations();
+                return DataSourceCrawlerTranslations;
+            }
         }
     }
 }

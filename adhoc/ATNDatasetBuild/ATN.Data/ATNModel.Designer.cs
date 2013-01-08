@@ -813,13 +813,15 @@ namespace ATN.Data
         /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
         /// <param name="canonicalIds">Initial value of the CanonicalIds property.</param>
         /// <param name="crawlState">Initial value of the CrawlState property.</param>
-        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int32 dataSourceId, global::System.String canonicalIds, global::System.Int16 crawlState)
+        /// <param name="dateCrawled">Initial value of the DateCrawled property.</param>
+        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int32 dataSourceId, global::System.String canonicalIds, global::System.Int16 crawlState, global::System.DateTime dateCrawled)
         {
             Crawl crawl = new Crawl();
             crawl.CrawlId = crawlId;
             crawl.DataSourceId = dataSourceId;
             crawl.CanonicalIds = canonicalIds;
             crawl.CrawlState = crawlState;
+            crawl.DateCrawled = dateCrawled;
             return crawl;
         }
 
@@ -925,6 +927,30 @@ namespace ATN.Data
         private global::System.Int16 _CrawlState;
         partial void OnCrawlStateChanging(global::System.Int16 value);
         partial void OnCrawlStateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime DateCrawled
+        {
+            get
+            {
+                return _DateCrawled;
+            }
+            set
+            {
+                OnDateCrawledChanging(value);
+                ReportPropertyChanging("DateCrawled");
+                _DateCrawled = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DateCrawled");
+                OnDateCrawledChanged();
+            }
+        }
+        private global::System.DateTime _DateCrawled;
+        partial void OnDateCrawledChanging(global::System.DateTime value);
+        partial void OnDateCrawledChanged();
 
         #endregion
 
@@ -2260,13 +2286,15 @@ namespace ATN.Data
         /// <param name="sourceType">Initial value of the SourceType property.</param>
         /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
         /// <param name="serializedDataSourceResponse">Initial value of the SerializedDataSourceResponse property.</param>
-        public static Source CreateSource(global::System.Int64 sourceId, global::System.Int32 sourceType, global::System.Int32 dataSourceId, global::System.String serializedDataSourceResponse)
+        /// <param name="dataSourceSpecificId">Initial value of the DataSourceSpecificId property.</param>
+        public static Source CreateSource(global::System.Int64 sourceId, global::System.Int32 sourceType, global::System.Int32 dataSourceId, global::System.String serializedDataSourceResponse, global::System.String dataSourceSpecificId)
         {
             Source source = new Source();
             source.SourceId = sourceId;
             source.SourceType = sourceType;
             source.DataSourceId = dataSourceId;
             source.SerializedDataSourceResponse = serializedDataSourceResponse;
+            source.DataSourceSpecificId = dataSourceSpecificId;
             return source;
         }
 
@@ -2348,30 +2376,6 @@ namespace ATN.Data
         private global::System.Int32 _DataSourceId;
         partial void OnDataSourceIdChanging(global::System.Int32 value);
         partial void OnDataSourceIdChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public Nullable<global::System.Int64> MasID
-        {
-            get
-            {
-                return _MasID;
-            }
-            set
-            {
-                OnMasIDChanging(value);
-                ReportPropertyChanging("MasID");
-                _MasID = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("MasID");
-                OnMasIDChanged();
-            }
-        }
-        private Nullable<global::System.Int64> _MasID;
-        partial void OnMasIDChanging(Nullable<global::System.Int64> value);
-        partial void OnMasIDChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -2780,6 +2784,30 @@ namespace ATN.Data
         private global::System.String _SerializedDataSourceResponse;
         partial void OnSerializedDataSourceResponseChanging(global::System.String value);
         partial void OnSerializedDataSourceResponseChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String DataSourceSpecificId
+        {
+            get
+            {
+                return _DataSourceSpecificId;
+            }
+            set
+            {
+                OnDataSourceSpecificIdChanging(value);
+                ReportPropertyChanging("DataSourceSpecificId");
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("DataSourceSpecificId");
+                OnDataSourceSpecificIdChanged();
+            }
+        }
+        private global::System.String _DataSourceSpecificId;
+        partial void OnDataSourceSpecificIdChanging(global::System.String value);
+        partial void OnDataSourceSpecificIdChanged();
 
         #endregion
 

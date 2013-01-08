@@ -14,8 +14,8 @@ namespace ATN.Export
         {
             CrawlerProgress Progress = new CrawlerProgress();
             string[] MasIds = Progress.GetCanonicalIdsForCrawl(CrawlerDataSource.MicrosoftAcademicSearch, 2);
-            SourceRetrievalService Retrival = new SourceRetrievalService();
-            Source CanonicalSource = Retrival.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MasIds.First());
+            Sources s = new Sources();
+            Source CanonicalSource = s.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MasIds.First());
 
             //Setup XML Writing structures
             FileStream DestinationStream = File.Open("Graph.xml", FileMode.Create);

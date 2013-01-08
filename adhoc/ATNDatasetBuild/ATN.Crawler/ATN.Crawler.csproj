@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="ConfigurationReader.cs" />
     <Compile Include="WebCrawler\CrawlInstantiator.cs" />
-    <Compile Include="CrawlOrchestrator.cs" />
+    <Compile Include="CrawlRunner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThirdParty\XmlHelper.cs" />

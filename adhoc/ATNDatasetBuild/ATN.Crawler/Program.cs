@@ -14,7 +14,8 @@ namespace ATN.Crawler
         static void Main(string[] args)
         {
             ICrawler crawler = new MASCrawler();
-            CrawlOrchestrator co = new CrawlOrchestrator(
+            CrawlRunner co = new CrawlRunner();
+            co.RunCrawls(
                 new CrawlSpecifier[] {
                     new CrawlSpecifier(){
                         DataSource = CrawlerDataSource.MicrosoftAcademicSearch,
@@ -22,8 +23,7 @@ namespace ATN.Crawler
                     }
                 }
             );
-            co.StartCrawl();
-            int x = 0;
+            co.RefreshExistingCrawls();
         }
     }
 }

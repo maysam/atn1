@@ -114,6 +114,7 @@
           <Property Name="DataSourceId" Type="int" Nullable="false" />
           <Property Name="CanonicalIds" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CrawlState" Type="smallint" Nullable="false" />
+          <Property Name="DateCrawled" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -176,9 +177,9 @@
           <Property Name="SourceId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="SourceType" Type="int" Nullable="false" />
           <Property Name="DataSourceId" Type="int" Nullable="false" />
-          <Property Name="MasID" Type="bigint" />
+          <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
           <Property Name="ProquestId" Type="int" />
-          <Property Name="DOI" Type="varchar" MaxLength="50" />
+          <Property Name="DOI" Type="varchar(max)" />
           <Property Name="ArticleTitle" Type="nvarchar(max)" />
           <Property Name="BookTitle" Type="nvarchar(max)" />
           <Property Name="ISSN" Type="int" />
@@ -482,6 +483,7 @@
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="Crawl" ToRole="CrawlQueue" />
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="Crawl" ToRole="CrawlResult" />
           <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="Crawl" ToRole="DataSource" />
+          <Property Type="DateTime" Name="DateCrawled" Nullable="false" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -548,7 +550,6 @@
           <Property Type="Int64" Name="SourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="SourceType" Nullable="false" />
           <Property Type="Int32" Name="DataSourceId" Nullable="false" />
-          <Property Type="Int64" Name="MasID" />
           <Property Type="Int32" Name="ProquestId" />
           <Property Type="String" Name="DOI" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="ArticleTitle" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -574,6 +575,7 @@
           <NavigationProperty Name="References" Relationship="ATNModel.CitationsReference" FromRole="Reference" ToRole="Citation" />
           <NavigationProperty Name="CitingSources" Relationship="ATNModel.CitationsReference" FromRole="Citation" ToRole="Reference" />
           <NavigationProperty Name="Journal" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Source" ToRole="Journal" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Type="ATNModel.Author" Role="Author" Multiplicity="1" />
@@ -775,6 +777,7 @@
           <EntitySetMapping Name="Crawls">
             <EntityTypeMapping TypeName="ATNModel.Crawl">
               <MappingFragment StoreEntitySet="Crawl">
+                <ScalarProperty Name="DateCrawled" ColumnName="DateCrawled" />
                 <ScalarProperty Name="CrawlState" ColumnName="CrawlState" />
                 <ScalarProperty Name="CanonicalIds" ColumnName="CanonicalIds" />
                 <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
@@ -836,6 +839,7 @@
           <EntitySetMapping Name="Sources">
             <EntityTypeMapping TypeName="ATNModel.Source">
               <MappingFragment StoreEntitySet="Source">
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
                 <ScalarProperty Name="SerializedDataSourceResponse" ColumnName="SerializedDataSourceResponse" />
                 <ScalarProperty Name="JournalId" ColumnName="JournalId" />
                 <ScalarProperty Name="Abstract" ColumnName="Abstract" />
@@ -853,7 +857,6 @@
                 <ScalarProperty Name="ArticleTitle" ColumnName="ArticleTitle" />
                 <ScalarProperty Name="DOI" ColumnName="DOI" />
                 <ScalarProperty Name="ProquestId" ColumnName="ProquestId" />
-                <ScalarProperty Name="MasID" ColumnName="MasID" />
                 <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
                 <ScalarProperty Name="SourceType" ColumnName="SourceType" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
@@ -906,7 +909,7 @@
         <EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="10.375" Height="2.172587890624996" />
         <EntityTypeShape EntityType="ATNModel.Editor" Width="1.5" PointX="3" PointY="10.125" Height="2.3648893229166674" />
         <EntityTypeShape EntityType="ATNModel.EditorsReference" Width="1.5" PointX="8.25" PointY="15.875" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="3" PointY="13.125" Height="6.4032194010416674" />
+        <EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="3" PointY="13.125" Height="6.5955208333333353" />
         <AssociationConnector Association="ATNModel.Author_AuthorsReference_FK1" >
           <ConnectorPoint PointX="4.5" PointY="4.8747460937500051" />
           <ConnectorPoint PointX="6" PointY="4.8747460937500051" />
@@ -921,23 +924,23 @@
           <ConnectorPoint PointX="4.5" PointY="13.126152846153847" />
           <ConnectorPoint PointX="4.875" PointY="12.751152846153847" />
           <ConnectorPoint PointX="4.875" PointY="12.856439304487186" />
-          <ConnectorPoint PointX="5.0035744349011209" PointY="12.727864869586062" />
-          <ConnectorPoint PointX="5.1214255650988791" PointY="12.610013739388306" />
+          <ConnectorPoint PointX="4.8785744349011209" PointY="12.852864869586062" />
+          <ConnectorPoint PointX="4.9964255650988791" PointY="12.735013739388306" />
           <ConnectorPoint PointX="5.2511528461538459" PointY="12.480286458333339" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.Crawl_CrawlQueue_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="9.3025806306089756" />
-          <ConnectorPoint PointX="5.0625" PointY="9.8650806306089756" />
-          <ConnectorPoint PointX="5.0625" PointY="15.307444661458334" />
-          <ConnectorPoint PointX="5.25" PointY="15.307444661458334" />
+          <ConnectorPoint PointX="4.5" PointY="9.49488206290064" />
+          <ConnectorPoint PointX="4.9375" PointY="9.93238206290064" />
+          <ConnectorPoint PointX="4.9375" PointY="15.676961118164064" />
+          <ConnectorPoint PointX="5.25" PointY="15.676961118164064" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.Crawl_CrawlResult_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="8.1200378153044941" />
-          <ConnectorPoint PointX="5.916666666666667" PointY="8.1200378153044941" />
-          <ConnectorPoint PointX="6.083333333333333" PointY="8.1200378153044941" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="8.1200378153044941" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="8.1200378153044941" />
-          <ConnectorPoint PointX="9" PointY="8.1200378153044941" />
+          <ConnectorPoint PointX="4.5" PointY="8.21618853145032" />
+          <ConnectorPoint PointX="5.916666666666667" PointY="8.21618853145032" />
+          <ConnectorPoint PointX="6.083333333333333" PointY="8.21618853145032" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="8.21618853145032" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="8.21618853145032" />
+          <ConnectorPoint PointX="9" PointY="8.21618853145032" />
           <ConnectorPoint PointX="9" PointY="12" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.DataSource_Crawl_FK1" >
@@ -946,15 +949,15 @@
           <ConnectorPoint PointX="3" PointY="8.1824446614583337" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.Source_CrawlQueue_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="14.653722330729167" />
-          <ConnectorPoint PointX="4.854166666666667" PointY="14.653722330729165" />
-          <ConnectorPoint PointX="5.145833333333333" PointY="14.653722330729167" />
-          <ConnectorPoint PointX="5.25" PointY="14.653722330729167" />
+          <ConnectorPoint PointX="4.5" PointY="14.838480559082033" />
+          <ConnectorPoint PointX="4.822916666666667" PointY="14.838480559082033" />
+          <ConnectorPoint PointX="5.020833333333333" PointY="14.838480559082033" />
+          <ConnectorPoint PointX="5.25" PointY="14.838480559082033" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.Source_CrawlResult_FK1" >
           <ConnectorPoint PointX="4.5" PointY="13.625578923076917" />
-          <ConnectorPoint PointX="4.854166666666667" PointY="13.625578923076915" />
-          <ConnectorPoint PointX="5.145833333333333" PointY="13.625578923076917" />
+          <ConnectorPoint PointX="4.822916666666667" PointY="13.625578923076917" />
+          <ConnectorPoint PointX="5.020833333333333" PointY="13.625578923076917" />
           <ConnectorPoint PointX="6.760416666666667" PointY="13.625578923076917" />
           <ConnectorPoint PointX="6.927083333333333" PointY="13.625578923076917" />
           <ConnectorPoint PointX="8.25" PointY="13.625578923076917" />
@@ -969,20 +972,20 @@
           <ConnectorPoint PointX="3" PointY="16.422760416666669" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.Editor_EditorsReference_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="12.427580630608976" />
-          <ConnectorPoint PointX="4.9375" PointY="12.865080630608976" />
-          <ConnectorPoint PointX="4.9375" PointY="17.203837390625004" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="17.203837390625004" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="17.203837390625004" />
-          <ConnectorPoint PointX="8.25" PointY="17.203837390625004" />
+          <ConnectorPoint PointX="4.5" PointY="12.458734476762821" />
+          <ConnectorPoint PointX="4.90625" PointY="12.864984476762821" />
+          <ConnectorPoint PointX="4.90625" PointY="17.407418036783859" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="17.407418036783859" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="17.407418036783859" />
+          <ConnectorPoint PointX="8.25" PointY="17.407418036783859" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.Source_EditorsReference_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="16.815613356770836" />
-          <ConnectorPoint PointX="4.854166666666667" PointY="16.815613356770836" />
-          <ConnectorPoint PointX="5.020833333333333" PointY="16.815613356770836" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="16.815613356770836" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="16.815613356770836" />
-          <ConnectorPoint PointX="8.25" PointY="16.815613356770836" />
+          <ConnectorPoint PointX="4.5" PointY="16.917403679850263" />
+          <ConnectorPoint PointX="4.822916666666667" PointY="16.917403679850263" />
+          <ConnectorPoint PointX="4.989583333333333" PointY="16.917403679850263" />
+          <ConnectorPoint PointX="6.760416666666667" PointY="16.917403679850263" />
+          <ConnectorPoint PointX="6.927083333333333" PointY="16.917403679850263" />
+          <ConnectorPoint PointX="8.25" PointY="16.917403679850263" />
         </AssociationConnector>
         <AssociationConnector Association="ATNModel.CitationsReference" >
           <ConnectorPoint PointX="3.5319230769230767" PointY="19.720520833333335" />
@@ -993,8 +996,8 @@
         <EntityTypeShape EntityType="ATNModel.Journal" Width="1.5" PointX="5.375" PointY="0.875" Height="1.7879850260416674" />
         <AssociationConnector Association="ATNModel.JournalName_Source_FK1" >
           <ConnectorPoint PointX="6.84375" PointY="2.6629850260416674" />
-          <ConnectorPoint PointX="6.84375" PointY="18.462179111979172" />
-          <ConnectorPoint PointX="4.5" PointY="18.462179111979172" />
+          <ConnectorPoint PointX="6.84375" PointY="18.5639694350586" />
+          <ConnectorPoint PointX="4.5" PointY="18.5639694350586" />
         </AssociationConnector>
       </Diagram>
     </Diagrams>
