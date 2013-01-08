@@ -34,6 +34,7 @@ namespace ATN.Crawler
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.Complete)
                 {
+                    _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.ScheduledCrawlStarted);
                     string[] CurrentCitations = CanonicalSource.CitingSources.Select(r => r.DataSourceSpecificId).ToArray();
 
                     foreach (string ID in Specifier.CanonicalIds)
@@ -61,6 +62,32 @@ namespace ATN.Crawler
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlRetrievingCitationsComplete)
                 {
+                    Trace.WriteLine("Queueing references for existing citations");
+
+                    //For instances where the crawl may be interrupted, get sources starting at the last referenced source id + 1
+                    //On resume, references will be queued starting from the next source rather than the beginning
+                    long LastReferencedSourceId = _progress.GetLastSourceIdReferencedInCrawl(Specifier.Crawl.CrawlId);
+                    var Citations = CanonicalSource.CitingSources.Where(c => c.SourceId > LastReferencedSourceId).OrderBy(c => c.SourceId).ToArray();
+
+                    for (int i = 0; i < Citations.Length; i++)
+                    {
+                        string[] CurrentReferences = Citations[i].References.Select(r => r.DataSourceSpecificId).ToArray();
+
+                        Trace.WriteLine(string.Format("Queueing references for paper {0}/{1}", i + 1, Citations.Length));
+
+                        //Get the difference from stored references and current references from data source
+                        string[] UpdatedReferences = Crawler.GetReferencesBySourceId(Citations[i].DataSourceSpecificId);
+                        string[] NewReferences = UpdatedReferences.Except(CurrentReferences).ToArray();
+
+                        Trace.WriteLine(string.Format("Found {0} new references", NewReferences.Length));
+
+                        //Queue the retrieved publication IDs for retrieval
+                        _progress.QueueCrawl(Specifier.Crawl.CrawlId, NewReferences, Citations[i].SourceId, CrawlReferenceDirection.Reference);
+                        _progress.CommitQueue();
+
+                        _progress.UpdateCrawlerLastEnumeratedSource(Specifier.Crawl, Citations[i].SourceId);
+                    }
+
                     Trace.WriteLine("Queueing references for added citations");
                     var CrawlResults = Specifier.Crawl.CrawlResults.Where(cr => cr.ReferenceRetrieved == false).ToArray();
 
@@ -80,23 +107,6 @@ namespace ATN.Crawler
                         CrawlResults[i].ReferenceRetrieved = true;
 
                         Trace.WriteLine(string.Format("Queued {0} references for paper {1}/{2}", NewReferences.Length, i + 1, CrawlResults.Length));
-                    }
-
-                    Trace.WriteLine("Queueing references for existing citations");
-                    var Citations = CanonicalSource.CitingSources.ToArray();
-
-                    for (int i = 0; i < Citations.Length; i++)
-                    {
-                        string[] CurrentReferences = Citations[i].References.Select(r => r.DataSourceSpecificId).ToArray();
-
-                        Trace.WriteLine(string.Format("Queueing references for paper {0}/{1}", i + 1, CrawlResults.Length));
-
-                        //Get the difference from stored references and current references from data source
-                        string[] UpdatedReferences = Crawler.GetReferencesBySourceId(CrawlResults[i].DataSourceSpecificId);
-                        string[] NewReferences = UpdatedReferences.Except(CurrentReferences).ToArray();
-
-                        //Queue the retrieved publication IDs for retrieval
-                        _progress.QueueCrawl(Specifier.Crawl.CrawlId, NewReferences, Citations[i].SourceId, CrawlReferenceDirection.Reference);
                     }
 
                     _progress.CommitQueue();

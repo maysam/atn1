@@ -9,8 +9,8 @@ namespace ATN.Data
     /// A representation of the progress of a given crawl
     /// </summary>
     public enum CrawlerState { Started = 0, CanonicalPaperComplete = 1, EnqueueingCitationsComplete = 2, RetrievingCitationsComplete = 3,
-        EnqueueingReferencesComplete = 4, Complete = 5, ScheduledCrawlEnqueueingCitationsComplete = 6,
-        ScheduledCrawlRetrievingCitationsComplete = 7, ScheduledCrawlEnqueueingReferencesComplete = 8};
+        EnqueueingReferencesComplete = 4, Complete = 5, ScheduledCrawlStarted = 6, ScheduledCrawlEnqueueingCitationsComplete = 7,
+        ScheduledCrawlRetrievingCitationsComplete = 8, ScheduledCrawlEnqueueingReferencesComplete = 9};
     
     /// <summary>
     /// A representation of which direction a crawl reference goes; with None meaning the given queue item is not for a reference relationship
@@ -27,6 +27,11 @@ namespace ATN.Data
 
         }
 
+        public long GetLastSourceIdReferencedInCrawl(int CrawlId)
+        {
+            return Context.Crawls.Where(c => c.CrawlId == CrawlId && c.LastEnumeratedSourceId.HasValue).Select(c => c.LastEnumeratedSourceId.Value).SingleOrDefault();
+        }
+
         public string[] GetCitationsAndReferencesForCrawl(CrawlerDataSource DataSource, int CrawlId)
         {
             return Context.Crawls.SingleOrDefault(c => c.DataSourceId == (int)DataSource && c.CrawlId == CrawlId).CrawlResults.Select(cr => cr.DataSourceSpecificId).ToArray();
@@ -34,7 +39,7 @@ namespace ATN.Data
 
         public Crawl[] GetExistingCrawls()
         {
-            return Context.Crawls.ToArray();
+            return Context.Crawls.OrderByDescending(c => c.CrawlState).ToArray();
         }
 
         /// <summary>
@@ -81,6 +86,22 @@ namespace ATN.Data
         {
             Crawler.DateCrawled = DateTime.Now;
             Crawler.CrawlState = (short)State;
+            if (State != CrawlerState.ScheduledCrawlRetrievingCitationsComplete)
+            {
+                Crawler.LastEnumeratedSourceId = null;
+            }
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Update the Crawler with the most recently enumerated SourceId during scheduled crawling
+        /// </summary>
+        /// <param name="Crawler">Crawl object to update</param>
+        /// <param name="State">Last enumerated SourceId</param>
+        public void UpdateCrawlerLastEnumeratedSource(Crawl Crawler, long LastEnumeratedSourceId)
+        {
+            Crawler.DateCrawled = DateTime.Now;
+            Crawler.LastEnumeratedSourceId = LastEnumeratedSourceId;
             Context.SaveChanges();
         }
 

@@ -13,16 +13,15 @@ namespace ATN.Crawler
     {
         static void Main(string[] args)
         {
-            ICrawler crawler = new MASCrawler();
             CrawlRunner co = new CrawlRunner();
-            co.RunCrawls(
+            /*co.RunCrawls(
                 new CrawlSpecifier[] {
                     new CrawlSpecifier(){
                         DataSource = CrawlerDataSource.MicrosoftAcademicSearch,
                         DataSourceSpecificIdentifiers = new string[] { "1331038" }
                     }
                 }
-            );
+            );*/
             co.RefreshExistingCrawls();
         }
     }

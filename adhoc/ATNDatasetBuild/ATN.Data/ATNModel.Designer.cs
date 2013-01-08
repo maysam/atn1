@@ -8,13 +8,12 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.ComponentModel;
-using System.Data.EntityClient;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
-using System.Linq;
-using System.Runtime.Serialization;
+using System.Data.EntityClient;
+using System.ComponentModel;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
@@ -245,7 +244,6 @@ namespace ATN.Data
         private ObjectSet<Journal> _Journals;
 
         #endregion
-
         #region AddTo Methods
     
         /// <summary>
@@ -329,11 +327,11 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
+    
 
     #endregion
-
+    
     #region Entities
     
     /// <summary>
@@ -364,7 +362,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -539,7 +536,6 @@ namespace ATN.Data
         partial void OnDataSourceSpecificIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -604,7 +600,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -633,7 +628,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -712,7 +706,6 @@ namespace ATN.Data
         partial void OnSourceIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -793,7 +786,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -826,7 +818,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -951,9 +942,32 @@ namespace ATN.Data
         private global::System.DateTime _DateCrawled;
         partial void OnDateCrawledChanging(global::System.DateTime value);
         partial void OnDateCrawledChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int64> LastEnumeratedSourceId
+        {
+            get
+            {
+                return _LastEnumeratedSourceId;
+            }
+            set
+            {
+                OnLastEnumeratedSourceIdChanging(value);
+                ReportPropertyChanging("LastEnumeratedSourceId");
+                _LastEnumeratedSourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("LastEnumeratedSourceId");
+                OnLastEnumeratedSourceIdChanged();
+            }
+        }
+        private Nullable<global::System.Int64> _LastEnumeratedSourceId;
+        partial void OnLastEnumeratedSourceIdChanging(Nullable<global::System.Int64> value);
+        partial void OnLastEnumeratedSourceIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -1040,7 +1054,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -1071,7 +1084,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -1198,7 +1210,6 @@ namespace ATN.Data
         partial void OnReferencesSourceIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -1279,7 +1290,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -1314,7 +1324,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -1465,7 +1474,6 @@ namespace ATN.Data
         partial void OnReferenceRetrievedChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -1546,7 +1554,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -1573,7 +1580,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -1628,7 +1634,6 @@ namespace ATN.Data
         partial void OnDataSourceNameChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -1721,7 +1726,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -1752,7 +1756,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -1879,7 +1882,6 @@ namespace ATN.Data
         partial void OnDataSourceSpecificIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -1944,7 +1946,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -1973,7 +1974,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -2052,7 +2052,6 @@ namespace ATN.Data
         partial void OnSourceIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -2133,7 +2132,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -2160,7 +2158,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -2239,7 +2236,6 @@ namespace ATN.Data
         partial void OnExternalURLChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -2266,7 +2262,6 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
     
     /// <summary>
@@ -2299,7 +2294,6 @@ namespace ATN.Data
         }
 
         #endregion
-
         #region Primitive Properties
     
         /// <summary>
@@ -2810,7 +2804,6 @@ namespace ATN.Data
         partial void OnDataSourceSpecificIdChanged();
 
         #endregion
-
     
         #region Navigation Properties
     
@@ -3023,10 +3016,8 @@ namespace ATN.Data
         }
 
         #endregion
-
     }
 
     #endregion
-
     
 }

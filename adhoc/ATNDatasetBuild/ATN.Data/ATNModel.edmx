@@ -115,6 +115,7 @@
           <Property Name="CanonicalIds" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CrawlState" Type="smallint" Nullable="false" />
           <Property Name="DateCrawled" Type="datetime" Nullable="false" />
+          <Property Name="LastEnumeratedSourceId" Type="bigint" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -484,6 +485,7 @@
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="Crawl" ToRole="CrawlResult" />
           <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="Crawl" ToRole="DataSource" />
           <Property Type="DateTime" Name="DateCrawled" Nullable="false" />
+          <Property Type="Int64" Name="LastEnumeratedSourceId" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -777,6 +779,7 @@
           <EntitySetMapping Name="Crawls">
             <EntityTypeMapping TypeName="ATNModel.Crawl">
               <MappingFragment StoreEntitySet="Crawl">
+                <ScalarProperty Name="LastEnumeratedSourceId" ColumnName="LastEnumeratedSourceId" />
                 <ScalarProperty Name="DateCrawled" ColumnName="DateCrawled" />
                 <ScalarProperty Name="CrawlState" ColumnName="CrawlState" />
                 <ScalarProperty Name="CanonicalIds" ColumnName="CanonicalIds" />
