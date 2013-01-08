@@ -120,7 +120,6 @@ namespace ATN.Data
         public void CommitQueue()
         {
             var Entries = Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Added)
-                .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Deleted))
                 .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Detached))
                 .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Modified));
             foreach (var Entry in Entries)
