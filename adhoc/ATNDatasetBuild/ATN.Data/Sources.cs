@@ -19,6 +19,10 @@ namespace ATN.Data
             _journals = new Journals();
         }
 
+        /// <summary>
+        /// Retrieves a list of all existing sources
+        /// </summary>
+        /// <returns>A list of all existing sources</returns>
         public Source[] GetSources()
         {
             return Context.Sources.ToArray();

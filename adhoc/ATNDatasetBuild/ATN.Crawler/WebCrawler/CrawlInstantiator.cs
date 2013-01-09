@@ -9,6 +9,10 @@ namespace ATN.Crawler.WebCrawler
     public static class CrawlInstantiator
     {
         private static Dictionary<CrawlerDataSource, ICrawler> DataSourceCrawlerTranslations;
+        
+        /// <summary>
+        /// Generates a translation between any CrawlerDataSource value and its target implementation
+        /// </summary>
         private static void PopulateTranslations()
         {
             DataSourceCrawlerTranslations = 
@@ -28,6 +32,11 @@ namespace ATN.Crawler.WebCrawler
                     )
                 );
         }
+        /// <summary>
+        /// Retrieves an instance of the ICrawler implementation corresponding to the given data source
+        /// </summary>
+        /// <param name="DataSource">The data source to retrieve the ICrawler implementation for</param>
+        /// <returns>An instance of the ICrawler implementation corresponding to the given data source</returns>
         public static ICrawler InstantiateCrawler(CrawlerDataSource DataSource)
         {
             if (DataSourceCrawlerTranslations != null)
@@ -40,6 +49,10 @@ namespace ATN.Crawler.WebCrawler
                 return DataSourceCrawlerTranslations[DataSource];
             }
         }
+        /// <summary>
+        /// Retrieves a Dictionary keyed by CrawlerDataSource that allows translating a given data source to its corresponding ICrawler implementation
+        /// </summary>
+        /// <returns>A Dictionary keyed by CrawlerDataSource that allows translating a given data source to its corresponding ICrawler implementation</returns>
         public static Dictionary<CrawlerDataSource, ICrawler> RetrieveCrawlerTranslations()
         {
             if (DataSourceCrawlerTranslations != null)

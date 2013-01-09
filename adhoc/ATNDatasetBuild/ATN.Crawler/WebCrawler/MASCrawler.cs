@@ -32,7 +32,13 @@ namespace ATN.Crawler.WebCrawler
             return CrawlerDataSource.MicrosoftAcademicSearch;
         }
 
-        private string[] GetReferences(string CanonicalId, ReferenceRelationship Relationship)
+        /// <summary>
+        /// Retrieves a list of references or citations for the given PublicationId
+        /// </summary>
+        /// <param name="PublicationId">The MAS-specific unique identifier corresponding to the Publication to retrieve references for</param>
+        /// <param name="Relationship">The type of references to retrieve; citations or references</param>
+        /// <returns>A list of MAS-specific unique identifiers referencing or citing the Publication provided</returns>
+        private string[] GetReferences(string PublicationId, ReferenceRelationship Relationship)
         {
             List<uint> PublicationIdsCitingCanonicalPaper = new List<uint>();
 
@@ -44,22 +50,20 @@ namespace ATN.Crawler.WebCrawler
             request.ResultObjects = ObjectType.Publication;
             request.ReferenceType = Relationship;
 
-            request.PublicationID = UInt32.Parse(CanonicalId);
+            request.PublicationID = UInt32.Parse(PublicationId);
             request.StartIdx = 1;
             request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
             //Get response
             int AttemptCount = 0;
             bool InitialRequestSucceeded = false;
-            int RetrievedItems = 0;
             uint ResultCount = 0;
             Response response = null;
             while(!InitialRequestSucceeded && AttemptCount < RetryLimit)
             {
                 try
                 {
-                    _limiter.AddRequest();
-                    response = _client.Search(request);
+                    response = _client.Search(request, _limiter);
                     ResultCount = response.Publication.TotalItem;
                     InitialRequestSucceeded = true;
                 }
@@ -76,34 +80,49 @@ namespace ATN.Crawler.WebCrawler
             Trace.WriteLine(string.Format("Received first response, {0} papers total.", ResultCount), "Informational");
 
             AttemptCount = 0;
-            while (RetrievedItems < ResultCount)
+            while (PublicationIdsCitingCanonicalPaper.Count < ResultCount)
             {
-                try
+                
+                Trace.WriteLine(string.Format("Retrieving papers {0} through {1}", request.StartIdx, request.EndIdx), "Informational");
+                foreach (var p in response.Publication.Result)
                 {
-                    Trace.WriteLine(string.Format("Retrieving papers {0} through {1}", request.StartIdx, request.EndIdx), "Informational");
-                    RetrievedItems += response.Publication.Result.Length;
-                    foreach (var p in response.Publication.Result)
-                    {
-                        Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
-                        PublicationIdsCitingCanonicalPaper.Add(p.ID);
-                    }
-                    request.StartIdx += MaxResultSize;
-                    request.EndIdx = request.StartIdx + MaxResultSize - 1;
-
-                    _limiter.AddRequest();
-                    response = _client.Search(request);
+                    //Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
+                    PublicationIdsCitingCanonicalPaper.Add(p.ID);
                 }
-                catch (Exception e)
-                {
-                    AttemptCount++;
-                    if (AttemptCount == RetryLimit)
-                    {
-                        throw e;
-                    }
-                    Thread.Sleep(AttemptCount * RetryDelayMilliseconds);
 
-                    _limiter.AddRequest();
-                    response = _client.Search(request);
+                while (AttemptCount < RetryLimit && PublicationIdsCitingCanonicalPaper.Count < ResultCount)
+                {
+                    try
+                    {
+
+                        response = _client.Search(request, _limiter);
+
+                        if (response.Publication.Result.Length == 0)
+                        {
+                            break;
+                        }
+
+                        request.StartIdx += MaxResultSize;
+                        request.EndIdx = request.StartIdx + MaxResultSize - 1;
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        AttemptCount++;
+                        if (AttemptCount == RetryLimit)
+                        {
+                            throw e;
+                        }
+                        Thread.Sleep(AttemptCount * RetryDelayMilliseconds);
+                    }
+                }
+
+                if(response.Publication != null && response.Publication.Result != null && response.Publication.Result.Length == 0)
+                {
+                    //Not retrieving any results; there's something wrong with the request
+                    //Break so as to not continue using API requests to ask for data which
+                    //is not there
+                    break;
                 }
             }
 
@@ -134,14 +153,13 @@ namespace ATN.Crawler.WebCrawler
             request.ResultObjects = ObjectType.Publication;
             request.PublicationContent = new PublicationContentType[] { PublicationContentType.AllInfo };
 
-            _limiter.AddRequest();
             Publication RetrievedPublication = null;
             Response response = null;
             for (int i = 1; i <= RetryLimit; i++)
             {
                 try
                 {
-                    response = _client.Search(request);
+                    response = _client.Search(request, _limiter);
                     RetrievedPublication = response.Publication.Result.SingleOrDefault();
                     break;
                 }
@@ -192,6 +210,41 @@ namespace ATN.Crawler.WebCrawler
             cs.Source = CanonicalPaper;
 
             return cs;
+        }
+    }
+    
+    public static class MASReferenceExtensions
+    {
+        private const int WaitDelayMinutes = 10;
+        private const int MillisecondsPerMinute = 60000;
+        public static Response Search(this APIServiceClient client, Request request, RateLimit limiter)
+        {
+            limiter.AddRequest();
+            Response response = client.Search(request);
+            HandleResultCode(response.ResultCode);
+            return response;
+        }
+        private static void HandleResultCode(uint ResultCode)
+        {
+            switch (ResultCode)
+            {
+                case 1:
+                    //AppID not correct; cease further requests
+                    Environment.Exit(1);
+                    break;
+                case 2:
+                    //Search parameter is incorrect; this means there is a bug in the crawler code
+                    Environment.Exit(1);
+                    break;
+                case 3:
+                    //MAS is temporarily unavailable; wait 10 minutes to continue
+                    Thread.Sleep(MillisecondsPerMinute * WaitDelayMinutes);
+                    throw new Exception("MAS request failed; please try again.");
+                case 4:
+                    //Search method unsupported; this means there is a bug in the crawler code
+                    Environment.Exit(1);
+                    break;
+            }
         }
     }
 }

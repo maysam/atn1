@@ -8,6 +8,11 @@ using ATN.Crawler.WebCrawler;
 
 namespace ATN.Crawler
 {
+    //To-do: Enforce a Source not being able to cite itself... even when such citing is returned from the data source
+
+    /// <summary>
+    /// A service for initiating crawls and refreshing existing crawls
+    /// </summary>
     public class CrawlRunner
     {
         private CrawlerProgress _progress;
@@ -20,25 +25,40 @@ namespace ATN.Crawler
 
         public void RefreshExistingCrawls()
         {
+
             //This translates specific data source identifier to an ICrawler implementation capable of crawling it
             Dictionary<CrawlerDataSource, ICrawler> DataSourceToCrawler = CrawlInstantiator.RetrieveCrawlerTranslations();
 
             //Enumerate existing crawls
             Crawl[] ExistingCrawls = _progress.GetExistingCrawls();
             var CrawlSpecifiers = ExistingCrawls.Select(c => new { DataSource = (CrawlerDataSource)c.DataSourceId, CanonicalIds = c.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries), Crawl = c }).ToArray();
-            
+
+            Trace.WriteLine(string.Format("Refreshing {0} crawls", CrawlSpecifiers.Length), "Informational");
+
             foreach (var Specifier in CrawlSpecifiers)
             {
                 ICrawler Crawler = DataSourceToCrawler[Specifier.DataSource];
                 Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds(Specifier.DataSource, Specifier.CanonicalIds);
 
+                if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlStarted)
+                {
+                    Trace.WriteLine(string.Format("Removing existing queue items for Crawl {0}", Specifier.Crawl.CrawlId), "Informational");
+
+                    //This means the enumeration of citations was interrupted; remove them and start over
+                    _progress.RemoveInterruptedQueueItems(Specifier.Crawl.CrawlId);
+                    _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.Complete);
+                }
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.Complete)
                 {
+                    Trace.WriteLine(string.Format("Refreshing citations for Crawl {0}", Specifier.Crawl.CrawlId), "Informational");
+
                     _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.ScheduledCrawlStarted);
                     string[] CurrentCitations = CanonicalSource.CitingSources.Select(r => r.DataSourceSpecificId).ToArray();
 
                     foreach (string ID in Specifier.CanonicalIds)
                     {
+                        Trace.WriteLine(string.Format("Refreshing citations for ID {0}, data source {1}", ID, Specifier.DataSource), "Informational");
+
                         //Get the difference from stored citations and current citations from the data source
                         string[] UpdatedCitations = Crawler.GetCitationsBySourceId(CanonicalSource.DataSourceSpecificId);
                         string[] NewCitations = UpdatedCitations.Except(CurrentCitations).ToArray();
@@ -122,13 +142,14 @@ namespace ATN.Crawler
                 }
             }
         }
-
-        public void RunCrawls(IEnumerable<CrawlSpecifier> CrawlSpecifiers)
+        public void RunCrawls(params CrawlSpecifier[] CrawlSpecifiers)
         {
             foreach (CrawlSpecifier crawl in CrawlSpecifiers)
             {
                 ICrawler crawler = CrawlInstantiator.InstantiateCrawler(crawl.DataSource);
                 Crawl Crawl = _progress.StartCrawl(crawler.GetDataSource(), crawl.DataSourceSpecificIdentifiers);
+
+                Trace.WriteLine(string.Format("Initiating Crawls for data source {0} using {1} for data-source specific IDs {2}", crawl.DataSource, crawler.GetType().ToString(), Crawl.CanonicalIds), "Informational");
 
                 //Get the canonical source from the crawler, or retrieve it from the database
                 CompleteSource CanonicalSource = null;
@@ -168,9 +189,14 @@ namespace ATN.Crawler
                     }
                 }
 
+                Trace.WriteLine("Crawler initiation complete");
+
                 //Retrieve publication IDs of citations of the canonical paper, and add queue them for a retireval
                 if (Crawl.CrawlState == (int)CrawlerState.CanonicalPaperComplete)
                 {
+                    //Remove any existing CrawlQueue items for the given Crawl
+                    _progress.RemoveInterruptedQueueItems(Crawl.CrawlId);
+
                     Trace.WriteLine("Queueing citations", "Informational");
                     foreach (string ID in crawl.DataSourceSpecificIdentifiers)
                     {
@@ -182,6 +208,8 @@ namespace ATN.Crawler
                         Trace.WriteLine(string.Format("Queued {0} citations", PublicationIdsCitingCanonicalPaper.Length));
                     }
                     _progress.CommitQueue();
+                    _progress.UpdateCrawlerState(Crawl, CrawlerState.EnqueueingCitationsComplete);
+                    Trace.WriteLine("Queueing citations complete", "Informational");
                 }
 
                 //Get all of the publication data for each queued citation, and add references between sources
@@ -310,5 +338,10 @@ namespace ATN.Crawler
     {
         public CrawlerDataSource DataSource { get; set;}
         public string[] DataSourceSpecificIdentifiers { get; set;}
+        public CrawlSpecifier(CrawlerDataSource DataSource, params string[] DataSourceSpecificIdentifiers)
+        {
+            this.DataSource = DataSource;
+            this.DataSourceSpecificIdentifiers = DataSourceSpecificIdentifiers;
+        }
     }
 }

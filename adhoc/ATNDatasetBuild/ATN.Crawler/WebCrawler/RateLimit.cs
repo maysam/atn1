@@ -7,15 +7,19 @@ using System.Threading;
 
 namespace ATN.Crawler.WebCrawler
 {
+
+    //To-do: Make this static abstract, and allow specification of different RateLimit classes for different crawlers
+
     /// <summary>
     /// A service which will automatically sleep the calling thread if the number of requests matches or exceeds a set threshold in a static time interval
     /// </summary>
     public class RateLimit
     {
         private TimeSpan RequestInterval = new TimeSpan(0, 0, 60);
-        private const int RequestsPerInterval = 130;
-        private Stopwatch _watch;
-        private uint _requests;
+
+        private const int RequestsPerInterval = 120;
+        private static Stopwatch Watch;
+        private static uint? Requests;
 
         /// <summary>
         /// The number of requests made in the current time interval
@@ -24,7 +28,7 @@ namespace ATN.Crawler.WebCrawler
         {
             get
             {
-                return _requests;
+                return RateLimit.Requests.Value;
             }
         }
 
@@ -35,9 +39,9 @@ namespace ATN.Crawler.WebCrawler
         {
             get
             {
-                if (RequestInterval >= _watch.Elapsed)
+                if (RequestInterval >= RateLimit.Watch.Elapsed)
                 {
-                    return RequestInterval - _watch.Elapsed;
+                    return RequestInterval - RateLimit.Watch.Elapsed;
                 }
                 else
                 {
@@ -53,13 +57,19 @@ namespace ATN.Crawler.WebCrawler
         {
             get
             {
-                return _watch.Elapsed;
+                return RateLimit.Watch.Elapsed;
             }
         }
         public RateLimit()
         {
-            _watch = new Stopwatch();
-            _requests = 0;
+            if (RateLimit.Watch == null)
+            {
+                RateLimit.Watch = new Stopwatch();
+            }
+            if (!RateLimit.Requests.HasValue)
+            {
+                RateLimit.Requests = 0;
+            }
         }
 
         /// <summary>
@@ -67,11 +77,11 @@ namespace ATN.Crawler.WebCrawler
         /// </summary>
         public void AddRequest()
         {
-            if (!_watch.IsRunning)
+            if (!RateLimit.Watch.IsRunning)
             {
-                _watch.Start();
+                RateLimit.Watch.Start();
             }
-            _requests++;
+            RateLimit.Requests++;
             WaitIfLimited();
         }
         
@@ -80,19 +90,19 @@ namespace ATN.Crawler.WebCrawler
         /// </summary>
         public void WaitIfLimited()
         {
-            if (_requests >= RequestsPerInterval && _watch.Elapsed <= RequestInterval)
+            if (RateLimit.Requests >= RequestsPerInterval && RateLimit.Watch.Elapsed <= RequestInterval)
             {
-                TimeSpan WaitSpan = RequestInterval - _watch.Elapsed;
+                TimeSpan WaitSpan = RequestInterval - RateLimit.Watch.Elapsed;
                 Trace.WriteLine(string.Format("Hit rate limit wall, waiting {0} before continuing.", WaitSpan), "Informational");
                 Thread.Sleep(WaitSpan);
-                _watch.Restart();
-                _requests = 0;
+                RateLimit.Watch.Restart();
+                RateLimit.Requests = 0;
             }
-            else if (_watch.Elapsed > RequestInterval)
+            else if (RateLimit.Watch.Elapsed > RequestInterval)
             {
                 Trace.WriteLine("Restting rate limit.", "Informational");
-                _requests = 0;
-                _watch.Restart();
+                RateLimit.Requests = 0;
+                RateLimit.Watch.Restart();
             }
         }
     }

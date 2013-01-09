@@ -27,19 +27,48 @@ namespace ATN.Data
 
         }
 
+        /// <summary>
+        /// Removes CrawlQueue items for the given CrawlId. Used when a crawl is interrupted to avoid enqueueing duplicate entries.
+        /// </summary>
+        /// <param name="CrawlId">The CrawlId to remove CrawlQueue items for</param>
+        public void RemoveInterruptedQueueItems(int CrawlId)
+        {
+            Context.CrawlQueues.Where(cq => cq.CrawlId == CrawlId && cq.CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation).ToList().ForEach(delegate(CrawlQueue cq)
+            {
+                Context.CrawlQueues.DeleteObject(cq);
+            });
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Retrieve the last enumerated SourceId for the given CrawlId. Useful when a crawl is interrupted to avoid
+        /// enqueueing duplicate entries, and to start enqueueing where the previous process left off.
+        /// </summary>
+        /// <param name="CrawlId">CrawlId to retrieve the last enumerated SourceId for</param>
+        /// <returns>The most recently enumerated SourceId for a given Crawl</returns>
         public long GetLastSourceIdReferencedInCrawl(int CrawlId)
         {
             return Context.Crawls.Where(c => c.CrawlId == CrawlId && c.LastEnumeratedSourceId.HasValue).Select(c => c.LastEnumeratedSourceId.Value).SingleOrDefault();
         }
 
-        public string[] GetCitationsAndReferencesForCrawl(CrawlerDataSource DataSource, int CrawlId)
+        /// <summary>
+        /// Retrieves the list of data-source specific identifiers for a given crawl, including the ID for the canonical source, and the IDs for references and citations.
+        /// </summary>
+        /// <param name="DataSource">The data source of the target Crawl</param>
+        /// <param name="CrawlId">The CrawlId corresponding to the target Crawl</param>
+        /// <returns>A list of data-source specific identifiers added during a given crawl</returns>
+        public string[] GetResultantDataSourceSpecificIdsForCrawl(CrawlerDataSource DataSource, int CrawlId)
         {
             return Context.Crawls.SingleOrDefault(c => c.DataSourceId == (int)DataSource && c.CrawlId == CrawlId).CrawlResults.Select(cr => cr.DataSourceSpecificId).ToArray();
         }
 
+        /// <summary>
+        /// Retrieves a list of all existing Crawl items
+        /// </summary>
+        /// <returns>A list of all existing Crawl items</returns>
         public Crawl[] GetExistingCrawls()
         {
-            return Context.Crawls.OrderByDescending(c => c.CrawlState).ToArray();
+            return Context.Crawls.OrderByDescending(c => c.CrawlState).OrderByDescending(c => c.DateCrawled).ToArray();
         }
 
         /// <summary>
