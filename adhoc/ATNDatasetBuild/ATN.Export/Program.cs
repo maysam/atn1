@@ -17,55 +17,19 @@ namespace ATN.Export
             Sources s = new Sources();
             Source CanonicalSource = s.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MasIds.First());
 
-            //Setup XML Writing structures
-            FileStream DestinationStream = File.Open("Graph.xml", FileMode.Create);
+            Dictionary<long, SourceNode> Nodes = new Dictionary<long, SourceNode>(CanonicalSource.CitingSources.Count * 50);
+            List<SourceEdge> Edges = new List<SourceEdge>(CanonicalSource.CitingSources.Count * 50 * 2);
 
-            //Setup settings
-            XmlWriterSettings WriterSettings = new XmlWriterSettings();
-            WriterSettings.CheckCharacters = true;
-            WriterSettings.ConformanceLevel = ConformanceLevel.Document;
-            WriterSettings.Encoding = Encoding.UTF8;
-            WriterSettings.Indent = true;
-            WriterSettings.IndentChars = "\t";
-            WriterSettings.NamespaceHandling = NamespaceHandling.OmitDuplicates;
-
-            //Instantiate writer
-            XmlWriter XGMMLWriter = XmlTextWriter.Create(DestinationStream, WriterSettings);
-
-            //Begin writing graph
-            XGMMLWriter.WriteStartDocument();
-
-            //Write root element
-            XGMMLWriter.WriteStartElement("graph", "http://www.cs.rpi.edu/XGMML");
-                XGMMLWriter.WriteAttributeString("label", "ATN Export Test");
-                XGMMLWriter.WriteAttributeString("xmlns", "dc", null, "http://purl.org/dc/elements/1.1/");
-                XGMMLWriter.WriteAttributeString("xmlns", "xlink", null, "http://www.w3.org/1999/xlink");
-                XGMMLWriter.WriteAttributeString("xmlns", "rdf", null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-                XGMMLWriter.WriteAttributeString("xmlns", "cy", null, "http://www.cytoscape.org");
-
-            //Write cannonical node
-                    XGMMLWriter.WriteStartElement("node");
-                    XGMMLWriter.WriteAttributeString("label", CanonicalSource.ArticleTitle);
-                    XGMMLWriter.WriteAttributeString("id", CanonicalSource.SourceId.ToString());
-                        XGMMLWriter.WriteStartElement("att");
-                        XGMMLWriter.WriteAttributeString("name", "size");
-                        XGMMLWriter.WriteAttributeString("type", "integer");
-                        XGMMLWriter.WriteAttributeString("value", CanonicalSource.CitingSources.Count.ToString());
-                        XGMMLWriter.WriteEndElement();
-                    XGMMLWriter.WriteEndElement();
+            //Write canonical node
+            Nodes.Add(CanonicalSource.SourceId, new SourceNode(CanonicalSource.SourceId, CanonicalSource.ArticleTitle, CanonicalSource.CitingSources.Count));
 
             //Write citation nodes
             foreach (var Source in CanonicalSource.CitingSources)
             {
-                XGMMLWriter.WriteStartElement("node");
-                XGMMLWriter.WriteAttributeString("label", Source.ArticleTitle);
-                XGMMLWriter.WriteAttributeString("id", Source.SourceId.ToString());
-                    XGMMLWriter.WriteStartElement("att");
-                    XGMMLWriter.WriteAttributeString("name", "size");
-                    XGMMLWriter.WriteAttributeString("type", "integer");
-                    XGMMLWriter.WriteAttributeString("value", Source.CitingSources.Count.ToString());
-                    XGMMLWriter.WriteEndElement();
-                XGMMLWriter.WriteEndElement();
+                if (!Nodes.ContainsKey(Source.SourceId))
+                {
+                    Nodes.Add(Source.SourceId, new SourceNode(Source.SourceId, Source.ArticleTitle, Source.CitingSources.Count));
+                }
             }
 
             //Write reference nodes
@@ -76,26 +40,20 @@ namespace ATN.Export
                 var References = Citations[i].References.ToArray();
                 for (int j = 0; j < References.Length; j++)
                 {
-                    XGMMLWriter.WriteStartElement("node");
-                    XGMMLWriter.WriteAttributeString("label", References[j].ArticleTitle);
-                    XGMMLWriter.WriteAttributeString("id", References[j].SourceId.ToString());
-                        XGMMLWriter.WriteStartElement("att");
-                        XGMMLWriter.WriteAttributeString("name", "size");
-                        XGMMLWriter.WriteAttributeString("type", "integer");
-                        XGMMLWriter.WriteAttributeString("value", References[j].CitingSources.Count.ToString());
-                        XGMMLWriter.WriteEndElement();
-                    XGMMLWriter.WriteEndElement();
+                    if (!Nodes.ContainsKey(References[j].SourceId))
+                    {
+                        Nodes.Add(References[j].SourceId, new SourceNode(References[j].SourceId, References[j].ArticleTitle, References[j].CitingSources.Count));
+                    }
                 }
             }
 
             //Write citation edges
             foreach (var Citation in CanonicalSource.CitingSources)
             {
-                XGMMLWriter.WriteStartElement("edge");
-                    XGMMLWriter.WriteAttributeString("label", Citation.SourceId.ToString() + "-" + CanonicalSource.SourceId.ToString());
-                    XGMMLWriter.WriteAttributeString("source", Citation.SourceId.ToString());
-                    XGMMLWriter.WriteAttributeString("target", CanonicalSource.SourceId.ToString());
-                XGMMLWriter.WriteEndElement();
+                if (Citation.SourceId != CanonicalSource.SourceId)
+                {
+                    Edges.Add(new SourceEdge(Citation.SourceId, CanonicalSource.SourceId));
+                }
             }
 
             //Write reference nodes
@@ -103,22 +61,24 @@ namespace ATN.Export
             {
                 foreach (var Reference in Citation.References)
                 {
-                    XGMMLWriter.WriteStartElement("edge");
-                        XGMMLWriter.WriteAttributeString("label", Citation.SourceId.ToString() + "-" + Reference.SourceId.ToString());
-                        XGMMLWriter.WriteAttributeString("source", Citation.SourceId.ToString());
-                        XGMMLWriter.WriteAttributeString("target", Reference.SourceId.ToString());
-                    XGMMLWriter.WriteEndElement();
+                    if (Citation.SourceId != Reference.SourceId)
+                    {
+                        Edges.Add(new SourceEdge(Citation.SourceId, Reference.SourceId));
+                    }
                 }
             }
 
-            //Write root element end
-            XGMMLWriter.WriteEndElement();
-            XGMMLWriter.WriteEndDocument();
+            string ExportedXML = XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray());
+            FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
+            StreamWriter DestinationXMLWriter = new StreamWriter(DestinationXMLStream);
+            DestinationXMLWriter.Write(ExportedXML);
+            DestinationXMLWriter.Close();
 
-            //Cleanup
-            XGMMLWriter.Flush();
-            XGMMLWriter.Close();
-            DestinationStream.Close();
+            string ExportedNetwork = PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray());
+            FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
+            StreamWriter DestinationNetWriter = new StreamWriter(DestinationNetStream);
+            DestinationNetWriter.Write(ExportedNetwork);
+            DestinationNetWriter.Close();
         }
     }
 }

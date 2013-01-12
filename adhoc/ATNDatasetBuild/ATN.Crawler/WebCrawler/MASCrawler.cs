@@ -229,7 +229,7 @@ namespace ATN.Crawler.WebCrawler
             switch (ResultCode)
             {
                 case 1:
-                    //AppID not correct; cease further requests
+                    //AppID not authorized. MAS throws this when it is under heavly load, so cease further requests
                     Environment.Exit(1);
                     break;
                 case 2:

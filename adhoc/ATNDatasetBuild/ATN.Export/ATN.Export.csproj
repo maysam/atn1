@@ -44,8 +44,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IExporter.cs" />
+    <Compile Include="PajekDotNetExporter.cs" />
+    <Compile Include="SourceEdge.cs" />
+    <Compile Include="SourceNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XGMMLExporter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ATN.Data\ATN.Data.csproj">
