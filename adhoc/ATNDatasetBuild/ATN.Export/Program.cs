@@ -68,17 +68,13 @@ namespace ATN.Export
                 }
             }
 
-            string ExportedXML = XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray());
             FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
-            StreamWriter DestinationXMLWriter = new StreamWriter(DestinationXMLStream);
-            DestinationXMLWriter.Write(ExportedXML);
-            DestinationXMLWriter.Close();
+            XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationXMLStream);
+            DestinationXMLStream.Close();
 
-            string ExportedNetwork = PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray());
             FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
-            StreamWriter DestinationNetWriter = new StreamWriter(DestinationNetStream);
-            DestinationNetWriter.Write(ExportedNetwork);
-            DestinationNetWriter.Close();
+            PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationNetStream);
+            DestinationNetStream.Close();
         }
     }
 }

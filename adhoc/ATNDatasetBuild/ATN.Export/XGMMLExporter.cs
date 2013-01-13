@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace ATN.Export
 {
     public static class XGMMLExporter
     {
-        public static string Export(SourceNode[] Nodes, SourceEdge[] Edges)
+        public static void Export(SourceNode[] Nodes, SourceEdge[] Edges, Stream DestinationStream)
         {
             //Setup settings
             XmlWriterSettings WriterSettings = new XmlWriterSettings();
@@ -20,8 +21,7 @@ namespace ATN.Export
             WriterSettings.NamespaceHandling = NamespaceHandling.OmitDuplicates;
 
             //Instantiate writer
-            StringBuilder StringDestination = new StringBuilder();
-            XmlWriter XGMMLWriter = XmlTextWriter.Create(StringDestination, WriterSettings);
+            XmlWriter XGMMLWriter = XmlTextWriter.Create(DestinationStream, WriterSettings);
 
             //Begin writing graph
             XGMMLWriter.WriteStartDocument();
@@ -65,8 +65,6 @@ namespace ATN.Export
             //Cleanup
             XGMMLWriter.Flush();
             XGMMLWriter.Close();
-
-            return StringDestination.ToString();
         }
     }
 }
