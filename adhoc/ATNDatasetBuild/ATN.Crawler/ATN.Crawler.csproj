@@ -68,6 +68,7 @@
   <ItemGroup>
     <None Include="app.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="Service References\MAS\API.wsdl" />
     <None Include="Service References\MAS\API.xsd">

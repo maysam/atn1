@@ -24,7 +24,7 @@ namespace ATN.Data
         /// <summary>
         /// The persistence-model object used to communicate with database model
         /// </summary>
-        public ATNEntities Context
+        protected ATNEntities Context
         {
             get
             {

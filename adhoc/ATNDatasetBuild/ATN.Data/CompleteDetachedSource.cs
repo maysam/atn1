@@ -10,6 +10,9 @@ namespace ATN.Data
     /// </summary>
     public class CompleteSource
     {
+        /// <summary>
+        /// Indicates whether this instance is actively attached to the persistence model
+        /// </summary>
         public bool IsDetached { get; set; }
         public Source Source {get; set;}
         public Author[] Authors {get; set;}
