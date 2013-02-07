@@ -4,9 +4,9 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNet.Membership.OpenAuth;
 
-namespace WebUI
+namespace ATN.Web
 {
-    public static class AuthConfig
+    internal static class AuthConfig
     {
         public static void RegisterOpenAuth()
         {

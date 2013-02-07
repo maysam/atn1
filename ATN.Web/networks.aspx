@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Networks" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="networks.aspx.cs" Inherits="networks" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="networks.aspx.cs" Inherits="ATN.Web.networks" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     

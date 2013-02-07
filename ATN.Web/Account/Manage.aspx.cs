@@ -4,89 +4,92 @@ using System.Linq;
 
 using Microsoft.AspNet.Membership.OpenAuth;
 
-public partial class Account_Manage : System.Web.UI.Page
+namespace ATN.Web.Account
 {
-    protected string SuccessMessage
+    public partial class Manage : System.Web.UI.Page
     {
-        get;
-        private set;
-    }
-
-    protected bool CanRemoveExternalLogins
-    {
-        get;
-        private set;
-    }
-
-    protected void Page_Load()
-    {
-        if (!IsPostBack)
+        protected string SuccessMessage
         {
-            // Determine the sections to render
-            var hasLocalPassword = OpenAuth.HasLocalPassword(User.Identity.Name);
-            setPassword.Visible = !hasLocalPassword;
-            changePassword.Visible = hasLocalPassword;
+            get;
+            private set;
+        }
 
-            CanRemoveExternalLogins = hasLocalPassword;
+        protected bool CanRemoveExternalLogins
+        {
+            get;
+            private set;
+        }
 
-            // Render success message
-            var message = Request.QueryString["m"];
-            if (message != null)
+        protected void Page_Load()
+        {
+            if (!IsPostBack)
             {
-                // Strip the query string from action
-                Form.Action = ResolveUrl("~/Account/Manage.aspx");
+                // Determine the sections to render
+                var hasLocalPassword = OpenAuth.HasLocalPassword(User.Identity.Name);
+                setPassword.Visible = !hasLocalPassword;
+                changePassword.Visible = hasLocalPassword;
 
-                SuccessMessage =
-                    message == "ChangePwdSuccess" ? "Your password has been changed."
-                    : message == "SetPwdSuccess" ? "Your password has been set."
-                    : message == "RemoveLoginSuccess" ? "The external login was removed."
-                    : String.Empty;
-                successMessage.Visible = !String.IsNullOrEmpty(SuccessMessage);
+                CanRemoveExternalLogins = hasLocalPassword;
+
+                // Render success message
+                var message = Request.QueryString["m"];
+                if (message != null)
+                {
+                    // Strip the query string from action
+                    Form.Action = ResolveUrl("~/Account/Manage.aspx");
+
+                    SuccessMessage =
+                        message == "ChangePwdSuccess" ? "Your password has been changed."
+                        : message == "SetPwdSuccess" ? "Your password has been set."
+                        : message == "RemoveLoginSuccess" ? "The external login was removed."
+                        : String.Empty;
+                    successMessage.Visible = !String.IsNullOrEmpty(SuccessMessage);
+                }
+            }
+
+        }
+
+        protected void setPassword_Click(object sender, EventArgs e)
+        {
+            if (IsValid)
+            {
+                var result = OpenAuth.AddLocalPassword(User.Identity.Name, password.Text);
+                if (result.IsSuccessful)
+                {
+                    Response.Redirect("~/Account/Manage.aspx?m=SetPwdSuccess");
+                }
+                else
+                {
+
+                    ModelState.AddModelError("NewPassword", result.ErrorMessage);
+
+                }
             }
         }
-        
-    }
 
-    protected void setPassword_Click(object sender, EventArgs e)
-    {
-        if (IsValid)
+
+        public IEnumerable<OpenAuthAccountData> GetExternalLogins()
         {
-            var result = OpenAuth.AddLocalPassword(User.Identity.Name, password.Text);
-            if (result.IsSuccessful)
-            {
-                Response.Redirect("~/Account/Manage.aspx?m=SetPwdSuccess");
-            }
-            else
-            {
-                
-                ModelState.AddModelError("NewPassword", result.ErrorMessage);
-                
-            }
+            var accounts = OpenAuth.GetAccountsForUser(User.Identity.Name);
+            CanRemoveExternalLogins = CanRemoveExternalLogins || accounts.Count() > 1;
+            return accounts;
         }
-    }
 
-    
-    public IEnumerable<OpenAuthAccountData> GetExternalLogins()
-    {
-        var accounts = OpenAuth.GetAccountsForUser(User.Identity.Name);
-        CanRemoveExternalLogins = CanRemoveExternalLogins || accounts.Count() > 1;
-        return accounts;
-    }
+        public void RemoveExternalLogin(string providerName, string providerUserId)
+        {
+            var m = OpenAuth.DeleteAccount(User.Identity.Name, providerName, providerUserId)
+                ? "?m=RemoveLoginSuccess"
+                : String.Empty;
+            Response.Redirect("~/Account/Manage.aspx" + m);
+        }
 
-    public void RemoveExternalLogin(string providerName, string providerUserId)
-    {
-        var m = OpenAuth.DeleteAccount(User.Identity.Name, providerName, providerUserId)
-            ? "?m=RemoveLoginSuccess"
-            : String.Empty;
-        Response.Redirect("~/Account/Manage.aspx" + m);
-    }
-    
 
-    protected static string ConvertToDisplayDateTime(DateTime? utcDateTime)
-    {
-        // You can change this method to convert the UTC date time into the desired display
-        // offset and format. Here we're converting it to the server timezone and formatting
-        // as a short date and a long time string, using the current thread culture.
-        return utcDateTime.HasValue ? utcDateTime.Value.ToLocalTime().ToString("G") : "[never]";
+        protected static string ConvertToDisplayDateTime(DateTime? utcDateTime)
+        {
+            // You can change this method to convert the UTC date time into the desired display
+            // offset and format. Here we're converting it to the server timezone and formatting
+            // as a short date and a long time string, using the current thread culture.
+            return utcDateTime.HasValue ? utcDateTime.Value.ToLocalTime().ToString("G") : "[never]";
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="RegisterExternalLogin.aspx.cs" Inherits="Account_RegisterExternalLogin" %>
+﻿<%@ Page Language="C#" Title="Register an external login" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="RegisterExternalLogin.aspx.cs" Inherits="ATN.Web.Account.RegisterExternalLogin" %>
 <asp:Content ContentPlaceHolderID="MainContent" runat="server">
     <hgroup class="title">
         <h1>Register with your <%: ProviderDisplayName %> account</h1>

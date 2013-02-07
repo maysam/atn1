@@ -5,17 +5,20 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class Account_Login : Page
+namespace ATN.Web.Account
 {
-    protected void Page_Load(object sender, EventArgs e)
+    public partial class Login : Page
     {
-        RegisterHyperLink.NavigateUrl = "Register.aspx";
-        OpenAuthLogin.ReturnUrl = Request.QueryString["ReturnUrl"];
-
-        var returnUrl = HttpUtility.UrlEncode(Request.QueryString["ReturnUrl"]);
-        if (!String.IsNullOrEmpty(returnUrl))
+        protected void Page_Load(object sender, EventArgs e)
         {
-            RegisterHyperLink.NavigateUrl += "?ReturnUrl=" + returnUrl;
+            RegisterHyperLink.NavigateUrl = "Register.aspx";
+            OpenAuthLogin.ReturnUrl = Request.QueryString["ReturnUrl"];
+
+            var returnUrl = HttpUtility.UrlEncode(Request.QueryString["ReturnUrl"]);
+            if (!String.IsNullOrEmpty(returnUrl))
+            {
+                RegisterHyperLink.NavigateUrl += "?ReturnUrl=" + returnUrl;
+            }
         }
     }
 }

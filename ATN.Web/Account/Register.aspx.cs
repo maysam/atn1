@@ -7,22 +7,25 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Microsoft.AspNet.Membership.OpenAuth;
 
-public partial class Account_Register : Page
+namespace ATN.Web.Account
 {
-    protected void Page_Load(object sender, EventArgs e)
+    public partial class Register : Page
     {
-        RegisterUser.ContinueDestinationPageUrl = Request.QueryString["ReturnUrl"];
-    }
-
-    protected void RegisterUser_CreatedUser(object sender, EventArgs e)
-    {
-        FormsAuthentication.SetAuthCookie(RegisterUser.UserName, createPersistentCookie: false);
-
-        string continueUrl = RegisterUser.ContinueDestinationPageUrl;
-        if (!OpenAuth.IsLocalUrl(continueUrl))
+        protected void Page_Load(object sender, EventArgs e)
         {
-            continueUrl = "~/";
+            RegisterUser.ContinueDestinationPageUrl = Request.QueryString["ReturnUrl"];
         }
-        Response.Redirect(continueUrl);
+
+        protected void RegisterUser_CreatedUser(object sender, EventArgs e)
+        {
+            FormsAuthentication.SetAuthCookie(RegisterUser.UserName, createPersistentCookie: false);
+
+            string continueUrl = RegisterUser.ContinueDestinationPageUrl;
+            if (!OpenAuth.IsLocalUrl(continueUrl))
+            {
+                continueUrl = "~/";
+            }
+            Response.Redirect(continueUrl);
+        }
     }
 }
