@@ -1,10 +1,5 @@
-﻿<%@ Page Title="Launcher" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="launcher.aspx.cs" Inherits="launcher" %>
-
+﻿<%@ Page Title="Launcher" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="launcher.aspx.cs" Inherits="ATN.Web.launcher" %>
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
-
-
-
-    <p>
         <h3><asp:Label ID="lblNetworkName" runat="server" Text="Network Name"></asp:Label></h3>
         <asp:TextBox ID="txtNetworkName" runat="server"></asp:TextBox>
         <br />
@@ -53,9 +48,4 @@
         <br />
         <asp:Button ID="btnSubmit" runat="server"  OnCommand="btnSubmit_LaunchCrawler" Text="Start Crawler" />
         <br />
-    </p>
-
-
-
 </asp:Content>
-

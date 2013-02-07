@@ -5,10 +5,13 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-public partial class About : Page
+namespace ATN.Web
 {
-    protected void Page_Load(object sender, EventArgs e)
+    public partial class About : Page
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
 
+        }
     }
 }
