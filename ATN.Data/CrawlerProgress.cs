@@ -77,9 +77,11 @@ namespace ATN.Data
         /// <param name="DataSource">The data-source to retrieve the canonical ids for</param>
         /// <param name="CrawlId">The CrawlId to retrieve the canonical ids for</param>
         /// <returns>All canonical IDs associated with the given DataSource and CrawlId</returns>
-        public string[] GetCanonicalIdsForCrawl(CrawlerDataSource DataSource, int CrawlId)
+        public ExistingCrawlSpecifier GetExistingCrawlSpecifierForCrawl(int CrawlId)
         {
-            return Context.Crawls.Where(c => c.CrawlId == CrawlId && c.DataSourceId == (int)DataSource).SingleOrDefault().CanonicalIds.Split(',').ToArray();
+            Crawl Crawl = Context.Crawls.Single(c => c.CrawlId == CrawlId);
+            TheoryDefinition[] Definition = Context.TheoryDefinitions.Where(td => td.TheoryId == Crawl.TheoryId).ToArray();
+            return new ExistingCrawlSpecifier(Crawl, Crawl.TheoryId, (CrawlerDataSource)Crawl.DataSourceId, Definition);
         }
 
         /// <summary>
@@ -88,18 +90,19 @@ namespace ATN.Data
         /// <param name="DataSource">The data source for which this crawl is being performed on</param>
         /// <param name="CanonicalIds">The data-source specific id or ids for the canonical papers being crawled</param>
         /// <returns>A persistence-model attached copy of the newly-initiated or previously-initiated crawl</returns>
-        public Crawl StartCrawl(CrawlerDataSource DataSource, string[] CanonicalIds)
+        public Crawl StartCrawl(CrawlSpecifier CrawlSpecifier)
         {
-            string ConcatedCanonicalIds = string.Join(",", CanonicalIds);
+            Theory Theory = Context.Theories.SingleOrDefault(t => t.TheoryId == CrawlSpecifier.TheoryId);
+            Crawl PotentiallyExistingCrawl = Theory.Crawl.SingleOrDefault();
 
-            Crawl PotentiallyExistingCrawl = Context.Crawls.Where(c => c.CanonicalIds == ConcatedCanonicalIds && c.DataSourceId == (int)DataSource).SingleOrDefault();
             if (PotentiallyExistingCrawl == null)
             {
-                PotentiallyExistingCrawl = new Crawl();
-                PotentiallyExistingCrawl.CanonicalIds = ConcatedCanonicalIds;
-                PotentiallyExistingCrawl.DataSourceId = (int)DataSource;
-                PotentiallyExistingCrawl.CrawlState = (int)CrawlerState.Started;
 
+                PotentiallyExistingCrawl = new Crawl();
+                PotentiallyExistingCrawl.TheoryId = CrawlSpecifier.TheoryId;
+                PotentiallyExistingCrawl.DataSourceId = (int)CrawlSpecifier.DataSource;
+                PotentiallyExistingCrawl.CrawlState = (int)CrawlerState.Started;
+                PotentiallyExistingCrawl.DateCrawled = DateTime.Now;
                 Context.Crawls.AddObject(PotentiallyExistingCrawl);
                 Context.SaveChanges();
             }

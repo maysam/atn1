@@ -16,7 +16,15 @@
           <EntitySet Name="Editor" EntityType="ATNModel.Store.Editor" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="EditorsReference" EntityType="ATNModel.Store.EditorsReference" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Journal" EntityType="ATNModel.Store.Journal" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="RelatedSources" EntityType="ATNModel.Store.RelatedSources" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Run" EntityType="ATNModel.Store.Run" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Source" EntityType="ATNModel.Store.Source" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SourceSubject" EntityType="ATNModel.Store.SourceSubject" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Subject" EntityType="ATNModel.Store.Subject" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Theory" EntityType="ATNModel.Store.Theory" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TheoryDefinition" EntityType="ATNModel.Store.TheoryDefinition" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TheoryMembership" EntityType="ATNModel.Store.TheoryMembership" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TheoryMembershipSignificance" EntityType="ATNModel.Store.TheoryMembershipSignificance" store:Type="Tables" Schema="dbo" />
           <AssociationSet Name="Author_AuthorsReference_FK1" Association="ATNModel.Store.Author_AuthorsReference_FK1">
             <End Role="Author" EntitySet="Author" />
             <End Role="AuthorsReference" EntitySet="AuthorsReference" />
@@ -49,6 +57,18 @@
             <End Role="Editor" EntitySet="Editor" />
             <End Role="EditorsReference" EntitySet="EditorsReference" />
           </AssociationSet>
+          <AssociationSet Name="FK_Crawl_Theory" Association="ATNModel.Store.FK_Crawl_Theory">
+            <End Role="Theory" EntitySet="Theory" />
+            <End Role="Crawl" EntitySet="Crawl" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TheoryDefinition_Theory" Association="ATNModel.Store.FK_TheoryDefinition_Theory">
+            <End Role="Theory" EntitySet="Theory" />
+            <End Role="TheoryDefinition" EntitySet="TheoryDefinition" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TheoryMembership_Run" Association="ATNModel.Store.FK_TheoryMembership_Run">
+            <End Role="Run" EntitySet="Run" />
+            <End Role="TheoryMembership" EntitySet="TheoryMembership" />
+          </AssociationSet>
           <AssociationSet Name="JournalName_Source_FK1" Association="ATNModel.Store.JournalName_Source_FK1">
             <End Role="Journal" EntitySet="Journal" />
             <End Role="Source" EntitySet="Source" />
@@ -76,6 +96,34 @@
           <AssociationSet Name="Source_EditorsReference_FK1" Association="ATNModel.Store.Source_EditorsReference_FK1">
             <End Role="Source" EntitySet="Source" />
             <End Role="EditorsReference" EntitySet="EditorsReference" />
+          </AssociationSet>
+          <AssociationSet Name="Source_RelatedSources_FK1" Association="ATNModel.Store.Source_RelatedSources_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="RelatedSources" EntitySet="RelatedSources" />
+          </AssociationSet>
+          <AssociationSet Name="Source_RelatedSources_FK2" Association="ATNModel.Store.Source_RelatedSources_FK2">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="RelatedSources" EntitySet="RelatedSources" />
+          </AssociationSet>
+          <AssociationSet Name="Source_SourceSubject_FK1" Association="ATNModel.Store.Source_SourceSubject_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="SourceSubject" EntitySet="SourceSubject" />
+          </AssociationSet>
+          <AssociationSet Name="Source_TheoryMembership_FK1" Association="ATNModel.Store.Source_TheoryMembership_FK1">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="TheoryMembership" EntitySet="TheoryMembership" />
+          </AssociationSet>
+          <AssociationSet Name="Subject_SourceSubject_FK1" Association="ATNModel.Store.Subject_SourceSubject_FK1">
+            <End Role="Subject" EntitySet="Subject" />
+            <End Role="SourceSubject" EntitySet="SourceSubject" />
+          </AssociationSet>
+          <AssociationSet Name="Theory_Run_FK1" Association="ATNModel.Store.Theory_Run_FK1">
+            <End Role="Theory" EntitySet="Theory" />
+            <End Role="Run" EntitySet="Run" />
+          </AssociationSet>
+          <AssociationSet Name="Theory_TheoryMembership_FK1" Association="ATNModel.Store.Theory_TheoryMembership_FK1">
+            <End Role="Theory" EntitySet="Theory" />
+            <End Role="TheoryMembership" EntitySet="TheoryMembership" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Author">
@@ -111,8 +159,8 @@
             <PropertyRef Name="CrawlId" />
           </Key>
           <Property Name="CrawlId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TheoryId" Type="int" Nullable="false" />
           <Property Name="DataSourceId" Type="int" Nullable="false" />
-          <Property Name="CanonicalIds" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CrawlState" Type="smallint" Nullable="false" />
           <Property Name="DateCrawled" Type="datetime" Nullable="false" />
           <Property Name="LastEnumeratedSourceId" Type="bigint" />
@@ -171,6 +219,22 @@
           <Property Name="JournalName" Type="varchar" Nullable="false" MaxLength="256" />
           <Property Name="ExternalURL" Type="varchar" MaxLength="500" />
         </EntityType>
+        <EntityType Name="RelatedSources">
+          <Key>
+            <PropertyRef Name="PrimarySourceId" />
+            <PropertyRef Name="DestinationSourceId" />
+          </Key>
+          <Property Name="PrimarySourceId" Type="bigint" Nullable="false" />
+          <Property Name="DestinationSourceId" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Run">
+          <Key>
+            <PropertyRef Name="RunId" />
+          </Key>
+          <Property Name="RunId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="DateStarted" Type="datetime" Nullable="false" />
+          <Property Name="TheoryId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Source">
           <Key>
             <PropertyRef Name="SourceId" />
@@ -196,6 +260,62 @@
           <Property Name="Abstract" Type="text" />
           <Property Name="JournalId" Type="int" />
           <Property Name="SerializedDataSourceResponse" Type="xml" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SourceSubject">
+          <Key>
+            <PropertyRef Name="SourceId" />
+            <PropertyRef Name="SubjectId" />
+          </Key>
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Subject">
+          <Key>
+            <PropertyRef Name="SubjectId" />
+          </Key>
+          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="SubjectCategory" Type="text" />
+        </EntityType>
+        <EntityType Name="Theory">
+          <Key>
+            <PropertyRef Name="TheoryId" />
+          </Key>
+          <Property Name="TheoryId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TheoryName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateAdded" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TheoryDefinition">
+          <Key>
+            <PropertyRef Name="TheoryDefinitionId" />
+          </Key>
+          <Property Name="TheoryDefinitionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TheoryId" Type="int" Nullable="false" />
+          <Property Name="CanonicalIds" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TheoryMembership">
+          <Key>
+            <PropertyRef Name="TheoryMembershipId" />
+          </Key>
+          <Property Name="TheoryMembershipId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TheoryId" Type="int" Nullable="false" />
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+          <Property Name="RunId" Type="int" Nullable="false" />
+          <Property Name="SourceSignifiance" Type="float" />
+          <Property Name="EigenFactorValue" Type="float" />
+          <Property Name="AttributionScore" Type="float" />
+          <Property Name="AttentionRatio" Type="float" />
+          <Property Name="TheoryNamePresent" Type="bit" />
+          <Property Name="PredictionProbability" Type="float" />
+          <Property Name="IsContributingPrediction" Type="bit" />
+        </EntityType>
+        <EntityType Name="TheoryMembershipSignificance">
+          <Key>
+            <PropertyRef Name="TheoryMembershipSignificanceId" />
+          </Key>
+          <Property Name="TheoryMembershipSignificanceId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TheoryId" Type="int" Nullable="false" />
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+          <Property Name="RAMarkedContributing" Type="bit" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Role="Author" Type="ATNModel.Store.Author" Multiplicity="1" />
@@ -293,6 +413,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Crawl_Theory">
+          <End Role="Theory" Type="ATNModel.Store.Theory" Multiplicity="1" />
+          <End Role="Crawl" Type="ATNModel.Store.Crawl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="Crawl">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TheoryDefinition_Theory">
+          <End Role="Theory" Type="ATNModel.Store.Theory" Multiplicity="1" />
+          <End Role="TheoryDefinition" Type="ATNModel.Store.TheoryDefinition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="TheoryDefinition">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TheoryMembership_Run">
+          <End Role="Run" Type="ATNModel.Store.Run" Multiplicity="1" />
+          <End Role="TheoryMembership" Type="ATNModel.Store.TheoryMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Run">
+              <PropertyRef Name="RunId" />
+            </Principal>
+            <Dependent Role="TheoryMembership">
+              <PropertyRef Name="RunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="JournalName_Source_FK1">
           <End Role="Journal" Type="ATNModel.Store.Journal" Multiplicity="0..1" />
           <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="*" />
@@ -377,6 +533,90 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="Source_RelatedSources_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="RelatedSources" Type="ATNModel.Store.RelatedSources" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="RelatedSources">
+              <PropertyRef Name="PrimarySourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_RelatedSources_FK2">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="RelatedSources" Type="ATNModel.Store.RelatedSources" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="RelatedSources">
+              <PropertyRef Name="DestinationSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_SourceSubject_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="SourceSubject">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_TheoryMembership_FK1">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="TheoryMembership" Type="ATNModel.Store.TheoryMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="TheoryMembership">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Subject_SourceSubject_FK1">
+          <End Role="Subject" Type="ATNModel.Store.Subject" Multiplicity="1" />
+          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subject">
+              <PropertyRef Name="SubjectId" />
+            </Principal>
+            <Dependent Role="SourceSubject">
+              <PropertyRef Name="SubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Theory_Run_FK1">
+          <End Role="Theory" Type="ATNModel.Store.Theory" Multiplicity="1" />
+          <End Role="Run" Type="ATNModel.Store.Run" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="Run">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Theory_TheoryMembership_FK1">
+          <End Role="Theory" Type="ATNModel.Store.Theory" Multiplicity="1" />
+          <End Role="TheoryMembership" Type="ATNModel.Store.TheoryMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="TheoryMembership">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -448,6 +688,44 @@
             <End Role="Journal" EntitySet="Journals" />
             <End Role="Source" EntitySet="Sources" />
           </AssociationSet>
+          <EntitySet Name="Runs" EntityType="ATNModel.Run" />
+          <EntitySet Name="Subjects" EntityType="ATNModel.Subject" />
+          <EntitySet Name="Theories" EntityType="ATNModel.Theory" />
+          <EntitySet Name="TheoryMemberships" EntityType="ATNModel.TheoryMembership" />
+          <EntitySet Name="TheoryMembershipSignificances" EntityType="ATNModel.TheoryMembershipSignificance" />
+          <AssociationSet Name="FK_Crawl_Theory" Association="ATNModel.FK_Crawl_Theory">
+            <End Role="Theory" EntitySet="Theories" />
+            <End Role="Crawl" EntitySet="Crawls" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TheoryMembership_Run" Association="ATNModel.FK_TheoryMembership_Run">
+            <End Role="Run" EntitySet="Runs" />
+            <End Role="TheoryMembership" EntitySet="TheoryMemberships" />
+          </AssociationSet>
+          <AssociationSet Name="Theory_Run_FK1" Association="ATNModel.Theory_Run_FK1">
+            <End Role="Theory" EntitySet="Theories" />
+            <End Role="Run" EntitySet="Runs" />
+          </AssociationSet>
+          <AssociationSet Name="Source_TheoryMembership_FK1" Association="ATNModel.Source_TheoryMembership_FK1">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="TheoryMembership" EntitySet="TheoryMemberships" />
+          </AssociationSet>
+          <AssociationSet Name="Theory_TheoryMembership_FK1" Association="ATNModel.Theory_TheoryMembership_FK1">
+            <End Role="Theory" EntitySet="Theories" />
+            <End Role="TheoryMembership" EntitySet="TheoryMemberships" />
+          </AssociationSet>
+          <AssociationSet Name="RelatedSources" Association="ATNModel.RelatedSources">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="Source1" EntitySet="Sources" />
+          </AssociationSet>
+          <AssociationSet Name="SourceSubject" Association="ATNModel.SourceSubject">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="Subject" EntitySet="Subjects" />
+          </AssociationSet>
+          <EntitySet Name="TheoryDefinitions" EntityType="ATNModel.TheoryDefinition" />
+          <AssociationSet Name="FK_TheoryDefinition_Theory" Association="ATNModel.FK_TheoryDefinition_Theory">
+            <End Role="Theory" EntitySet="Theories" />
+            <End Role="TheoryDefinition" EntitySet="TheoryDefinitions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Author">
           <Key>
@@ -479,13 +757,14 @@
           </Key>
           <Property Type="Int32" Name="CrawlId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="DataSourceId" Nullable="false" />
-          <Property Type="String" Name="CanonicalIds" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="Int16" Name="CrawlState" Nullable="false" />
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="Crawl" ToRole="CrawlQueue" />
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="Crawl" ToRole="CrawlResult" />
           <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="Crawl" ToRole="DataSource" />
-          <Property Type="DateTime" Name="DateCrawled" Nullable="false" />
+          <Property Type="DateTime" Name="DateCrawled" Nullable="false" Precision="3" />
           <Property Type="Int64" Name="LastEnumeratedSourceId" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" />
+          <NavigationProperty Name="Theory" Relationship="ATNModel.FK_Crawl_Theory" FromRole="Crawl" ToRole="Theory" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -507,7 +786,7 @@
           <Property Type="Int32" Name="CrawlId" Nullable="false" />
           <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
-          <Property Type="DateTime" Name="DateRetreieved" Nullable="false" />
+          <Property Type="DateTime" Name="DateRetreieved" Nullable="false" Precision="3" />
           <Property Type="Boolean" Name="ReferenceRetrieved" Nullable="false" />
           <NavigationProperty Name="Crawl" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Crawl" />
           <NavigationProperty Name="Source" Relationship="ATNModel.Source_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Source" />
@@ -578,6 +857,10 @@
           <NavigationProperty Name="CitingSources" Relationship="ATNModel.CitationsReference" FromRole="Citation" ToRole="Reference" />
           <NavigationProperty Name="Journal" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Source" ToRole="Journal" />
           <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.Source_TheoryMembership_FK1" FromRole="Source" ToRole="TheoryMembership" />
+          <NavigationProperty Name="Source11" Relationship="ATNModel.RelatedSources" FromRole="Source" ToRole="Source1" />
+          <NavigationProperty Name="Sources1" Relationship="ATNModel.RelatedSources" FromRole="Source1" ToRole="Source" />
+          <NavigationProperty Name="Subjects" Relationship="ATNModel.SourceSubject" FromRole="Source" ToRole="Subject" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Type="ATNModel.Author" Role="Author" Multiplicity="1" />
@@ -748,6 +1031,153 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Run">
+          <Key>
+            <PropertyRef Name="RunId" />
+          </Key>
+          <Property Type="Int32" Name="RunId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="DateStarted" Nullable="false" Precision="3" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" />
+          <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.FK_TheoryMembership_Run" FromRole="Run" ToRole="TheoryMembership" />
+          <NavigationProperty Name="Theory" Relationship="ATNModel.Theory_Run_FK1" FromRole="Run" ToRole="Theory" />
+        </EntityType>
+        <EntityType Name="Subject">
+          <Key>
+            <PropertyRef Name="SubjectId" />
+          </Key>
+          <Property Type="Int32" Name="SubjectId" Nullable="false" />
+          <Property Type="String" Name="SubjectCategory" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Sources" Relationship="ATNModel.SourceSubject" FromRole="Subject" ToRole="Source" />
+        </EntityType>
+        <EntityType Name="Theory">
+          <Key>
+            <PropertyRef Name="TheoryId" />
+          </Key>
+          <Property Type="Int32" Name="TheoryId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="TheoryName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="DateAdded" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Crawl" Relationship="ATNModel.FK_Crawl_Theory" FromRole="Theory" ToRole="Crawl" />
+          <NavigationProperty Name="Runs" Relationship="ATNModel.Theory_Run_FK1" FromRole="Theory" ToRole="Run" />
+          <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="Theory" ToRole="TheoryMembership" />
+          <NavigationProperty Name="TheoryDefinitions" Relationship="ATNModel.FK_TheoryDefinition_Theory" FromRole="Theory" ToRole="TheoryDefinition" />
+        </EntityType>
+        <EntityType Name="TheoryMembership">
+          <Key>
+            <PropertyRef Name="TheoryMembershipId" />
+          </Key>
+          <Property Type="Int64" Name="TheoryMembershipId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <Property Type="Int32" Name="RunId" Nullable="false" />
+          <Property Type="Double" Name="SourceSignifiance" />
+          <Property Type="Double" Name="EigenFactorValue" />
+          <Property Type="Double" Name="AttributionScore" />
+          <Property Type="Double" Name="AttentionRatio" />
+          <Property Type="Boolean" Name="TheoryNamePresent" />
+          <Property Type="Double" Name="PredictionProbability" />
+          <Property Type="Boolean" Name="IsContributingPrediction" />
+          <NavigationProperty Name="Run" Relationship="ATNModel.FK_TheoryMembership_Run" FromRole="TheoryMembership" ToRole="Run" />
+          <NavigationProperty Name="Source" Relationship="ATNModel.Source_TheoryMembership_FK1" FromRole="TheoryMembership" ToRole="Source" />
+          <NavigationProperty Name="Theory" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="TheoryMembership" ToRole="Theory" />
+        </EntityType>
+        <EntityType Name="TheoryMembershipSignificance">
+          <Key>
+            <PropertyRef Name="TheoryMembershipSignificanceId" />
+          </Key>
+          <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <Property Type="Boolean" Name="RAMarkedContributing" />
+        </EntityType>
+        <Association Name="FK_Crawl_Theory">
+          <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
+          <End Type="ATNModel.Crawl" Role="Crawl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="Crawl">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TheoryMembership_Run">
+          <End Type="ATNModel.Run" Role="Run" Multiplicity="1" />
+          <End Type="ATNModel.TheoryMembership" Role="TheoryMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Run">
+              <PropertyRef Name="RunId" />
+            </Principal>
+            <Dependent Role="TheoryMembership">
+              <PropertyRef Name="RunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Theory_Run_FK1">
+          <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
+          <End Type="ATNModel.Run" Role="Run" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="Run">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Source_TheoryMembership_FK1">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="1" />
+          <End Type="ATNModel.TheoryMembership" Role="TheoryMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="TheoryMembership">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Theory_TheoryMembership_FK1">
+          <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
+          <End Type="ATNModel.TheoryMembership" Role="TheoryMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="TheoryMembership">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RelatedSources">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
+          <End Type="ATNModel.Source" Role="Source1" Multiplicity="*" />
+        </Association>
+        <Association Name="SourceSubject">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
+          <End Type="ATNModel.Subject" Role="Subject" Multiplicity="*" />
+        </Association>
+        <EntityType Name="TheoryDefinition">
+          <Key>
+            <PropertyRef Name="TheoryDefinitionId" />
+          </Key>
+          <Property Type="Int32" Name="TheoryDefinitionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" />
+          <Property Type="String" Name="CanonicalIds" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Theory" Relationship="ATNModel.FK_TheoryDefinition_Theory" FromRole="TheoryDefinition" ToRole="Theory" />
+        </EntityType>
+        <Association Name="FK_TheoryDefinition_Theory">
+          <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
+          <End Type="ATNModel.TheoryDefinition" Role="TheoryDefinition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Theory">
+              <PropertyRef Name="TheoryId" />
+            </Principal>
+            <Dependent Role="TheoryDefinition">
+              <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -779,10 +1209,10 @@
           <EntitySetMapping Name="Crawls">
             <EntityTypeMapping TypeName="ATNModel.Crawl">
               <MappingFragment StoreEntitySet="Crawl">
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
                 <ScalarProperty Name="LastEnumeratedSourceId" ColumnName="LastEnumeratedSourceId" />
                 <ScalarProperty Name="DateCrawled" ColumnName="DateCrawled" />
                 <ScalarProperty Name="CrawlState" ColumnName="CrawlState" />
-                <ScalarProperty Name="CanonicalIds" ColumnName="CanonicalIds" />
                 <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
                 <ScalarProperty Name="CrawlId" ColumnName="CrawlId" />
               </MappingFragment>
@@ -883,6 +1313,84 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Runs">
+            <EntityTypeMapping TypeName="ATNModel.Run">
+              <MappingFragment StoreEntitySet="Run">
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
+                <ScalarProperty Name="DateStarted" ColumnName="DateStarted" />
+                <ScalarProperty Name="RunId" ColumnName="RunId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subjects">
+            <EntityTypeMapping TypeName="ATNModel.Subject">
+              <MappingFragment StoreEntitySet="Subject">
+                <ScalarProperty Name="SubjectCategory" ColumnName="SubjectCategory" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Theories">
+            <EntityTypeMapping TypeName="ATNModel.Theory">
+              <MappingFragment StoreEntitySet="Theory">
+                <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
+                <ScalarProperty Name="TheoryName" ColumnName="TheoryName" />
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TheoryMemberships">
+            <EntityTypeMapping TypeName="ATNModel.TheoryMembership">
+              <MappingFragment StoreEntitySet="TheoryMembership">
+                <ScalarProperty Name="IsContributingPrediction" ColumnName="IsContributingPrediction" />
+                <ScalarProperty Name="PredictionProbability" ColumnName="PredictionProbability" />
+                <ScalarProperty Name="TheoryNamePresent" ColumnName="TheoryNamePresent" />
+                <ScalarProperty Name="AttentionRatio" ColumnName="AttentionRatio" />
+                <ScalarProperty Name="AttributionScore" ColumnName="AttributionScore" />
+                <ScalarProperty Name="EigenFactorValue" ColumnName="EigenFactorValue" />
+                <ScalarProperty Name="SourceSignifiance" ColumnName="SourceSignifiance" />
+                <ScalarProperty Name="RunId" ColumnName="RunId" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
+                <ScalarProperty Name="TheoryMembershipId" ColumnName="TheoryMembershipId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TheoryMembershipSignificances">
+            <EntityTypeMapping TypeName="ATNModel.TheoryMembershipSignificance">
+              <MappingFragment StoreEntitySet="TheoryMembershipSignificance">
+                <ScalarProperty Name="RAMarkedContributing" ColumnName="RAMarkedContributing" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
+                <ScalarProperty Name="TheoryMembershipSignificanceId" ColumnName="TheoryMembershipSignificanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="RelatedSources" TypeName="ATNModel.RelatedSources" StoreEntitySet="RelatedSources">
+            <EndProperty Name="Source1">
+              <ScalarProperty Name="SourceId" ColumnName="DestinationSourceId" />
+            </EndProperty>
+            <EndProperty Name="Source">
+              <ScalarProperty Name="SourceId" ColumnName="PrimarySourceId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="SourceSubject" TypeName="ATNModel.SourceSubject" StoreEntitySet="SourceSubject">
+            <EndProperty Name="Subject">
+              <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+            </EndProperty>
+            <EndProperty Name="Source">
+              <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="TheoryDefinitions">
+            <EntityTypeMapping TypeName="ATNModel.TheoryDefinition">
+              <MappingFragment StoreEntitySet="TheoryDefinition">
+                <ScalarProperty Name="CanonicalIds" ColumnName="CanonicalIds" />
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
+                <ScalarProperty Name="TheoryDefinitionId" ColumnName="TheoryDefinitionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -906,7 +1414,7 @@
       <Diagram Name="ATNModel">
         <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="3.5" Height="2.7494921875000102" />
         <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="10.5" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="3" PointY="7" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="7.75" PointY="3.75" Height="2.3648893229166674" />
         <EntityTypeShape EntityType="ATNModel.CrawlQueue" Width="1.5" PointX="5.25" PointY="14.125" Height="2.3648893229166674" />
         <EntityTypeShape EntityType="ATNModel.CrawlResult" Width="1.5" PointX="8.25" PointY="12" Height="2.5571907552083388" />
         <EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="10.375" Height="2.172587890624996" />
@@ -1002,6 +1510,20 @@
           <ConnectorPoint PointX="6.84375" PointY="18.5639694350586" />
           <ConnectorPoint PointX="4.5" PointY="18.5639694350586" />
         </AssociationConnector>
+        <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="11.283239755445738" PointY="8.8857703399312538" />
+        <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="10.726351998153307" PointY="16.342354335050263" />
+        <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="7" PointY="19.75" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="0.75" PointY="4.875" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="0.36436036991158516" PointY="27.056207982383764" />
+        <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
+        <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
+        <AssociationConnector Association="ATNModel.Theory_Run_FK1" />
+        <AssociationConnector Association="ATNModel.Source_TheoryMembership_FK1" />
+        <AssociationConnector Association="ATNModel.Theory_TheoryMembership_FK1" />
+        <AssociationConnector Association="ATNModel.RelatedSources" />
+        <AssociationConnector Association="ATNModel.SourceSubject" />
+        <EntityTypeShape EntityType="ATNModel.TheoryDefinition" Width="1.5" PointX="1.0297081214514134" PointY="7.9193225539845056" />
+        <AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
       </Diagram>
     </Diagrams>
   </Designer>

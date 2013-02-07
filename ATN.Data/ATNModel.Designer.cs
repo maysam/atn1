@@ -8,12 +8,13 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
+using System.Data.EntityClient;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
-using System.Data.EntityClient;
-using System.ComponentModel;
-using System.Xml.Serialization;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
@@ -32,6 +33,14 @@ using System.Runtime.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "Source_EditorsReference_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "EditorsReference", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.EditorsReference), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "CitationsReference", "Reference", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Citation", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source))]
 [assembly: EdmRelationshipAttribute("ATNModel", "JournalName_Source_FK1", "Journal", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ATN.Data.Journal), "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_Crawl_Theory", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "Crawl", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Crawl), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_TheoryMembership_Run", "Run", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Run), "TheoryMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryMembership), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "Theory_Run_FK1", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "Run", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Run), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "Source_TheoryMembership_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "TheoryMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryMembership), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "Theory_TheoryMembership_FK1", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "TheoryMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryMembership), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "RelatedSources", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Source1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source))]
+[assembly: EdmRelationshipAttribute("ATNModel", "SourceSubject", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject))]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_TheoryDefinition_Theory", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "TheoryDefinition", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryDefinition), true)]
 
 #endregion
 
@@ -242,8 +251,105 @@ namespace ATN.Data
             }
         }
         private ObjectSet<Journal> _Journals;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<Run> Runs
+        {
+            get
+            {
+                if ((_Runs == null))
+                {
+                    _Runs = base.CreateObjectSet<Run>("Runs");
+                }
+                return _Runs;
+            }
+        }
+        private ObjectSet<Run> _Runs;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<Subject> Subjects
+        {
+            get
+            {
+                if ((_Subjects == null))
+                {
+                    _Subjects = base.CreateObjectSet<Subject>("Subjects");
+                }
+                return _Subjects;
+            }
+        }
+        private ObjectSet<Subject> _Subjects;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<Theory> Theories
+        {
+            get
+            {
+                if ((_Theories == null))
+                {
+                    _Theories = base.CreateObjectSet<Theory>("Theories");
+                }
+                return _Theories;
+            }
+        }
+        private ObjectSet<Theory> _Theories;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<TheoryMembership> TheoryMemberships
+        {
+            get
+            {
+                if ((_TheoryMemberships == null))
+                {
+                    _TheoryMemberships = base.CreateObjectSet<TheoryMembership>("TheoryMemberships");
+                }
+                return _TheoryMemberships;
+            }
+        }
+        private ObjectSet<TheoryMembership> _TheoryMemberships;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<TheoryMembershipSignificance> TheoryMembershipSignificances
+        {
+            get
+            {
+                if ((_TheoryMembershipSignificances == null))
+                {
+                    _TheoryMembershipSignificances = base.CreateObjectSet<TheoryMembershipSignificance>("TheoryMembershipSignificances");
+                }
+                return _TheoryMembershipSignificances;
+            }
+        }
+        private ObjectSet<TheoryMembershipSignificance> _TheoryMembershipSignificances;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<TheoryDefinition> TheoryDefinitions
+        {
+            get
+            {
+                if ((_TheoryDefinitions == null))
+                {
+                    _TheoryDefinitions = base.CreateObjectSet<TheoryDefinition>("TheoryDefinitions");
+                }
+                return _TheoryDefinitions;
+            }
+        }
+        private ObjectSet<TheoryDefinition> _TheoryDefinitions;
 
         #endregion
+
         #region AddTo Methods
     
         /// <summary>
@@ -325,13 +431,61 @@ namespace ATN.Data
         {
             base.AddObject("Journals", journal);
         }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the Runs EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToRuns(Run run)
+        {
+            base.AddObject("Runs", run);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the Subjects EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToSubjects(Subject subject)
+        {
+            base.AddObject("Subjects", subject);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the Theories EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToTheories(Theory theory)
+        {
+            base.AddObject("Theories", theory);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the TheoryMemberships EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToTheoryMemberships(TheoryMembership theoryMembership)
+        {
+            base.AddObject("TheoryMemberships", theoryMembership);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the TheoryMembershipSignificances EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToTheoryMembershipSignificances(TheoryMembershipSignificance theoryMembershipSignificance)
+        {
+            base.AddObject("TheoryMembershipSignificances", theoryMembershipSignificance);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the TheoryDefinitions EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToTheoryDefinitions(TheoryDefinition theoryDefinition)
+        {
+            base.AddObject("TheoryDefinitions", theoryDefinition);
+        }
 
         #endregion
+
     }
-    
 
     #endregion
-    
+
     #region Entities
     
     /// <summary>
@@ -362,6 +516,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -536,6 +691,7 @@ namespace ATN.Data
         partial void OnDataSourceSpecificIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -600,6 +756,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -628,6 +785,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -706,6 +864,7 @@ namespace ATN.Data
         partial void OnSourceIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -786,6 +945,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -803,21 +963,22 @@ namespace ATN.Data
         /// </summary>
         /// <param name="crawlId">Initial value of the CrawlId property.</param>
         /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
-        /// <param name="canonicalIds">Initial value of the CanonicalIds property.</param>
         /// <param name="crawlState">Initial value of the CrawlState property.</param>
         /// <param name="dateCrawled">Initial value of the DateCrawled property.</param>
-        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int32 dataSourceId, global::System.String canonicalIds, global::System.Int16 crawlState, global::System.DateTime dateCrawled)
+        /// <param name="theoryId">Initial value of the TheoryId property.</param>
+        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int32 dataSourceId, global::System.Int16 crawlState, global::System.DateTime dateCrawled, global::System.Int32 theoryId)
         {
             Crawl crawl = new Crawl();
             crawl.CrawlId = crawlId;
             crawl.DataSourceId = dataSourceId;
-            crawl.CanonicalIds = canonicalIds;
             crawl.CrawlState = crawlState;
             crawl.DateCrawled = dateCrawled;
+            crawl.TheoryId = theoryId;
             return crawl;
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -870,30 +1031,6 @@ namespace ATN.Data
         private global::System.Int32 _DataSourceId;
         partial void OnDataSourceIdChanging(global::System.Int32 value);
         partial void OnDataSourceIdChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
-        [DataMemberAttribute()]
-        public global::System.String CanonicalIds
-        {
-            get
-            {
-                return _CanonicalIds;
-            }
-            set
-            {
-                OnCanonicalIdsChanging(value);
-                ReportPropertyChanging("CanonicalIds");
-                _CanonicalIds = StructuralObject.SetValidValue(value, false);
-                ReportPropertyChanged("CanonicalIds");
-                OnCanonicalIdsChanged();
-            }
-        }
-        private global::System.String _CanonicalIds;
-        partial void OnCanonicalIdsChanging(global::System.String value);
-        partial void OnCanonicalIdsChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -966,8 +1103,33 @@ namespace ATN.Data
         private Nullable<global::System.Int64> _LastEnumeratedSourceId;
         partial void OnLastEnumeratedSourceIdChanging(Nullable<global::System.Int64> value);
         partial void OnLastEnumeratedSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryId
+        {
+            get
+            {
+                return _TheoryId;
+            }
+            set
+            {
+                OnTheoryIdChanging(value);
+                ReportPropertyChanging("TheoryId");
+                _TheoryId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryId");
+                OnTheoryIdChanged();
+            }
+        }
+        private global::System.Int32 _TheoryId;
+        partial void OnTheoryIdChanging(global::System.Int32 value);
+        partial void OnTheoryIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1052,8 +1214,47 @@ namespace ATN.Data
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Crawl_Theory", "Theory")]
+        public Theory Theory
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.FK_Crawl_Theory", "Theory").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.FK_Crawl_Theory", "Theory").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Theory> TheoryReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.FK_Crawl_Theory", "Theory");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Theory>("ATNModel.FK_Crawl_Theory", "Theory", value);
+                }
+            }
+        }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1084,6 +1285,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1210,6 +1412,7 @@ namespace ATN.Data
         partial void OnReferencesSourceIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1290,6 +1493,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1324,6 +1528,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1474,6 +1679,7 @@ namespace ATN.Data
         partial void OnReferenceRetrievedChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1554,6 +1760,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1580,6 +1787,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1634,6 +1842,7 @@ namespace ATN.Data
         partial void OnDataSourceNameChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1726,6 +1935,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1756,6 +1966,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1882,6 +2093,7 @@ namespace ATN.Data
         partial void OnDataSourceSpecificIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1946,6 +2158,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1974,6 +2187,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -2052,6 +2266,7 @@ namespace ATN.Data
         partial void OnSourceIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -2132,6 +2347,7 @@ namespace ATN.Data
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -2158,6 +2374,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -2236,6 +2453,7 @@ namespace ATN.Data
         partial void OnExternalURLChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -2262,6 +2480,180 @@ namespace ATN.Data
         }
 
         #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="Run")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class Run : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new Run object.
+        /// </summary>
+        /// <param name="runId">Initial value of the RunId property.</param>
+        /// <param name="dateStarted">Initial value of the DateStarted property.</param>
+        /// <param name="theoryId">Initial value of the TheoryId property.</param>
+        public static Run CreateRun(global::System.Int32 runId, global::System.DateTime dateStarted, global::System.Int32 theoryId)
+        {
+            Run run = new Run();
+            run.RunId = runId;
+            run.DateStarted = dateStarted;
+            run.TheoryId = theoryId;
+            return run;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 RunId
+        {
+            get
+            {
+                return _RunId;
+            }
+            set
+            {
+                if (_RunId != value)
+                {
+                    OnRunIdChanging(value);
+                    ReportPropertyChanging("RunId");
+                    _RunId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("RunId");
+                    OnRunIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _RunId;
+        partial void OnRunIdChanging(global::System.Int32 value);
+        partial void OnRunIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime DateStarted
+        {
+            get
+            {
+                return _DateStarted;
+            }
+            set
+            {
+                OnDateStartedChanging(value);
+                ReportPropertyChanging("DateStarted");
+                _DateStarted = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DateStarted");
+                OnDateStartedChanged();
+            }
+        }
+        private global::System.DateTime _DateStarted;
+        partial void OnDateStartedChanging(global::System.DateTime value);
+        partial void OnDateStartedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryId
+        {
+            get
+            {
+                return _TheoryId;
+            }
+            set
+            {
+                OnTheoryIdChanging(value);
+                ReportPropertyChanging("TheoryId");
+                _TheoryId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryId");
+                OnTheoryIdChanged();
+            }
+        }
+        private global::System.Int32 _TheoryId;
+        partial void OnTheoryIdChanging(global::System.Int32 value);
+        partial void OnTheoryIdChanged();
+
+        #endregion
+
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_TheoryMembership_Run", "TheoryMembership")]
+        public EntityCollection<TheoryMembership> TheoryMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<TheoryMembership>("ATNModel.FK_TheoryMembership_Run", "TheoryMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<TheoryMembership>("ATNModel.FK_TheoryMembership_Run", "TheoryMembership", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "Theory_Run_FK1", "Theory")]
+        public Theory Theory
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.Theory_Run_FK1", "Theory").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.Theory_Run_FK1", "Theory").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Theory> TheoryReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.Theory_Run_FK1", "Theory");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Theory>("ATNModel.Theory_Run_FK1", "Theory", value);
+                }
+            }
+        }
+
+        #endregion
+
     }
     
     /// <summary>
@@ -2294,6 +2686,7 @@ namespace ATN.Data
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -2804,6 +3197,7 @@ namespace ATN.Data
         partial void OnDataSourceSpecificIdChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -3014,10 +3408,1113 @@ namespace ATN.Data
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "Source_TheoryMembership_FK1", "TheoryMembership")]
+        public EntityCollection<TheoryMembership> TheoryMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<TheoryMembership>("ATNModel.Source_TheoryMembership_FK1", "TheoryMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<TheoryMembership>("ATNModel.Source_TheoryMembership_FK1", "TheoryMembership", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "RelatedSources", "Source1")]
+        public EntityCollection<Source> Source11
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.RelatedSources", "Source1");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.RelatedSources", "Source1", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "RelatedSources", "Source")]
+        public EntityCollection<Source> Sources1
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.RelatedSources", "Source");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.RelatedSources", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "SourceSubject", "Subject")]
+        public EntityCollection<Subject> Subjects
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Subject>("ATNModel.SourceSubject", "Subject");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Subject>("ATNModel.SourceSubject", "Subject", value);
+                }
+            }
+        }
 
         #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="Subject")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class Subject : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new Subject object.
+        /// </summary>
+        /// <param name="subjectId">Initial value of the SubjectId property.</param>
+        public static Subject CreateSubject(global::System.Int32 subjectId)
+        {
+            Subject subject = new Subject();
+            subject.SubjectId = subjectId;
+            return subject;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 SubjectId
+        {
+            get
+            {
+                return _SubjectId;
+            }
+            set
+            {
+                if (_SubjectId != value)
+                {
+                    OnSubjectIdChanging(value);
+                    ReportPropertyChanging("SubjectId");
+                    _SubjectId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("SubjectId");
+                    OnSubjectIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _SubjectId;
+        partial void OnSubjectIdChanging(global::System.Int32 value);
+        partial void OnSubjectIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String SubjectCategory
+        {
+            get
+            {
+                return _SubjectCategory;
+            }
+            set
+            {
+                OnSubjectCategoryChanging(value);
+                ReportPropertyChanging("SubjectCategory");
+                _SubjectCategory = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("SubjectCategory");
+                OnSubjectCategoryChanged();
+            }
+        }
+        private global::System.String _SubjectCategory;
+        partial void OnSubjectCategoryChanging(global::System.String value);
+        partial void OnSubjectCategoryChanged();
+
+        #endregion
+
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "SourceSubject", "Source")]
+        public EntityCollection<Source> Sources
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.SourceSubject", "Source");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.SourceSubject", "Source", value);
+                }
+            }
+        }
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="Theory")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class Theory : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new Theory object.
+        /// </summary>
+        /// <param name="theoryId">Initial value of the TheoryId property.</param>
+        /// <param name="theoryName">Initial value of the TheoryName property.</param>
+        /// <param name="dateAdded">Initial value of the DateAdded property.</param>
+        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded)
+        {
+            Theory theory = new Theory();
+            theory.TheoryId = theoryId;
+            theory.TheoryName = theoryName;
+            theory.DateAdded = dateAdded;
+            return theory;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryId
+        {
+            get
+            {
+                return _TheoryId;
+            }
+            set
+            {
+                if (_TheoryId != value)
+                {
+                    OnTheoryIdChanging(value);
+                    ReportPropertyChanging("TheoryId");
+                    _TheoryId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("TheoryId");
+                    OnTheoryIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _TheoryId;
+        partial void OnTheoryIdChanging(global::System.Int32 value);
+        partial void OnTheoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String TheoryName
+        {
+            get
+            {
+                return _TheoryName;
+            }
+            set
+            {
+                OnTheoryNameChanging(value);
+                ReportPropertyChanging("TheoryName");
+                _TheoryName = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("TheoryName");
+                OnTheoryNameChanged();
+            }
+        }
+        private global::System.String _TheoryName;
+        partial void OnTheoryNameChanging(global::System.String value);
+        partial void OnTheoryNameChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime DateAdded
+        {
+            get
+            {
+                return _DateAdded;
+            }
+            set
+            {
+                OnDateAddedChanging(value);
+                ReportPropertyChanging("DateAdded");
+                _DateAdded = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DateAdded");
+                OnDateAddedChanged();
+            }
+        }
+        private global::System.DateTime _DateAdded;
+        partial void OnDateAddedChanging(global::System.DateTime value);
+        partial void OnDateAddedChanged();
+
+        #endregion
+
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Crawl_Theory", "Crawl")]
+        public EntityCollection<Crawl> Crawl
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Crawl>("ATNModel.FK_Crawl_Theory", "Crawl");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Crawl>("ATNModel.FK_Crawl_Theory", "Crawl", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "Theory_Run_FK1", "Run")]
+        public EntityCollection<Run> Runs
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Run>("ATNModel.Theory_Run_FK1", "Run");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Run>("ATNModel.Theory_Run_FK1", "Run", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "Theory_TheoryMembership_FK1", "TheoryMembership")]
+        public EntityCollection<TheoryMembership> TheoryMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<TheoryMembership>("ATNModel.Theory_TheoryMembership_FK1", "TheoryMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<TheoryMembership>("ATNModel.Theory_TheoryMembership_FK1", "TheoryMembership", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_TheoryDefinition_Theory", "TheoryDefinition")]
+        public EntityCollection<TheoryDefinition> TheoryDefinitions
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<TheoryDefinition>("ATNModel.FK_TheoryDefinition_Theory", "TheoryDefinition");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<TheoryDefinition>("ATNModel.FK_TheoryDefinition_Theory", "TheoryDefinition", value);
+                }
+            }
+        }
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="TheoryDefinition")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class TheoryDefinition : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new TheoryDefinition object.
+        /// </summary>
+        /// <param name="theoryDefinitionId">Initial value of the TheoryDefinitionId property.</param>
+        /// <param name="theoryId">Initial value of the TheoryId property.</param>
+        /// <param name="canonicalIds">Initial value of the CanonicalIds property.</param>
+        public static TheoryDefinition CreateTheoryDefinition(global::System.Int32 theoryDefinitionId, global::System.Int32 theoryId, global::System.String canonicalIds)
+        {
+            TheoryDefinition theoryDefinition = new TheoryDefinition();
+            theoryDefinition.TheoryDefinitionId = theoryDefinitionId;
+            theoryDefinition.TheoryId = theoryId;
+            theoryDefinition.CanonicalIds = canonicalIds;
+            return theoryDefinition;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryDefinitionId
+        {
+            get
+            {
+                return _TheoryDefinitionId;
+            }
+            set
+            {
+                if (_TheoryDefinitionId != value)
+                {
+                    OnTheoryDefinitionIdChanging(value);
+                    ReportPropertyChanging("TheoryDefinitionId");
+                    _TheoryDefinitionId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("TheoryDefinitionId");
+                    OnTheoryDefinitionIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _TheoryDefinitionId;
+        partial void OnTheoryDefinitionIdChanging(global::System.Int32 value);
+        partial void OnTheoryDefinitionIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryId
+        {
+            get
+            {
+                return _TheoryId;
+            }
+            set
+            {
+                OnTheoryIdChanging(value);
+                ReportPropertyChanging("TheoryId");
+                _TheoryId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryId");
+                OnTheoryIdChanged();
+            }
+        }
+        private global::System.Int32 _TheoryId;
+        partial void OnTheoryIdChanging(global::System.Int32 value);
+        partial void OnTheoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String CanonicalIds
+        {
+            get
+            {
+                return _CanonicalIds;
+            }
+            set
+            {
+                OnCanonicalIdsChanging(value);
+                ReportPropertyChanging("CanonicalIds");
+                _CanonicalIds = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("CanonicalIds");
+                OnCanonicalIdsChanged();
+            }
+        }
+        private global::System.String _CanonicalIds;
+        partial void OnCanonicalIdsChanging(global::System.String value);
+        partial void OnCanonicalIdsChanged();
+
+        #endregion
+
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_TheoryDefinition_Theory", "Theory")]
+        public Theory Theory
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.FK_TheoryDefinition_Theory", "Theory").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.FK_TheoryDefinition_Theory", "Theory").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Theory> TheoryReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.FK_TheoryDefinition_Theory", "Theory");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Theory>("ATNModel.FK_TheoryDefinition_Theory", "Theory", value);
+                }
+            }
+        }
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="TheoryMembership")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class TheoryMembership : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new TheoryMembership object.
+        /// </summary>
+        /// <param name="theoryMembershipId">Initial value of the TheoryMembershipId property.</param>
+        /// <param name="theoryId">Initial value of the TheoryId property.</param>
+        /// <param name="sourceId">Initial value of the SourceId property.</param>
+        /// <param name="runId">Initial value of the RunId property.</param>
+        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId)
+        {
+            TheoryMembership theoryMembership = new TheoryMembership();
+            theoryMembership.TheoryMembershipId = theoryMembershipId;
+            theoryMembership.TheoryId = theoryId;
+            theoryMembership.SourceId = sourceId;
+            theoryMembership.RunId = runId;
+            return theoryMembership;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 TheoryMembershipId
+        {
+            get
+            {
+                return _TheoryMembershipId;
+            }
+            set
+            {
+                if (_TheoryMembershipId != value)
+                {
+                    OnTheoryMembershipIdChanging(value);
+                    ReportPropertyChanging("TheoryMembershipId");
+                    _TheoryMembershipId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("TheoryMembershipId");
+                    OnTheoryMembershipIdChanged();
+                }
+            }
+        }
+        private global::System.Int64 _TheoryMembershipId;
+        partial void OnTheoryMembershipIdChanging(global::System.Int64 value);
+        partial void OnTheoryMembershipIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryId
+        {
+            get
+            {
+                return _TheoryId;
+            }
+            set
+            {
+                OnTheoryIdChanging(value);
+                ReportPropertyChanging("TheoryId");
+                _TheoryId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryId");
+                OnTheoryIdChanged();
+            }
+        }
+        private global::System.Int32 _TheoryId;
+        partial void OnTheoryIdChanging(global::System.Int32 value);
+        partial void OnTheoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 SourceId
+        {
+            get
+            {
+                return _SourceId;
+            }
+            set
+            {
+                OnSourceIdChanging(value);
+                ReportPropertyChanging("SourceId");
+                _SourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SourceId");
+                OnSourceIdChanged();
+            }
+        }
+        private global::System.Int64 _SourceId;
+        partial void OnSourceIdChanging(global::System.Int64 value);
+        partial void OnSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 RunId
+        {
+            get
+            {
+                return _RunId;
+            }
+            set
+            {
+                OnRunIdChanging(value);
+                ReportPropertyChanging("RunId");
+                _RunId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RunId");
+                OnRunIdChanged();
+            }
+        }
+        private global::System.Int32 _RunId;
+        partial void OnRunIdChanging(global::System.Int32 value);
+        partial void OnRunIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> SourceSignifiance
+        {
+            get
+            {
+                return _SourceSignifiance;
+            }
+            set
+            {
+                OnSourceSignifianceChanging(value);
+                ReportPropertyChanging("SourceSignifiance");
+                _SourceSignifiance = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SourceSignifiance");
+                OnSourceSignifianceChanged();
+            }
+        }
+        private Nullable<global::System.Double> _SourceSignifiance;
+        partial void OnSourceSignifianceChanging(Nullable<global::System.Double> value);
+        partial void OnSourceSignifianceChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> EigenFactorValue
+        {
+            get
+            {
+                return _EigenFactorValue;
+            }
+            set
+            {
+                OnEigenFactorValueChanging(value);
+                ReportPropertyChanging("EigenFactorValue");
+                _EigenFactorValue = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("EigenFactorValue");
+                OnEigenFactorValueChanged();
+            }
+        }
+        private Nullable<global::System.Double> _EigenFactorValue;
+        partial void OnEigenFactorValueChanging(Nullable<global::System.Double> value);
+        partial void OnEigenFactorValueChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> AttributionScore
+        {
+            get
+            {
+                return _AttributionScore;
+            }
+            set
+            {
+                OnAttributionScoreChanging(value);
+                ReportPropertyChanging("AttributionScore");
+                _AttributionScore = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("AttributionScore");
+                OnAttributionScoreChanged();
+            }
+        }
+        private Nullable<global::System.Double> _AttributionScore;
+        partial void OnAttributionScoreChanging(Nullable<global::System.Double> value);
+        partial void OnAttributionScoreChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> AttentionRatio
+        {
+            get
+            {
+                return _AttentionRatio;
+            }
+            set
+            {
+                OnAttentionRatioChanging(value);
+                ReportPropertyChanging("AttentionRatio");
+                _AttentionRatio = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("AttentionRatio");
+                OnAttentionRatioChanged();
+            }
+        }
+        private Nullable<global::System.Double> _AttentionRatio;
+        partial void OnAttentionRatioChanging(Nullable<global::System.Double> value);
+        partial void OnAttentionRatioChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> TheoryNamePresent
+        {
+            get
+            {
+                return _TheoryNamePresent;
+            }
+            set
+            {
+                OnTheoryNamePresentChanging(value);
+                ReportPropertyChanging("TheoryNamePresent");
+                _TheoryNamePresent = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryNamePresent");
+                OnTheoryNamePresentChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _TheoryNamePresent;
+        partial void OnTheoryNamePresentChanging(Nullable<global::System.Boolean> value);
+        partial void OnTheoryNamePresentChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> PredictionProbability
+        {
+            get
+            {
+                return _PredictionProbability;
+            }
+            set
+            {
+                OnPredictionProbabilityChanging(value);
+                ReportPropertyChanging("PredictionProbability");
+                _PredictionProbability = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("PredictionProbability");
+                OnPredictionProbabilityChanged();
+            }
+        }
+        private Nullable<global::System.Double> _PredictionProbability;
+        partial void OnPredictionProbabilityChanging(Nullable<global::System.Double> value);
+        partial void OnPredictionProbabilityChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> IsContributingPrediction
+        {
+            get
+            {
+                return _IsContributingPrediction;
+            }
+            set
+            {
+                OnIsContributingPredictionChanging(value);
+                ReportPropertyChanging("IsContributingPrediction");
+                _IsContributingPrediction = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsContributingPrediction");
+                OnIsContributingPredictionChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _IsContributingPrediction;
+        partial void OnIsContributingPredictionChanging(Nullable<global::System.Boolean> value);
+        partial void OnIsContributingPredictionChanged();
+
+        #endregion
+
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_TheoryMembership_Run", "Run")]
+        public Run Run
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Run>("ATNModel.FK_TheoryMembership_Run", "Run").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Run>("ATNModel.FK_TheoryMembership_Run", "Run").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Run> RunReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Run>("ATNModel.FK_TheoryMembership_Run", "Run");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Run>("ATNModel.FK_TheoryMembership_Run", "Run", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "Source_TheoryMembership_FK1", "Source")]
+        public Source Source
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.Source_TheoryMembership_FK1", "Source").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.Source_TheoryMembership_FK1", "Source").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Source> SourceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.Source_TheoryMembership_FK1", "Source");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Source>("ATNModel.Source_TheoryMembership_FK1", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "Theory_TheoryMembership_FK1", "Theory")]
+        public Theory Theory
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.Theory_TheoryMembership_FK1", "Theory").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.Theory_TheoryMembership_FK1", "Theory").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Theory> TheoryReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Theory>("ATNModel.Theory_TheoryMembership_FK1", "Theory");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Theory>("ATNModel.Theory_TheoryMembership_FK1", "Theory", value);
+                }
+            }
+        }
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="TheoryMembershipSignificance")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class TheoryMembershipSignificance : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new TheoryMembershipSignificance object.
+        /// </summary>
+        /// <param name="theoryMembershipSignificanceId">Initial value of the TheoryMembershipSignificanceId property.</param>
+        /// <param name="theoryId">Initial value of the TheoryId property.</param>
+        /// <param name="sourceId">Initial value of the SourceId property.</param>
+        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId)
+        {
+            TheoryMembershipSignificance theoryMembershipSignificance = new TheoryMembershipSignificance();
+            theoryMembershipSignificance.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
+            theoryMembershipSignificance.TheoryId = theoryId;
+            theoryMembershipSignificance.SourceId = sourceId;
+            return theoryMembershipSignificance;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 TheoryMembershipSignificanceId
+        {
+            get
+            {
+                return _TheoryMembershipSignificanceId;
+            }
+            set
+            {
+                if (_TheoryMembershipSignificanceId != value)
+                {
+                    OnTheoryMembershipSignificanceIdChanging(value);
+                    ReportPropertyChanging("TheoryMembershipSignificanceId");
+                    _TheoryMembershipSignificanceId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("TheoryMembershipSignificanceId");
+                    OnTheoryMembershipSignificanceIdChanged();
+                }
+            }
+        }
+        private global::System.Int64 _TheoryMembershipSignificanceId;
+        partial void OnTheoryMembershipSignificanceIdChanging(global::System.Int64 value);
+        partial void OnTheoryMembershipSignificanceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 TheoryId
+        {
+            get
+            {
+                return _TheoryId;
+            }
+            set
+            {
+                OnTheoryIdChanging(value);
+                ReportPropertyChanging("TheoryId");
+                _TheoryId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryId");
+                OnTheoryIdChanged();
+            }
+        }
+        private global::System.Int32 _TheoryId;
+        partial void OnTheoryIdChanging(global::System.Int32 value);
+        partial void OnTheoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 SourceId
+        {
+            get
+            {
+                return _SourceId;
+            }
+            set
+            {
+                OnSourceIdChanging(value);
+                ReportPropertyChanging("SourceId");
+                _SourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SourceId");
+                OnSourceIdChanged();
+            }
+        }
+        private global::System.Int64 _SourceId;
+        partial void OnSourceIdChanging(global::System.Int64 value);
+        partial void OnSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> RAMarkedContributing
+        {
+            get
+            {
+                return _RAMarkedContributing;
+            }
+            set
+            {
+                OnRAMarkedContributingChanging(value);
+                ReportPropertyChanging("RAMarkedContributing");
+                _RAMarkedContributing = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RAMarkedContributing");
+                OnRAMarkedContributingChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _RAMarkedContributing;
+        partial void OnRAMarkedContributingChanging(Nullable<global::System.Boolean> value);
+        partial void OnRAMarkedContributingChanged();
+
+        #endregion
+
+    
     }
 
     #endregion
+
     
 }

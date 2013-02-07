@@ -13,12 +13,16 @@ namespace ATN.Crawler
     {
         static void Main(string[] args)
         {
-            CrawlRunner co = new CrawlRunner();
-            /*co.RunCrawls(
-                    new CrawlSpecifier(CrawlerDataSource.MicrosoftAcademicSearch, "2085496")
-                    //,new CrawlSpecifier(...)
+            Theories t = new Theories();
+            /*t.AddTheory("Technology Acceptance Model",
+                new string[][] {
+                    new string[] {"1265954", "1279051"},
+                    new string[] {"1253523", "38747179"}
+                }
             );*/
-            co.RefreshExistingCrawls();
+            CrawlRunner co = new CrawlRunner();
+            co.RunCrawl(new CrawlSpecifier(2, CrawlerDataSource.MicrosoftAcademicSearch, t.GetCanonicalPapersForTheory(2)));
+            //co.RefreshExistingCrawls();
         }
     }
 }
