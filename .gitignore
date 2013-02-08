@@ -1,9 +1,17 @@
 /*.suo
 /*/bin/*
 /*/obj/*
+/adhoc/*/Debug/*
+/adhoc/*/Release/*
+/adhoc/*/x64/*
+/adhoc/*/*.sdf
 /adhoc/*/bin/*
 /adhoc/*/obj/*
 /adhoc/*/*/obj/*
 /adhoc/*/*/bin/*
+/adhoc/*/*/Debug/*
+/adhoc/*/*/Release/*
+/adhoc/*/*/x64/*
+/adhoc/*/*/*.sdf
 /adhoc/*/*.suo
 /adhoc/*/*/*.suo

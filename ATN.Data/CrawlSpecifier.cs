@@ -6,34 +6,57 @@ using ATN.Data;
 
 namespace ATN.Data
 {
-    public class ExistingCrawlSpecifier : CrawlSpecifier
+    public class ExistingCrawlSpecifier : PendingCrawlSpecifier
     {
         public Crawl Crawl { get; set; }
-        public ExistingCrawlSpecifier(Crawl Crawl, int TheoryId, CrawlerDataSource DataSource, params string[][] CanonicalDataSourceIds)
-            : base(TheoryId, DataSource, CanonicalDataSourceIds)
+        public ExistingCrawlSpecifier(Crawl Crawl, string TheoryName, int TheoryId, CrawlerDataSource DataSource, params string[][] CanonicalDataSourceIds)
+            : base(TheoryId, TheoryName, DataSource, CanonicalDataSourceIds)
         {
             this.Crawl = Crawl;
         }
-        public ExistingCrawlSpecifier(Crawl Crawl, int TheoryId, CrawlerDataSource DataSource, TheoryDefinition[] CrawlDefinitions) :
-            base(TheoryId, DataSource, CrawlDefinitions)
+        public ExistingCrawlSpecifier(Crawl Crawl, string TheoryName, int TheoryId, CrawlerDataSource DataSource, TheoryDefinition[] CrawlDefinitions) :
+            base(TheoryId, TheoryName, DataSource, CrawlDefinitions)
+        {
+            this.Crawl = Crawl;
+        }
+        public ExistingCrawlSpecifier(Crawl Crawl, PendingCrawlSpecifier PendingSpecifier) : base(PendingSpecifier.TheoryId, PendingSpecifier.TheoryName, PendingSpecifier.DataSource, PendingSpecifier.CanonicalDataSourceIds)
         {
             this.Crawl = Crawl;
         }
     }
-    public class CrawlSpecifier
+    public class PendingCrawlSpecifier : NewCrawlSpecifier
     {
         public int TheoryId { get; set; }
-        public CrawlerDataSource DataSource { get; set; }
-        public string[][] CanonicalDataSourceIds { get; set; }
-        public CrawlSpecifier(int TheoryId, CrawlerDataSource DataSource, params string[][] CanonicalDataSourceIds)
+        public PendingCrawlSpecifier(int TheoryId, string TheoryName, CrawlerDataSource DataSource, params string[][] CanonicalDataSourceIds)
+            : base(TheoryName, DataSource, CanonicalDataSourceIds)
         {
             this.TheoryId = TheoryId;
+        }
+        public PendingCrawlSpecifier(int TheoryId, string TheoryName, CrawlerDataSource DataSource, TheoryDefinition[] CrawlDefinitions)
+            : base(TheoryName, DataSource, CrawlDefinitions)
+        {
+            this.TheoryId = TheoryId;
+        }
+        public PendingCrawlSpecifier(int TheoryId, NewCrawlSpecifier NewSpecifier) : base(NewSpecifier.TheoryName, NewSpecifier.DataSource, NewSpecifier.CanonicalDataSourceIds)
+        {
+            this.TheoryId = TheoryId;
+        }
+
+    }
+    public class NewCrawlSpecifier
+    {
+        public string TheoryName { get; set; }
+        public CrawlerDataSource DataSource { get; set; }
+        public string[][] CanonicalDataSourceIds { get; set; }
+        public NewCrawlSpecifier(string TheoryName, CrawlerDataSource DataSource, params string[][] CanonicalDataSourceIds)
+        {
+            this.TheoryName = TheoryName;
             this.DataSource = DataSource;
             this.CanonicalDataSourceIds = CanonicalDataSourceIds;
         }
-        public CrawlSpecifier(int TheoryId, CrawlerDataSource DataSource, TheoryDefinition[] CrawlDefinitions)
+        public NewCrawlSpecifier(string TheoryName, CrawlerDataSource DataSource, TheoryDefinition[] CrawlDefinitions)
         {
-            this.TheoryId = TheoryId;
+            this.TheoryName = TheoryName;
             this.DataSource = DataSource;
             CanonicalDataSourceIds = CrawlDefinitions.Select(cd => new string[] { cd.CanonicalIds }).ToArray();
         }

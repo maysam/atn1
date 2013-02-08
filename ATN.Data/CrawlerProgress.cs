@@ -81,7 +81,7 @@ namespace ATN.Data
         {
             Crawl Crawl = Context.Crawls.Single(c => c.CrawlId == CrawlId);
             TheoryDefinition[] Definition = Context.TheoryDefinitions.Where(td => td.TheoryId == Crawl.TheoryId).ToArray();
-            return new ExistingCrawlSpecifier(Crawl, Crawl.TheoryId, (CrawlerDataSource)Crawl.DataSourceId, Definition);
+            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.TheoryId, (CrawlerDataSource)Crawl.DataSourceId, Definition);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace ATN.Data
         /// <param name="DataSource">The data source for which this crawl is being performed on</param>
         /// <param name="CanonicalIds">The data-source specific id or ids for the canonical papers being crawled</param>
         /// <returns>A persistence-model attached copy of the newly-initiated or previously-initiated crawl</returns>
-        public Crawl StartCrawl(CrawlSpecifier CrawlSpecifier)
+        public Crawl QueueTheoryCrawl(PendingCrawlSpecifier CrawlSpecifier)
         {
             Theory Theory = Context.Theories.SingleOrDefault(t => t.TheoryId == CrawlSpecifier.TheoryId);
             Crawl PotentiallyExistingCrawl = Theory.Crawl.SingleOrDefault();
@@ -163,7 +163,7 @@ namespace ATN.Data
         /// <param name="DataSourceSpecificIds">The data-source specific IDs to Crawl</param>
         /// <param name="ReferencesSourceId">The referenced persistent-model source, if any</param>
         /// <param name="Direction">The direction of the persistence-model reference, if any</param>
-        public void QueueCrawl(int CrawlId, string[] DataSourceSpecificIds, long? ReferencesSourceId, CrawlReferenceDirection Direction)
+        public void QueueReferenceCrawl(int CrawlId, string[] DataSourceSpecificIds, long? ReferencesSourceId, CrawlReferenceDirection Direction)
         {
             foreach (string DataSourceSpecificId in DataSourceSpecificIds)
             {

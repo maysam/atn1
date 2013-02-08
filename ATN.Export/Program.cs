@@ -13,7 +13,7 @@ namespace ATN.Export
         static void Main(string[] args)
         {
             Theories Theories = new Theories();
-            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(1);
+            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(2);
 
             Dictionary<long, SourceNode> Nodes = new Dictionary<long, SourceNode>();
             List<SourceEdge> Edges = new List<SourceEdge>();
@@ -22,8 +22,11 @@ namespace ATN.Export
             {
                 var CitingSources = CanonicalSource.CitingSources.ToArray();
 
-                //Write canonical node
-                Nodes.Add(CanonicalSource.SourceId, new SourceNode(CanonicalSource.SourceId, CanonicalSource.ArticleTitle, CanonicalSource.CitingSources.Count));
+                //Write canonical nodes
+                if (!Nodes.ContainsKey(CanonicalSource.SourceId))
+                {
+                    Nodes.Add(CanonicalSource.SourceId, new SourceNode(CanonicalSource.SourceId, CanonicalSource.ArticleTitle, CanonicalSource.CitingSources.Count));
+                }
 
                 //Write citation nodes
                 for (int i = 0; i < CitingSources.Length; i++)
@@ -36,7 +39,7 @@ namespace ATN.Export
                 }
 
                 //Write reference nodes
-                /*for (int i = 0; i < CitingSources.Length; i++)
+                for (int i = 0; i < CitingSources.Length; i++)
                 {
                     Console.WriteLine("Writing references for node {0}/{1}", i + 1, CitingSources.Length);
                     var References = CitingSources[i].References.ToArray();
@@ -47,7 +50,7 @@ namespace ATN.Export
                             Nodes.Add(References[j].SourceId, new SourceNode(References[j].SourceId, References[j].ArticleTitle, References[j].CitingSources.Count));
                         }
                     }
-                }*/
+                }
 
                 //Write citation edges
                 foreach (var Citation in CitingSources)
@@ -59,7 +62,7 @@ namespace ATN.Export
                 }
 
                 //Write reference edges
-                /*foreach (var Citation in CitingSources)
+                foreach (var Citation in CitingSources)
                 {
                     foreach (var Reference in Citation.References)
                     {
@@ -68,7 +71,7 @@ namespace ATN.Export
                             Edges.Add(new SourceEdge(Citation.SourceId, Reference.SourceId));
                         }
                     }
-                }*/
+                }
             }
             FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
             XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationXMLStream);

@@ -21,8 +21,17 @@ namespace ATN.Crawler
                 }
             );*/
             CrawlRunner co = new CrawlRunner();
-            co.RunCrawl(new CrawlSpecifier(2, CrawlerDataSource.MicrosoftAcademicSearch, t.GetCanonicalPapersForTheory(2)));
-            //co.RefreshExistingCrawls();
+            /*co.StartNewCrawl(
+                    new NewCrawlSpecifier(
+                        "Technology Acceptance Model",
+                        CrawlerDataSource.MicrosoftAcademicSearch,
+                        new string[][] {
+                            new string[] {"1265954", "1279051"},
+                            new string[] {"1253523", "38747179"}
+                        }
+                    )
+            );*/
+            co.RefreshExistingCrawls();
         }
     }
 }
