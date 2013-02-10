@@ -52,17 +52,6 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Retrieves the list of data-source specific identifiers for a given crawl, including the ID for the canonical source, and the IDs for references and citations.
-        /// </summary>
-        /// <param name="DataSource">The data source of the target Crawl</param>
-        /// <param name="CrawlId">The CrawlId corresponding to the target Crawl</param>
-        /// <returns>A list of data-source specific identifiers added during a given crawl</returns>
-        public string[] GetResultantDataSourceSpecificIdsForCrawl(CrawlerDataSource DataSource, int CrawlId)
-        {
-            return Context.Crawls.SingleOrDefault(c => c.DataSourceId == (int)DataSource && c.CrawlId == CrawlId).CrawlResults.Select(cr => cr.DataSourceSpecificId).ToArray();
-        }
-
-        /// <summary>
         /// Retrieves a list of all existing Crawl items
         /// </summary>
         /// <returns>A list of all existing Crawl items</returns>
@@ -81,7 +70,7 @@ namespace ATN.Data
         {
             Crawl Crawl = Context.Crawls.Single(c => c.CrawlId == CrawlId);
             TheoryDefinition[] Definition = Context.TheoryDefinitions.Where(td => td.TheoryId == Crawl.TheoryId).ToArray();
-            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.TheoryId, (CrawlerDataSource)Crawl.DataSourceId, Definition);
+            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.TheoryId, Definition);
         }
 
         /// <summary>
@@ -100,7 +89,6 @@ namespace ATN.Data
 
                 PotentiallyExistingCrawl = new Crawl();
                 PotentiallyExistingCrawl.TheoryId = CrawlSpecifier.TheoryId;
-                PotentiallyExistingCrawl.DataSourceId = (int)CrawlSpecifier.DataSource;
                 PotentiallyExistingCrawl.CrawlState = (int)CrawlerState.Started;
                 PotentiallyExistingCrawl.DateCrawled = DateTime.Now;
                 Context.Crawls.AddObject(PotentiallyExistingCrawl);
@@ -163,13 +151,14 @@ namespace ATN.Data
         /// <param name="DataSourceSpecificIds">The data-source specific IDs to Crawl</param>
         /// <param name="ReferencesSourceId">The referenced persistent-model source, if any</param>
         /// <param name="Direction">The direction of the persistence-model reference, if any</param>
-        public void QueueReferenceCrawl(int CrawlId, string[] DataSourceSpecificIds, long? ReferencesSourceId, CrawlReferenceDirection Direction)
+        public void QueueReferenceCrawl(int CrawlId, string[] DataSourceSpecificIds, CrawlerDataSource DataSource, long? ReferencesSourceId, CrawlReferenceDirection Direction)
         {
             foreach (string DataSourceSpecificId in DataSourceSpecificIds)
             {
                 CrawlQueue cq = new CrawlQueue();
                 cq.CrawlId = CrawlId;
                 cq.DataSourceSpecificId = DataSourceSpecificId;
+                cq.DataSourceId = (int)DataSource;
                 cq.CrawlReferenceDirection = (short)Direction;
                 if (Direction != CrawlReferenceDirection.None)
                 {

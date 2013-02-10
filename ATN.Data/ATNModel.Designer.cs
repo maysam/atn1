@@ -24,7 +24,6 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "Source_AuthorsReference_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "AuthorsReference", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.AuthorsReference), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Crawl_CrawlQueue_FK1", "Crawl", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Crawl), "CrawlQueue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlQueue), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Crawl_CrawlResult_FK1", "Crawl", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Crawl), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
-[assembly: EdmRelationshipAttribute("ATNModel", "DataSource_Crawl_FK1", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Crawl", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Crawl), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Source_CrawlQueue_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ATN.Data.Source), "CrawlQueue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlQueue), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Source_CrawlResult_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "DataSource_Editor_FK1", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Editor", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Editor), true)]
@@ -41,6 +40,8 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "RelatedSources", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Source1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source))]
 [assembly: EdmRelationshipAttribute("ATNModel", "SourceSubject", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject))]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_TheoryDefinition_Theory", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "TheoryDefinition", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryDefinition), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlQueue_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlQueue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlQueue), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlResult_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
 
 #endregion
 
@@ -962,15 +963,13 @@ namespace ATN.Data
         /// Create a new Crawl object.
         /// </summary>
         /// <param name="crawlId">Initial value of the CrawlId property.</param>
-        /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
         /// <param name="crawlState">Initial value of the CrawlState property.</param>
         /// <param name="dateCrawled">Initial value of the DateCrawled property.</param>
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
-        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int32 dataSourceId, global::System.Int16 crawlState, global::System.DateTime dateCrawled, global::System.Int32 theoryId)
+        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int16 crawlState, global::System.DateTime dateCrawled, global::System.Int32 theoryId)
         {
             Crawl crawl = new Crawl();
             crawl.CrawlId = crawlId;
-            crawl.DataSourceId = dataSourceId;
             crawl.CrawlState = crawlState;
             crawl.DateCrawled = dateCrawled;
             crawl.TheoryId = theoryId;
@@ -1007,30 +1006,6 @@ namespace ATN.Data
         private global::System.Int32 _CrawlId;
         partial void OnCrawlIdChanging(global::System.Int32 value);
         partial void OnCrawlIdChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
-        [DataMemberAttribute()]
-        public global::System.Int32 DataSourceId
-        {
-            get
-            {
-                return _DataSourceId;
-            }
-            set
-            {
-                OnDataSourceIdChanging(value);
-                ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("DataSourceId");
-                OnDataSourceIdChanged();
-            }
-        }
-        private global::System.Int32 _DataSourceId;
-        partial void OnDataSourceIdChanging(global::System.Int32 value);
-        partial void OnDataSourceIdChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1183,44 +1158,6 @@ namespace ATN.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "DataSource_Crawl_FK1", "DataSource")]
-        public DataSource DataSource
-        {
-            get
-            {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.DataSource_Crawl_FK1", "DataSource").Value;
-            }
-            set
-            {
-                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.DataSource_Crawl_FK1", "DataSource").Value = value;
-            }
-        }
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [BrowsableAttribute(false)]
-        [DataMemberAttribute()]
-        public EntityReference<DataSource> DataSourceReference
-        {
-            get
-            {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.DataSource_Crawl_FK1", "DataSource");
-            }
-            set
-            {
-                if ((value != null))
-                {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DataSource>("ATNModel.DataSource_Crawl_FK1", "DataSource", value);
-                }
-            }
-        }
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [XmlIgnoreAttribute()]
-        [SoapIgnoreAttribute()]
-        [DataMemberAttribute()]
         [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Crawl_Theory", "Theory")]
         public Theory Theory
         {
@@ -1274,13 +1211,15 @@ namespace ATN.Data
         /// <param name="crawlId">Initial value of the CrawlId property.</param>
         /// <param name="dataSourceSpecificId">Initial value of the DataSourceSpecificId property.</param>
         /// <param name="crawlReferenceDirection">Initial value of the CrawlReferenceDirection property.</param>
-        public static CrawlQueue CreateCrawlQueue(global::System.Int64 crawQueueId, global::System.Int32 crawlId, global::System.String dataSourceSpecificId, global::System.Int16 crawlReferenceDirection)
+        /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
+        public static CrawlQueue CreateCrawlQueue(global::System.Int64 crawQueueId, global::System.Int32 crawlId, global::System.String dataSourceSpecificId, global::System.Int16 crawlReferenceDirection, global::System.Int32 dataSourceId)
         {
             CrawlQueue crawlQueue = new CrawlQueue();
             crawlQueue.CrawQueueId = crawQueueId;
             crawlQueue.CrawlId = crawlId;
             crawlQueue.DataSourceSpecificId = dataSourceSpecificId;
             crawlQueue.CrawlReferenceDirection = crawlReferenceDirection;
+            crawlQueue.DataSourceId = dataSourceId;
             return crawlQueue;
         }
 
@@ -1410,6 +1349,30 @@ namespace ATN.Data
         private Nullable<global::System.Int64> _ReferencesSourceId;
         partial void OnReferencesSourceIdChanging(Nullable<global::System.Int64> value);
         partial void OnReferencesSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 DataSourceId
+        {
+            get
+            {
+                return _DataSourceId;
+            }
+            set
+            {
+                OnDataSourceIdChanging(value);
+                ReportPropertyChanging("DataSourceId");
+                _DataSourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DataSourceId");
+                OnDataSourceIdChanged();
+            }
+        }
+        private global::System.Int32 _DataSourceId;
+        partial void OnDataSourceIdChanging(global::System.Int32 value);
+        partial void OnDataSourceIdChanged();
 
         #endregion
 
@@ -1491,6 +1454,44 @@ namespace ATN.Data
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_CrawlQueue_DataSource", "DataSource")]
+        public DataSource DataSource
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_CrawlQueue_DataSource", "DataSource").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_CrawlQueue_DataSource", "DataSource").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<DataSource> DataSourceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_CrawlQueue_DataSource", "DataSource");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DataSource>("ATNModel.FK_CrawlQueue_DataSource", "DataSource", value);
+                }
+            }
+        }
 
         #endregion
 
@@ -1515,7 +1516,8 @@ namespace ATN.Data
         /// <param name="sourceId">Initial value of the SourceId property.</param>
         /// <param name="dateRetreieved">Initial value of the DateRetreieved property.</param>
         /// <param name="referenceRetrieved">Initial value of the ReferenceRetrieved property.</param>
-        public static CrawlResult CreateCrawlResult(global::System.Int64 crawlResultId, global::System.Int32 crawlId, global::System.String dataSourceSpecificId, global::System.Int64 sourceId, global::System.DateTime dateRetreieved, global::System.Boolean referenceRetrieved)
+        /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
+        public static CrawlResult CreateCrawlResult(global::System.Int64 crawlResultId, global::System.Int32 crawlId, global::System.String dataSourceSpecificId, global::System.Int64 sourceId, global::System.DateTime dateRetreieved, global::System.Boolean referenceRetrieved, global::System.Int32 dataSourceId)
         {
             CrawlResult crawlResult = new CrawlResult();
             crawlResult.CrawlResultId = crawlResultId;
@@ -1524,6 +1526,7 @@ namespace ATN.Data
             crawlResult.SourceId = sourceId;
             crawlResult.DateRetreieved = dateRetreieved;
             crawlResult.ReferenceRetrieved = referenceRetrieved;
+            crawlResult.DataSourceId = dataSourceId;
             return crawlResult;
         }
 
@@ -1677,6 +1680,30 @@ namespace ATN.Data
         private global::System.Boolean _ReferenceRetrieved;
         partial void OnReferenceRetrievedChanging(global::System.Boolean value);
         partial void OnReferenceRetrievedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 DataSourceId
+        {
+            get
+            {
+                return _DataSourceId;
+            }
+            set
+            {
+                OnDataSourceIdChanging(value);
+                ReportPropertyChanging("DataSourceId");
+                _DataSourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DataSourceId");
+                OnDataSourceIdChanged();
+            }
+        }
+        private global::System.Int32 _DataSourceId;
+        partial void OnDataSourceIdChanging(global::System.Int32 value);
+        partial void OnDataSourceIdChanged();
 
         #endregion
 
@@ -1755,6 +1782,44 @@ namespace ATN.Data
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Source>("ATNModel.Source_CrawlResult_FK1", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_CrawlResult_DataSource", "DataSource")]
+        public DataSource DataSource
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_CrawlResult_DataSource", "DataSource").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_CrawlResult_DataSource", "DataSource").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<DataSource> DataSourceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_CrawlResult_DataSource", "DataSource");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DataSource>("ATNModel.FK_CrawlResult_DataSource", "DataSource", value);
                 }
             }
         }
@@ -1874,28 +1939,6 @@ namespace ATN.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "DataSource_Crawl_FK1", "Crawl")]
-        public EntityCollection<Crawl> Crawls
-        {
-            get
-            {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Crawl>("ATNModel.DataSource_Crawl_FK1", "Crawl");
-            }
-            set
-            {
-                if ((value != null))
-                {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Crawl>("ATNModel.DataSource_Crawl_FK1", "Crawl", value);
-                }
-            }
-        }
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [XmlIgnoreAttribute()]
-        [SoapIgnoreAttribute()]
-        [DataMemberAttribute()]
         [EdmRelationshipNavigationPropertyAttribute("ATNModel", "DataSource_Editor_FK1", "Editor")]
         public EntityCollection<Editor> Editors
         {
@@ -1930,6 +1973,50 @@ namespace ATN.Data
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.DataSource_Source_FK1", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_CrawlQueue_DataSource", "CrawlQueue")]
+        public EntityCollection<CrawlQueue> CrawlQueues
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<CrawlQueue>("ATNModel.FK_CrawlQueue_DataSource", "CrawlQueue");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<CrawlQueue>("ATNModel.FK_CrawlQueue_DataSource", "CrawlQueue", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_CrawlResult_DataSource", "CrawlResult")]
+        public EntityCollection<CrawlResult> CrawlResults
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<CrawlResult>("ATNModel.FK_CrawlResult_DataSource", "CrawlResult");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<CrawlResult>("ATNModel.FK_CrawlResult_DataSource", "CrawlResult", value);
                 }
             }
         }
@@ -3825,12 +3912,14 @@ namespace ATN.Data
         /// <param name="theoryDefinitionId">Initial value of the TheoryDefinitionId property.</param>
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="canonicalIds">Initial value of the CanonicalIds property.</param>
-        public static TheoryDefinition CreateTheoryDefinition(global::System.Int32 theoryDefinitionId, global::System.Int32 theoryId, global::System.String canonicalIds)
+        /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
+        public static TheoryDefinition CreateTheoryDefinition(global::System.Int32 theoryDefinitionId, global::System.Int32 theoryId, global::System.String canonicalIds, global::System.Int32 dataSourceId)
         {
             TheoryDefinition theoryDefinition = new TheoryDefinition();
             theoryDefinition.TheoryDefinitionId = theoryDefinitionId;
             theoryDefinition.TheoryId = theoryId;
             theoryDefinition.CanonicalIds = canonicalIds;
+            theoryDefinition.DataSourceId = dataSourceId;
             return theoryDefinition;
         }
 
@@ -3912,6 +4001,30 @@ namespace ATN.Data
         private global::System.String _CanonicalIds;
         partial void OnCanonicalIdsChanging(global::System.String value);
         partial void OnCanonicalIdsChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 DataSourceId
+        {
+            get
+            {
+                return _DataSourceId;
+            }
+            set
+            {
+                OnDataSourceIdChanging(value);
+                ReportPropertyChanging("DataSourceId");
+                _DataSourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DataSourceId");
+                OnDataSourceIdChanged();
+            }
+        }
+        private global::System.Int32 _DataSourceId;
+        partial void OnDataSourceIdChanging(global::System.Int32 value);
+        partial void OnDataSourceIdChanged();
 
         #endregion
 

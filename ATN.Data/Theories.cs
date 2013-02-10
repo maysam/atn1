@@ -11,7 +11,7 @@ namespace ATN.Data
         {
 
         }
-        public Theory AddTheory(string TheoryName, params string[][] CanonicalSources)
+        public Theory AddTheory(string TheoryName, params CanonicalDataSource[] CanonicalSources)
         {
             Theory TheoryToAdd = new Theory();
             TheoryToAdd.TheoryName = TheoryName;
@@ -19,11 +19,12 @@ namespace ATN.Data
             Context.Theories.AddObject(TheoryToAdd);
             Context.SaveChanges();
 
-            foreach (string[] CanonicalSource in CanonicalSources)
+            foreach (CanonicalDataSource CanonicalSource in CanonicalSources)
             {
                 TheoryDefinition TheoryCanonicalSource = new TheoryDefinition();
                 TheoryCanonicalSource.TheoryId = TheoryToAdd.TheoryId;
-                TheoryCanonicalSource.CanonicalIds = String.Join(",", CanonicalSource);
+                TheoryCanonicalSource.DataSourceId = (int)CanonicalSource.DataSource;
+                TheoryCanonicalSource.CanonicalIds = String.Join(",", CanonicalSource.CanonicalIds);
                 Context.TheoryDefinitions.AddObject(TheoryCanonicalSource);
             }
 
@@ -43,7 +44,7 @@ namespace ATN.Data
             List<Source> Sources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                Sources.Add(s.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.Theory.Crawl.SingleOrDefault().DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                Sources.Add(s.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
             }
             return Sources.ToArray();
         }

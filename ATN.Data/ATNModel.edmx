@@ -41,10 +41,6 @@
             <End Role="DataSource" EntitySet="DataSource" />
             <End Role="Author" EntitySet="Author" />
           </AssociationSet>
-          <AssociationSet Name="DataSource_Crawl_FK1" Association="ATNModel.Store.DataSource_Crawl_FK1">
-            <End Role="DataSource" EntitySet="DataSource" />
-            <End Role="Crawl" EntitySet="Crawl" />
-          </AssociationSet>
           <AssociationSet Name="DataSource_Editor_FK1" Association="ATNModel.Store.DataSource_Editor_FK1">
             <End Role="DataSource" EntitySet="DataSource" />
             <End Role="Editor" EntitySet="Editor" />
@@ -60,6 +56,14 @@
           <AssociationSet Name="FK_Crawl_Theory" Association="ATNModel.Store.FK_Crawl_Theory">
             <End Role="Theory" EntitySet="Theory" />
             <End Role="Crawl" EntitySet="Crawl" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CrawlQueue_DataSource" Association="ATNModel.Store.FK_CrawlQueue_DataSource">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="CrawlQueue" EntitySet="CrawlQueue" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CrawlResult_DataSource" Association="ATNModel.Store.FK_CrawlResult_DataSource">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="CrawlResult" EntitySet="CrawlResult" />
           </AssociationSet>
           <AssociationSet Name="FK_TheoryDefinition_Theory" Association="ATNModel.Store.FK_TheoryDefinition_Theory">
             <End Role="Theory" EntitySet="Theory" />
@@ -160,7 +164,6 @@
           </Key>
           <Property Name="CrawlId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="TheoryId" Type="int" Nullable="false" />
-          <Property Name="DataSourceId" Type="int" Nullable="false" />
           <Property Name="CrawlState" Type="smallint" Nullable="false" />
           <Property Name="DateCrawled" Type="datetime" Nullable="false" />
           <Property Name="LastEnumeratedSourceId" Type="bigint" />
@@ -172,6 +175,7 @@
           <Property Name="CrawQueueId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="CrawlId" Type="int" Nullable="false" />
           <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="256" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
           <Property Name="CrawlReferenceDirection" Type="smallint" Nullable="false" />
           <Property Name="ReferencesSourceId" Type="bigint" />
         </EntityType>
@@ -182,6 +186,7 @@
           <Property Name="CrawlResultId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="CrawlId" Type="int" Nullable="false" />
           <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="DateRetreieved" Type="datetime" Nullable="false" />
           <Property Name="ReferenceRetrieved" Type="bit" Nullable="false" />
@@ -291,6 +296,7 @@
           <Property Name="TheoryDefinitionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="TheoryId" Type="int" Nullable="false" />
           <Property Name="CanonicalIds" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="TheoryMembership">
           <Key>
@@ -365,18 +371,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="DataSource_Crawl_FK1">
-          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
-          <End Role="Crawl" Type="ATNModel.Store.Crawl" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DataSource">
-              <PropertyRef Name="DataSourceId" />
-            </Principal>
-            <Dependent Role="Crawl">
-              <PropertyRef Name="DataSourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="DataSource_Editor_FK1">
           <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
           <End Role="Editor" Type="ATNModel.Store.Editor" Multiplicity="*" />
@@ -422,6 +416,30 @@
             </Principal>
             <Dependent Role="Crawl">
               <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CrawlQueue_DataSource">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="CrawlQueue" Type="ATNModel.Store.CrawlQueue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="CrawlQueue">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CrawlResult_DataSource">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="CrawlResult" Type="ATNModel.Store.CrawlResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="CrawlResult">
+              <PropertyRef Name="DataSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -651,10 +669,6 @@
             <End Role="Crawl" EntitySet="Crawls" />
             <End Role="CrawlResult" EntitySet="CrawlResults" />
           </AssociationSet>
-          <AssociationSet Name="DataSource_Crawl_FK1" Association="ATNModel.DataSource_Crawl_FK1">
-            <End Role="DataSource" EntitySet="DataSources" />
-            <End Role="Crawl" EntitySet="Crawls" />
-          </AssociationSet>
           <AssociationSet Name="Source_CrawlQueue_FK1" Association="ATNModel.Source_CrawlQueue_FK1">
             <End Role="Source" EntitySet="Sources" />
             <End Role="CrawlQueue" EntitySet="CrawlQueues" />
@@ -726,6 +740,14 @@
             <End Role="Theory" EntitySet="Theories" />
             <End Role="TheoryDefinition" EntitySet="TheoryDefinitions" />
           </AssociationSet>
+          <AssociationSet Name="FK_CrawlQueue_DataSource" Association="ATNModel.FK_CrawlQueue_DataSource">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="CrawlQueue" EntitySet="CrawlQueues" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CrawlResult_DataSource" Association="ATNModel.FK_CrawlResult_DataSource">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="CrawlResult" EntitySet="CrawlResults" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Author">
           <Key>
@@ -756,11 +778,9 @@
             <PropertyRef Name="CrawlId" />
           </Key>
           <Property Type="Int32" Name="CrawlId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
           <Property Type="Int16" Name="CrawlState" Nullable="false" />
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="Crawl" ToRole="CrawlQueue" />
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="Crawl" ToRole="CrawlResult" />
-          <NavigationProperty Name="DataSource" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="Crawl" ToRole="DataSource" />
           <Property Type="DateTime" Name="DateCrawled" Nullable="false" Precision="3" />
           <Property Type="Int64" Name="LastEnumeratedSourceId" />
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
@@ -777,6 +797,8 @@
           <Property Type="Int64" Name="ReferencesSourceId" />
           <NavigationProperty Name="Crawl" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="CrawlQueue" ToRole="Crawl" />
           <NavigationProperty Name="Source" Relationship="ATNModel.Source_CrawlQueue_FK1" FromRole="CrawlQueue" ToRole="Source" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.FK_CrawlQueue_DataSource" FromRole="CrawlQueue" ToRole="DataSource" />
         </EntityType>
         <EntityType Name="CrawlResult">
           <Key>
@@ -790,6 +812,8 @@
           <Property Type="Boolean" Name="ReferenceRetrieved" Nullable="false" />
           <NavigationProperty Name="Crawl" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Crawl" />
           <NavigationProperty Name="Source" Relationship="ATNModel.Source_CrawlResult_FK1" FromRole="CrawlResult" ToRole="Source" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.FK_CrawlResult_DataSource" FromRole="CrawlResult" ToRole="DataSource" />
         </EntityType>
         <EntityType Name="DataSource">
           <Key>
@@ -798,9 +822,10 @@
           <Property Type="Int32" Name="DataSourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="String" Name="DataSourceName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Authors" Relationship="ATNModel.DataSource_Author_FK1" FromRole="DataSource" ToRole="Author" />
-          <NavigationProperty Name="Crawls" Relationship="ATNModel.DataSource_Crawl_FK1" FromRole="DataSource" ToRole="Crawl" />
           <NavigationProperty Name="Editors" Relationship="ATNModel.DataSource_Editor_FK1" FromRole="DataSource" ToRole="Editor" />
           <NavigationProperty Name="Sources" Relationship="ATNModel.DataSource_Source_FK1" FromRole="DataSource" ToRole="Source" />
+          <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.FK_CrawlQueue_DataSource" FromRole="DataSource" ToRole="CrawlQueue" />
+          <NavigationProperty Name="CrawlResults" Relationship="ATNModel.FK_CrawlResult_DataSource" FromRole="DataSource" ToRole="CrawlResult" />
         </EntityType>
         <EntityType Name="Editor">
           <Key>
@@ -919,18 +944,6 @@
             </Principal>
             <Dependent Role="CrawlResult">
               <PropertyRef Name="CrawlId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="DataSource_Crawl_FK1">
-          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
-          <End Type="ATNModel.Crawl" Role="Crawl" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DataSource">
-              <PropertyRef Name="DataSourceId" />
-            </Principal>
-            <Dependent Role="Crawl">
-              <PropertyRef Name="DataSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1165,6 +1178,7 @@
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="String" Name="CanonicalIds" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Theory" Relationship="ATNModel.FK_TheoryDefinition_Theory" FromRole="TheoryDefinition" ToRole="Theory" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
         </EntityType>
         <Association Name="FK_TheoryDefinition_Theory">
           <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
@@ -1175,6 +1189,30 @@
             </Principal>
             <Dependent Role="TheoryDefinition">
               <PropertyRef Name="TheoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CrawlQueue_DataSource">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.CrawlQueue" Role="CrawlQueue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="CrawlQueue">
+              <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CrawlResult_DataSource">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.CrawlResult" Role="CrawlResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="CrawlResult">
+              <PropertyRef Name="DataSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1213,7 +1251,6 @@
                 <ScalarProperty Name="LastEnumeratedSourceId" ColumnName="LastEnumeratedSourceId" />
                 <ScalarProperty Name="DateCrawled" ColumnName="DateCrawled" />
                 <ScalarProperty Name="CrawlState" ColumnName="CrawlState" />
-                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
                 <ScalarProperty Name="CrawlId" ColumnName="CrawlId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1221,6 +1258,7 @@
           <EntitySetMapping Name="CrawlQueues">
             <EntityTypeMapping TypeName="ATNModel.CrawlQueue">
               <MappingFragment StoreEntitySet="CrawlQueue">
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
                 <ScalarProperty Name="ReferencesSourceId" ColumnName="ReferencesSourceId" />
                 <ScalarProperty Name="CrawlReferenceDirection" ColumnName="CrawlReferenceDirection" />
                 <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
@@ -1232,6 +1270,7 @@
           <EntitySetMapping Name="CrawlResults">
             <EntityTypeMapping TypeName="ATNModel.CrawlResult">
               <MappingFragment StoreEntitySet="CrawlResult">
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
                 <ScalarProperty Name="ReferenceRetrieved" ColumnName="ReferenceRetrieved" />
                 <ScalarProperty Name="DateRetreieved" ColumnName="DateRetreieved" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
@@ -1385,6 +1424,7 @@
           <EntitySetMapping Name="TheoryDefinitions">
             <EntityTypeMapping TypeName="ATNModel.TheoryDefinition">
               <MappingFragment StoreEntitySet="TheoryDefinition">
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
                 <ScalarProperty Name="CanonicalIds" ColumnName="CanonicalIds" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
                 <ScalarProperty Name="TheoryDefinitionId" ColumnName="TheoryDefinitionId" />
@@ -1454,11 +1494,6 @@
           <ConnectorPoint PointX="9" PointY="8.21618853145032" />
           <ConnectorPoint PointX="9" PointY="12" />
         </AssociationConnector>
-        <AssociationConnector Association="ATNModel.DataSource_Crawl_FK1" >
-          <ConnectorPoint PointX="1.9062525" PointY="10.375" />
-          <ConnectorPoint PointX="1.9062525" PointY="8.1824446614583337" />
-          <ConnectorPoint PointX="3" PointY="8.1824446614583337" />
-        </AssociationConnector>
         <AssociationConnector Association="ATNModel.Source_CrawlQueue_FK1" >
           <ConnectorPoint PointX="4.5" PointY="14.838480559082033" />
           <ConnectorPoint PointX="4.822916666666667" PointY="14.838480559082033" />
@@ -1524,6 +1559,8 @@
         <AssociationConnector Association="ATNModel.SourceSubject" />
         <EntityTypeShape EntityType="ATNModel.TheoryDefinition" Width="1.5" PointX="1.0297081214514134" PointY="7.9193225539845056" />
         <AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
+        <AssociationConnector Association="ATNModel.FK_CrawlQueue_DataSource" />
+        <AssociationConnector Association="ATNModel.FK_CrawlResult_DataSource" />
       </Diagram>
     </Diagrams>
   </Designer>

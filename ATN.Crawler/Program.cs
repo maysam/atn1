@@ -13,22 +13,13 @@ namespace ATN.Crawler
     {
         static void Main(string[] args)
         {
-            Theories t = new Theories();
-            /*t.AddTheory("Technology Acceptance Model",
-                new string[][] {
-                    new string[] {"1265954", "1279051"},
-                    new string[] {"1253523", "38747179"}
-                }
-            );*/
             CrawlRunner co = new CrawlRunner();
             /*co.StartNewCrawl(
                     new NewCrawlSpecifier(
-                        "Technology Acceptance Model",
-                        CrawlerDataSource.MicrosoftAcademicSearch,
-                        new string[][] {
-                            new string[] {"1265954", "1279051"},
-                            new string[] {"1253523", "38747179"}
-                        }
+                        "Transtheoretical Model/Stages of Change",
+                        new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, "37035751"),
+                        new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, "36978289", "36978290"),
+                        new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, "3228451", "45552775")
                     )
             );*/
             co.RefreshExistingCrawls();
