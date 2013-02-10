@@ -61,11 +61,10 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Returns the data-source specific canonical identifiers for the given CrawlId and DataSource
+        /// Returns the crawl specifiers for the given CrawlId
         /// </summary>
-        /// <param name="DataSource">The data-source to retrieve the canonical ids for</param>
         /// <param name="CrawlId">The CrawlId to retrieve the canonical ids for</param>
-        /// <returns>All canonical IDs associated with the given DataSource and CrawlId</returns>
+        /// <returns>All crawl specifiers associated with the given CrawlId</returns>
         public ExistingCrawlSpecifier GetExistingCrawlSpecifierForCrawl(int CrawlId)
         {
             Crawl Crawl = Context.Crawls.Single(c => c.CrawlId == CrawlId);
@@ -74,10 +73,9 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Creates the neccessary structures to begin enqueueing crawls
+        /// Creates the Crawl entry for the given crawl specifier
         /// </summary>
-        /// <param name="DataSource">The data source for which this crawl is being performed on</param>
-        /// <param name="CanonicalIds">The data-source specific id or ids for the canonical papers being crawled</param>
+        /// <param name="CrawlSpecifier">The attributes of the crawl being created</param>
         /// <returns>A persistence-model attached copy of the newly-initiated or previously-initiated crawl</returns>
         public Crawl QueueTheoryCrawl(PendingCrawlSpecifier CrawlSpecifier)
         {
@@ -91,6 +89,7 @@ namespace ATN.Data
                 PotentiallyExistingCrawl.TheoryId = CrawlSpecifier.TheoryId;
                 PotentiallyExistingCrawl.CrawlState = (int)CrawlerState.Started;
                 PotentiallyExistingCrawl.DateCrawled = DateTime.Now;
+                PotentiallyExistingCrawl.CrawlIntervalDays = CrawlSpecifier.CrawlIntervalDays;
                 Context.Crawls.AddObject(PotentiallyExistingCrawl);
                 Context.SaveChanges();
             }
@@ -150,6 +149,7 @@ namespace ATN.Data
         /// </summary>
         /// <param name="CrawlId">The Crawl which these data-source specific IDs pertain to</param>
         /// <param name="DataSourceSpecificIds">The data-source specific IDs to Crawl</param>
+        /// <param name="DataSource">The data-source with which the data-source specific IDs are from</param>
         /// <param name="ReferencesSourceId">The referenced persistent-model source, if any</param>
         /// <param name="Direction">The direction of the persistence-model reference, if any</param>
         public void QueueReferenceCrawl(int CrawlId, string[] DataSourceSpecificIds, CrawlerDataSource DataSource, long? ReferencesSourceId, CrawlReferenceDirection Direction)
@@ -181,7 +181,7 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Commits the list of pending 
+        /// Commits the list of pending crawl queue items
         /// </summary>
         public void CommitQueue()
         {

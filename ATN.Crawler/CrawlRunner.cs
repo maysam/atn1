@@ -23,10 +23,32 @@ namespace ATN.Crawler
             _sources = new Sources();
         }
 
+        /// <summary>
+        /// Enumerates all existing crawls and re-crawls them
+        /// </summary>
         public void RefreshExistingCrawls()
         {
             RefreshExistingCrawls(null);
         }
+
+        /// <summary>
+        /// Enumerates all crawls, finishing incomplete ones and recrawling stale ones
+        /// </summary>
+        public void ProcessStaleCrawls()
+        {
+            Crawl[] ExistingCrawls = _progress.GetExistingCrawls();
+            ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState > 5).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
+            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+            foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
+            {
+                RefreshExistingCrawls(Specifier.Crawl.CrawlId);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes all existing crawls, or a single crawl indicated by CrawlId
+        /// </summary>
+        /// <param name="CrawlId">CrawlId to refresh, if this is null all existing crawls will be refreshed</param>
         private void RefreshExistingCrawls(int? CrawlId = null)
         {
             //This translates specific data source identifier to an ICrawler implementation capable of crawling it
@@ -76,12 +98,12 @@ namespace ATN.Crawler
                         CanonicalSources.Add(AttachedCannonicalSource, CanonicalDataSource);
                     }
                     _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.CanonicalPaperComplete);
-                    Trace.WriteLine("Canonical paper retrieved, crawl state committed", "Informational");
+                    Trace.WriteLine("Canonical papers retrieved, crawl state committed", "Informational");
                 }
                 else
                 {
                     Trace.WriteLine("Crawl already started, retrieving crawl state from database model", "Informational");
-                    //Find the canonical source from the database, stopping once one is found
+                    //Find the canonical sources from the database
                     foreach (CanonicalDataSource CanonicalDataSource in Specifier.CanonicalDataSources)
                     {
                         CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds(CanonicalDataSource.DataSource, CanonicalDataSource.CanonicalIds), CanonicalDataSource);
@@ -184,16 +206,25 @@ namespace ATN.Crawler
                 }
             }
         }
-        public void StartNewCrawl(NewCrawlSpecifier CrawlSpecifier)
+
+        /// <summary>
+        /// Queue a crawl for a new theory
+        /// </summary>
+        /// <param name="CrawlSpecifier">The parameters of the theory being crawled</param>
+        /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of this crawl. If null, this theory will not be refreshed.</param>
+        public void StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
         {
             Theories Theories = new Theories();
             Theory TheoryToCrawl = Theories.AddTheory(CrawlSpecifier.TheoryName, CrawlSpecifier.CanonicalDataSources);
-            PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier);
+            PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier, CrawlIntervalDays);
             Crawl Crawl = _progress.QueueTheoryCrawl(pcs);
             Trace.WriteLine(string.Format("Queueing crawl using for theory {0}", TheoryToCrawl.TheoryName, "Informational"));
-            RefreshExistingCrawls(Crawl.CrawlId);
         }
 
+        /// <summary>
+        /// Dequeues existing crawl-specific queue items for citations and references
+        /// </summary>
+        /// <param name="Crawl">The crawl to dequeue items for</param>
         private void DequeueCitationsReferences(Crawl Crawl)
         {
             Dictionary<CrawlerDataSource, ICrawler> DataSourceToCrawler = CrawlInstantiator.RetrieveCrawlerTranslations();

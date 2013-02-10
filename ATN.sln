@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATN.Test", "ATN.Test\ATN.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATN.Web", "ATN.Web\ATN.Web.csproj", "{DF64F22E-ED81-4F29-BDF8-C166B071FAFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATN.Processing", "ATN.Processing\ATN.Processing.csproj", "{7C9830E3-4AA1-484B-B043-73B2776F78E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,18 @@ Global
 		{DF64F22E-ED81-4F29-BDF8-C166B071FAFB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DF64F22E-ED81-4F29-BDF8-C166B071FAFB}.Release|x64.ActiveCfg = Release|Any CPU
 		{DF64F22E-ED81-4F29-BDF8-C166B071FAFB}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Release|x64.ActiveCfg = Release|x64
+		{7C9830E3-4AA1-484B-B043-73B2776F78E8}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

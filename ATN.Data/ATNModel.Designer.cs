@@ -240,7 +240,7 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<Journal> Journals
+        internal ObjectSet<Journal> Journals
         {
             get
             {
@@ -1102,6 +1102,30 @@ namespace ATN.Data
         private global::System.Int32 _TheoryId;
         partial void OnTheoryIdChanging(global::System.Int32 value);
         partial void OnTheoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> CrawlIntervalDays
+        {
+            get
+            {
+                return _CrawlIntervalDays;
+            }
+            set
+            {
+                OnCrawlIntervalDaysChanging(value);
+                ReportPropertyChanging("CrawlIntervalDays");
+                _CrawlIntervalDays = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("CrawlIntervalDays");
+                OnCrawlIntervalDaysChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _CrawlIntervalDays;
+        partial void OnCrawlIntervalDaysChanging(Nullable<global::System.Int32> value);
+        partial void OnCrawlIntervalDaysChanged();
 
         #endregion
 
