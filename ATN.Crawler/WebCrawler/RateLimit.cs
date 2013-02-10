@@ -17,7 +17,7 @@ namespace ATN.Crawler.WebCrawler
     {
         private TimeSpan RequestInterval = new TimeSpan(0, 0, 60);
 
-        private const int RequestsPerInterval = 120;
+        private const int RequestsPerInterval = 100;
         private static Stopwatch Watch;
         private static uint? Requests;
 

@@ -43,7 +43,7 @@ namespace ATN.Crawler
             {
                 //Prioritize crawls that haven't been run yet, then sort by how close each crawl is to completion
                 CrawlSpecifiers = ExistingCrawls.Where(ec => ec.CrawlState < (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).OrderBy(ec => ec.DateCrawled).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
-                CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(ec => ec.CrawlState >= (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).OrderBy(ec => ec.DateCrawled).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+                CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(ec => ec.CrawlState >= (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             }
 
             Trace.WriteLine(string.Format("Refreshing {0} crawls", CrawlSpecifiers.Length), "Informational");
@@ -71,7 +71,7 @@ namespace ATN.Crawler
                         //If there are multiple copies of the same source added, correlate each unique data-source ID to the canonical source ID
                         foreach (string ID in CanonicalDataSource.CanonicalIds)
                         {
-                            _progress.StoreCanonicalResult(Specifier.Crawl.CrawlId, ID, AttachedCannonicalSource.SourceId);
+                            _progress.StoreCanonicalResult(Specifier.Crawl.CrawlId, ID, CanonicalDataSource.DataSource, AttachedCannonicalSource.SourceId);
                         }
                         CanonicalSources.Add(AttachedCannonicalSource, CanonicalDataSource);
                     }
@@ -131,7 +131,7 @@ namespace ATN.Crawler
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlEnqueueingCitationsComplete || Specifier.Crawl.CrawlState == (int)CrawlerState.EnqueueingCitationsComplete)
                 {
-                    DequeueCitations(Specifier.Crawl);
+                    DequeueCitationsReferences(Specifier.Crawl);
                     _progress.UpdateCrawlerState(Specifier.Crawl, (CrawlerState)(Specifier.Crawl.CrawlState + 1));
                     Trace.WriteLine("Dequeueing citations complete", "Informational");
                 }
@@ -171,28 +171,6 @@ namespace ATN.Crawler
                         }
                     }
 
-                    Trace.WriteLine("Queueing references for added citations");
-                    var CrawlResults = Specifier.Crawl.CrawlResults.Where(cr => cr.ReferenceRetrieved == false).ToArray();
-
-                    for (int i = 0; i < CrawlResults.Length; i++)
-                    {
-                        ICrawler Crawler = DataSourceToCrawler[(CrawlerDataSource)CrawlResults[i].DataSourceId];
-                        Trace.WriteLine(string.Format("Queueing references for paper {0}/{1}", i + 1, CrawlResults.Length));
-
-                        //Get the difference from stored references and current references from data source
-                        string[] CurrentReferences = CrawlResults[i].Source.References.Select(r => r.DataSourceSpecificId).ToArray();
-                        string[] UpdatedReferences = Crawler.GetReferencesBySourceId(CrawlResults[i].DataSourceSpecificId);
-                        string[] NewReferences = UpdatedReferences.Except(CurrentReferences).ToArray();
-
-                        //Queue the retrieved publication IDs for retrieval
-                        _progress.QueueReferenceCrawl(Specifier.Crawl.CrawlId, NewReferences, (CrawlerDataSource)CrawlResults[i].DataSourceId, CrawlResults[i].SourceId, CrawlReferenceDirection.Reference);
-
-                        //Mark the dequeued publication as having it's references enumerated
-                        CrawlResults[i].ReferenceRetrieved = true;
-
-                        Trace.WriteLine(string.Format("Queued {0} references for paper {1}/{2}", NewReferences.Length, i + 1, CrawlResults.Length));
-                    }
-
                     _progress.CommitQueue();
                     _progress.UpdateCrawlerState(Specifier.Crawl, (CrawlerState)(Specifier.Crawl.CrawlState + 1));
                     Trace.WriteLine("Reference queueing complete", "Informational");
@@ -200,7 +178,7 @@ namespace ATN.Crawler
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlEnqueueingReferencesComplete || Specifier.Crawl.CrawlState == (int)CrawlerState.EnqueueingReferencesComplete)
                 {
-                    DequeueReferences(Specifier.Crawl);
+                    DequeueCitationsReferences(Specifier.Crawl);
                     _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.Complete);
                     Trace.WriteLine("Dequeueing references complete", "Informational");
                 }
@@ -216,7 +194,7 @@ namespace ATN.Crawler
             RefreshExistingCrawls(Crawl.CrawlId);
         }
 
-        private void DequeueReferences(Crawl Crawl)
+        private void DequeueCitationsReferences(Crawl Crawl)
         {
             Dictionary<CrawlerDataSource, ICrawler> DataSourceToCrawler = CrawlInstantiator.RetrieveCrawlerTranslations();
             Trace.WriteLine("Dequeueing and retreiving references", "Informational");
@@ -228,75 +206,39 @@ namespace ATN.Crawler
             for (int i = 0; i < CrawlsToComplete.Length; i++)
             {
                 ICrawler CrawlerForDataSource = DataSourceToCrawler[(CrawlerDataSource)CrawlsToComplete[i].DataSourceId];
-                if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
+
+                //See if the given data-source specific ID exists in the database, if not retrieve it from the data source and store it
+                Source SourceToComplete = _sources.GetSourceByDataSourceSpecificId(CrawlerForDataSource.GetDataSource(), CrawlsToComplete[i].DataSourceSpecificId);
+                if (SourceToComplete == null)
                 {
-                    //See if the given data-source specific ID exists in the database, if not retrieve it from the data source and store it
-                    Source SourceToComplete = _sources.GetSourceByDataSourceSpecificId(CrawlerForDataSource.GetDataSource(), CrawlsToComplete[i].DataSourceSpecificId);
-                    if (SourceToComplete == null)
+                    CompleteSource SourceToAdd = CrawlerForDataSource.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
+                    _sources.AddDetachedSource(SourceToAdd);
+                    SourceToComplete = SourceToAdd.Source;
+                    Trace.WriteLine("Source does not exist in database, adding.", "Informational");
+                }
+                try
+                {
+                    //Add a citation between the retrieved source and the paper which it cites
+                    //The reference direction merely switches the direction of the citation,
+                    //which merely swaps the parameters to the AddCitation call
+                    if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
                     {
-                        CompleteSource SourceToAdd = CrawlerForDataSource.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
-                        _sources.AddDetachedSource(SourceToAdd);
-                        SourceToComplete = SourceToAdd.Source;
-                        Trace.WriteLine("Source does not exist in database, adding.", "Informational");
-                    }
-                    try
-                    {
-                        //Try to add a reference between the retrieved source and the canonical paper
                         _sources.AddCitation(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
                     }
-                    catch
+                    else if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
                     {
-                        _sources = new Sources();
-                        Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId), "Informational");
-                    }
-
-                    //Mark this queue item as completed
-                    _progress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId, true);
-                    Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
-                }
-            }
-        }
-
-
-        private void DequeueCitations(Crawl Crawl)
-        {
-            Dictionary<CrawlerDataSource, ICrawler> DataSourceToCrawler = CrawlInstantiator.RetrieveCrawlerTranslations();
-            Trace.WriteLine("Dequeueing and retreiving citations", "Informational");
-
-            //Get all of the pending citations
-            CrawlQueue[] CrawlsToComplete = _progress.GetPendingCrawlsForCrawlId(Crawl.CrawlId);
-            Trace.WriteLine(string.Format("Retreiving {0} citations", CrawlsToComplete.Length), "Informational");
-            for (int i = 0; i < CrawlsToComplete.Length; i++)
-            {
-                ICrawler CrawlerForDataSource = DataSourceToCrawler[(CrawlerDataSource)CrawlsToComplete[i].DataSourceId];
-
-                if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
-                {
-                    //See if the given data-source specific ID exists in the database, if not retrieve it from the data source and store it
-                    Source SourceToComplete = _sources.GetSourceByDataSourceSpecificId(CrawlerForDataSource.GetDataSource(), CrawlsToComplete[i].DataSourceSpecificId);
-                    if (SourceToComplete == null)
-                    {
-                        CompleteSource SourceToAdd = CrawlerForDataSource.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
-                        _sources.AddDetachedSource(SourceToAdd);
-                        SourceToComplete = SourceToAdd.Source;
-                        Trace.WriteLine("Source does not exist in database, adding.", "Informational");
-                    }
-
-                    try
-                    {
-                        //Try to add a reference between the retrieved source and the canonical paper
                         _sources.AddCitation(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
                     }
-                    catch
-                    {
-                        _sources = new Sources();
-                        Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value), "Informational");
-                    }
-
-                    //Mark this queue item as completed
-                    _progress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId);
-                    Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
                 }
+                catch
+                {
+                    _sources = new Sources();
+                    Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId), "Informational");
+                }
+
+                //Mark this queue item as completed
+                _progress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId, true);
+                Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
             }
         }
     }

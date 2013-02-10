@@ -131,11 +131,12 @@ namespace ATN.Data
         /// <param name="CrawlId">The Crawl with which this canonical paper is a part of</param>
         /// <param name="DataSourceSpecificCanonicalId">A canonical paper ID for the given Crawl</param>
         /// <param name="SourceId">The persistence-model SourceId of the given canonical paper ID</param>
-        public void StoreCanonicalResult(int CrawlId, string DataSourceSpecificCanonicalId, long SourceId)
+        public void StoreCanonicalResult(int CrawlId, string DataSourceSpecificCanonicalId, CrawlerDataSource DataSource, long SourceId)
         {
             CrawlResult CanonicalCrawl = new CrawlResult();
             CanonicalCrawl.CrawlId = CrawlId;
             CanonicalCrawl.DataSourceSpecificId = DataSourceSpecificCanonicalId;
+            CanonicalCrawl.DataSourceId = (int)DataSource;
             CanonicalCrawl.DateRetreieved = DateTime.Now;
             CanonicalCrawl.SourceId = SourceId;
 
@@ -220,6 +221,7 @@ namespace ATN.Data
             CrawlResult cr = new CrawlResult();
             cr.CrawlId = CrawlQueueItem.CrawlId;
             cr.DataSourceSpecificId = CrawlQueueItem.DataSourceSpecificId;
+            cr.DataSourceId = CrawlQueueItem.DataSourceId;
             cr.DateRetreieved = DateTime.Now;
             cr.SourceId = SourceId;
             cr.ReferenceRetrieved = ReferencesRetrieved;

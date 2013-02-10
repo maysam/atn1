@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading;
 using ATN.Crawler.MAS;
 using ATN.Data;
+using System.ServiceModel.Security;
 
 namespace ATN.Crawler.WebCrawler
 {
@@ -66,6 +67,11 @@ namespace ATN.Crawler.WebCrawler
                     response = _client.Search(request, _limiter);
                     ResultCount = response.Publication.TotalItem;
                     InitialRequestSucceeded = true;
+                }
+                catch (MessageSecurityException e)
+                {
+                    //"Access Denied", meaning the MAS rate limiter is not happy. Abort immediately.
+                    throw e;
                 }
                 catch (Exception e)
                 {
