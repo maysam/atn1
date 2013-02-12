@@ -325,6 +325,16 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ATN.Crawler\ATN.Crawler.csproj">
+      <Project>{31619954-f7b0-47f7-b9a1-21f722f1de51}</Project>
+      <Name>ATN.Crawler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATN.Data\ATN.Data.csproj">
+      <Project>{d656a9ed-9157-42b1-a870-ab260ecbeed2}</Project>
+      <Name>ATN.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

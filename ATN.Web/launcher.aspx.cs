@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using ATN.Data;
+using ATN.Crawler;
 
 namespace ATN.Web
 {
@@ -118,14 +120,14 @@ namespace ATN.Web
 
 
         /// <summary>
-        /// launches the web crawler with the given arguments
+        /// launches the web crawler with the data the user entered
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void btnSubmit_LaunchCrawler(object sender, CommandEventArgs e)
         {
-            string networkName;
-            networkName = txtNetworkName.Text;
+            string TheoryName;
+            TheoryName = txtNetworkName.Text;
 
             TextBox txtPaperNameTemp;
             TextBox txtMSAcademicSearchIdTemp;
@@ -143,21 +145,29 @@ namespace ATN.Web
                 msAcademicSearchIds[itr] = txtMSAcademicSearchIdTemp.Text;
             }
 
+           
+            //prepare the datasource and specifications for the crawl
+            CanonicalDataSource MASIds = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, msAcademicSearchIds);
+            NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName, MASIds);
+            //start a new crawl
+            CrawlRunner NewCrawler = new CrawlRunner();
+            NewCrawler.StartNewCrawl(CrawlSpecifier);
 
-            string crawlerString;
-            crawlerString = "alert('" +
-                    txtNetworkName.Text + "\\n" +
-                    txtNetworkComments.Text + "\\n" +
-                    "paper name     MS Academic Search ID \\n";
+            //pop an alert box to test if information is being passed correctly
 
-            for (int itr = 0; itr < paperNames.Count(); itr++)
-            {
-                crawlerString += paperNames[itr] + "    " + msAcademicSearchIds[itr] + "\\n";
-            }
-            crawlerString += "');";
+            //string crawlerString;
+            //crawlerString = "alert('" +
+            //        txtNetworkName.Text + "\\n" +
+            //        txtNetworkComments.Text + "\\n" +
+            //        "paper name     MS Academic Search ID \\n";
 
+            //for (int itr = 0; itr < paperNames.Count(); itr++)
+            //{
+            //    crawlerString += paperNames[itr] + "    " + msAcademicSearchIds[itr] + "\\n";
+            //}
+            //crawlerString += "');";
 
-            ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
+            //ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
         }
     }
 }
