@@ -289,6 +289,7 @@
           <Property Name="TheoryId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="TheoryName" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DateAdded" Type="datetime" Nullable="false" />
+          <Property Name="TheoryComment" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="TheoryDefinition">
           <Key>
@@ -1075,6 +1076,7 @@
           <NavigationProperty Name="Runs" Relationship="ATNModel.Theory_Run_FK1" FromRole="Theory" ToRole="Run" />
           <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="Theory" ToRole="TheoryMembership" />
           <NavigationProperty Name="TheoryDefinitions" Relationship="ATNModel.FK_TheoryDefinition_Theory" FromRole="Theory" ToRole="TheoryDefinition" />
+          <Property Type="String" Name="TheoryComment" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="TheoryMembership">
           <Key>
@@ -1375,6 +1377,7 @@
           <EntitySetMapping Name="Theories">
             <EntityTypeMapping TypeName="ATNModel.Theory">
               <MappingFragment StoreEntitySet="Theory">
+                <ScalarProperty Name="TheoryComment" ColumnName="TheoryComment" />
                 <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
                 <ScalarProperty Name="TheoryName" ColumnName="TheoryName" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
@@ -1551,7 +1554,7 @@
         <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="11.283239755445738" PointY="8.8857703399312538" />
         <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="10.726351998153307" PointY="16.342354335050263" />
         <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="7" PointY="19.75" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="0.75" PointY="4.875" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="0.875" PointY="3.625" />
         <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="0.36436036991158516" PointY="27.056207982383764" />
         <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
         <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />

@@ -27,7 +27,19 @@ namespace ATN.Processing
         {
             while (true)
             {
-                co.ProcessStaleCrawls();
+                try
+                {
+                    co.ProcessStaleCrawls();
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Exception:", "Error");
+                    Trace.WriteLine(e.Message);
+                    Trace.WriteLine(e.Source);
+                    Trace.WriteLine(e.StackTrace);
+                    Trace.WriteLine(e.TargetSite);
+                    Trace.WriteLine(e.Data);
+                }
                 Thread.Sleep(new TimeSpan(1, 0, 0));
             }
         }

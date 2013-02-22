@@ -37,8 +37,9 @@ namespace ATN.Crawler
         public void ProcessStaleCrawls()
         {
             Crawl[] ExistingCrawls = _progress.GetExistingCrawls();
-            ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState > 5).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
-            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+            ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState < 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
+            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState > 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
             {
                 RefreshExistingCrawls(Specifier.Crawl.CrawlId);
@@ -121,7 +122,7 @@ namespace ATN.Crawler
                 {
                     Trace.WriteLine(string.Format("Refreshing citations for Crawl {0}", Specifier.Crawl.CrawlId), "Informational");
 
-                    _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.ScheduledCrawlStarted);
+                    _progress.UpdateCrawlerState(Specifier.Crawl, (CrawlerState)(Specifier.Crawl.CrawlState + 1));
 
                     foreach (KeyValuePair<Source, CanonicalDataSource> CanonicalSourceAndLocalSource in CanonicalSources)
                     {

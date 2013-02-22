@@ -8,12 +8,12 @@ using System.IO;
 
 namespace ATN.Export
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
             Theories Theories = new Theories();
-            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(3);
+            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(6);
 
             Dictionary<long, SourceNode> Nodes = new Dictionary<long, SourceNode>();
             List<SourceEdge> Edges = new List<SourceEdge>();
@@ -30,7 +30,7 @@ namespace ATN.Export
 
                 //Write citation nodes
                 for (int i = 0; i < CitingSources.Length; i++)
-                {
+                { 
                     if (!Nodes.ContainsKey(CitingSources[i].SourceId))
                     {
                         Console.WriteLine("Writing node {0}/{1}", i + 1, CitingSources.Length);

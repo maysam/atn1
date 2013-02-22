@@ -12,7 +12,7 @@ namespace ATN.Data
     {
         public Theories()
         {
-
+            
         }
 
         /// <summary>

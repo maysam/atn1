@@ -70,12 +70,24 @@ namespace ATN.Crawler.WebCrawler
                 }
                 catch (MessageSecurityException e)
                 {
+                    Trace.WriteLine("Exception:", "Error");
+                    Trace.WriteLine(e.Message);
+                    Trace.WriteLine(e.Source);
+                    Trace.WriteLine(e.StackTrace);
+                    Trace.WriteLine(e.TargetSite);
+                    Trace.WriteLine(e.Data);
                     //"Access Denied", meaning the MAS rate limiter is not happy. Abort immediately.
                     throw e;
                 }
                 catch (Exception e)
                 {
                     AttemptCount++;
+                    Trace.WriteLine("Exception:", "Error");
+                    Trace.WriteLine(e.Message);
+                    Trace.WriteLine(e.Source);
+                    Trace.WriteLine(e.StackTrace);
+                    Trace.WriteLine(e.TargetSite);
+                    Trace.WriteLine(e.Data);
                     if (AttemptCount == RetryLimit)
                     {
                         throw e;
@@ -115,6 +127,12 @@ namespace ATN.Crawler.WebCrawler
                     catch (Exception e)
                     {
                         AttemptCount++;
+                        Trace.WriteLine("Exception:", "Error");
+                        Trace.WriteLine(e.Message);
+                        Trace.WriteLine(e.Source);
+                        Trace.WriteLine(e.StackTrace);
+                        Trace.Write(e.TargetSite);
+                        Trace.Write(e.Data);
                         if (AttemptCount == RetryLimit)
                         {
                             throw e;
@@ -171,6 +189,12 @@ namespace ATN.Crawler.WebCrawler
                 }
                 catch (Exception e)
                 {
+                    Trace.WriteLine("Exception:", "Error");
+                    Trace.WriteLine(e.Message);
+                    Trace.WriteLine(e.Source);
+                    Trace.WriteLine(e.StackTrace);
+                    Trace.WriteLine(e.TargetSite);
+                    Trace.WriteLine(e.Data);
                     if (i == RetryLimit)
                     {
                         throw e;
@@ -236,8 +260,8 @@ namespace ATN.Crawler.WebCrawler
             {
                 case 1:
                     //AppID not authorized. MAS throws this when it is under heavly load, so cease further requests
-                    Environment.Exit(1);
-                    break;
+                    Thread.Sleep(MillisecondsPerMinute * 2 * WaitDelayMinutes);
+                    throw new Exception("MAS request failed; please try again.");
                 case 2:
                     //Search parameter is incorrect; this means there is a bug in the crawler code
                     Environment.Exit(1);
@@ -248,8 +272,9 @@ namespace ATN.Crawler.WebCrawler
                     throw new Exception("MAS request failed; please try again.");
                 case 4:
                     //Search method unsupported; this means there is a bug in the crawler code
+                    Thread.Sleep(MillisecondsPerMinute * WaitDelayMinutes);
                     Environment.Exit(1);
-                    break;
+                    throw new Exception("MAS request failed; please try again.");
             }
         }
     }

@@ -3822,6 +3822,30 @@ namespace ATN.Data
         private global::System.DateTime _DateAdded;
         partial void OnDateAddedChanging(global::System.DateTime value);
         partial void OnDateAddedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String TheoryComment
+        {
+            get
+            {
+                return _TheoryComment;
+            }
+            set
+            {
+                OnTheoryCommentChanging(value);
+                ReportPropertyChanging("TheoryComment");
+                _TheoryComment = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("TheoryComment");
+                OnTheoryCommentChanged();
+            }
+        }
+        private global::System.String _TheoryComment;
+        partial void OnTheoryCommentChanging(global::System.String value);
+        partial void OnTheoryCommentChanged();
 
         #endregion
 
