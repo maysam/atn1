@@ -65,9 +65,13 @@
             <End Role="DataSource" EntitySet="DataSource" />
             <End Role="CrawlResult" EntitySet="CrawlResult" />
           </AssociationSet>
-          <AssociationSet Name="FK_SourceSubject_SourceSubject" Association="ATNModel.Store.FK_SourceSubject_SourceSubject">
+          <AssociationSet Name="FK_SourceSubject_Source" Association="ATNModel.Store.FK_SourceSubject_Source">
+            <End Role="Source" EntitySet="Source" />
             <End Role="SourceSubject" EntitySet="SourceSubject" />
-            <End Role="SourceSubject1" EntitySet="SourceSubject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SourceSubject_Subject" Association="ATNModel.Store.FK_SourceSubject_Subject">
+            <End Role="Subject" EntitySet="Subject" />
+            <End Role="SourceSubject" EntitySet="SourceSubject" />
           </AssociationSet>
           <AssociationSet Name="FK_Subject_DataSource" Association="ATNModel.Store.FK_Subject_DataSource">
             <End Role="DataSource" EntitySet="DataSource" />
@@ -117,17 +121,9 @@
             <End Role="Source" EntitySet="Source" />
             <End Role="RelatedSources" EntitySet="RelatedSources" />
           </AssociationSet>
-          <AssociationSet Name="Source_SourceSubject_FK1" Association="ATNModel.Store.Source_SourceSubject_FK1">
-            <End Role="Source" EntitySet="Source" />
-            <End Role="SourceSubject" EntitySet="SourceSubject" />
-          </AssociationSet>
           <AssociationSet Name="Source_TheoryMembership_FK1" Association="ATNModel.Store.Source_TheoryMembership_FK1">
             <End Role="Source" EntitySet="Source" />
             <End Role="TheoryMembership" EntitySet="TheoryMembership" />
-          </AssociationSet>
-          <AssociationSet Name="Subject_SourceSubject_FK1" Association="ATNModel.Store.Subject_SourceSubject_FK1">
-            <End Role="Subject" EntitySet="Subject" />
-            <End Role="SourceSubject" EntitySet="SourceSubject" />
           </AssociationSet>
           <AssociationSet Name="Theory_Run_FK1" Association="ATNModel.Store.Theory_Run_FK1">
             <End Role="Theory" EntitySet="Theory" />
@@ -287,7 +283,7 @@
           <Key>
             <PropertyRef Name="SubjectId" />
           </Key>
-          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="SubjectId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="SubjectText" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DataSourceId" Type="int" Nullable="false" />
           <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
@@ -455,29 +451,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_SourceSubject_SourceSubject">
-          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="1" />
-          <End Role="SourceSubject1" Type="ATNModel.Store.SourceSubject" Multiplicity="0..1" />
+        <Association Name="FK_SourceSubject_Source">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="SourceSubject">
+            <Principal Role="Source">
               <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="SourceSubject">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SourceSubject_Subject">
+          <End Role="Subject" Type="ATNModel.Store.Subject" Multiplicity="1" />
+          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subject">
               <PropertyRef Name="SubjectId" />
             </Principal>
-            <Dependent Role="SourceSubject1">
-              <PropertyRef Name="SourceId" />
+            <Dependent Role="SourceSubject">
               <PropertyRef Name="SubjectId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Subject_DataSource">
           <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
-          <End Role="Subject" Type="ATNModel.Store.Subject" Multiplicity="0..1" />
+          <End Role="Subject" Type="ATNModel.Store.Subject" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="DataSource">
               <PropertyRef Name="DataSourceId" />
             </Principal>
             <Dependent Role="Subject">
-              <PropertyRef Name="SubjectId" />
+              <PropertyRef Name="DataSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -613,18 +619,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="Source_SourceSubject_FK1">
-          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
-          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Source">
-              <PropertyRef Name="SourceId" />
-            </Principal>
-            <Dependent Role="SourceSubject">
-              <PropertyRef Name="SourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="Source_TheoryMembership_FK1">
           <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
           <End Role="TheoryMembership" Type="ATNModel.Store.TheoryMembership" Multiplicity="*" />
@@ -634,18 +628,6 @@
             </Principal>
             <Dependent Role="TheoryMembership">
               <PropertyRef Name="SourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="Subject_SourceSubject_FK1">
-          <End Role="Subject" Type="ATNModel.Store.Subject" Multiplicity="1" />
-          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subject">
-              <PropertyRef Name="SubjectId" />
-            </Principal>
-            <Dependent Role="SourceSubject">
-              <PropertyRef Name="SubjectId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -741,7 +723,6 @@
             <End Role="Source" EntitySet="Sources" />
           </AssociationSet>
           <EntitySet Name="Runs" EntityType="ATNModel.Run" />
-          <EntitySet Name="Subjects" EntityType="ATNModel.Subject" />
           <EntitySet Name="Theories" EntityType="ATNModel.Theory" />
           <EntitySet Name="TheoryMemberships" EntityType="ATNModel.TheoryMembership" />
           <EntitySet Name="TheoryMembershipSignificances" EntityType="ATNModel.TheoryMembershipSignificance" />
@@ -769,10 +750,6 @@
             <End Role="Source" EntitySet="Sources" />
             <End Role="Source1" EntitySet="Sources" />
           </AssociationSet>
-          <AssociationSet Name="SourceSubject" Association="ATNModel.SourceSubject">
-            <End Role="Source" EntitySet="Sources" />
-            <End Role="Subject" EntitySet="Subjects" />
-          </AssociationSet>
           <EntitySet Name="TheoryDefinitions" EntityType="ATNModel.TheoryDefinition" />
           <AssociationSet Name="FK_TheoryDefinition_Theory" Association="ATNModel.FK_TheoryDefinition_Theory">
             <End Role="Theory" EntitySet="Theories" />
@@ -786,8 +763,13 @@
             <End Role="DataSource" EntitySet="DataSources" />
             <End Role="CrawlResult" EntitySet="CrawlResults" />
           </AssociationSet>
+          <EntitySet Name="Subjects" EntityType="ATNModel.Subject" />
           <AssociationSet Name="FK_Subject_DataSource" Association="ATNModel.FK_Subject_DataSource">
             <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="Subject" EntitySet="Subjects" />
+          </AssociationSet>
+          <AssociationSet Name="SourceSubject" Association="ATNModel.SourceSubject">
+            <End Role="Source" EntitySet="Sources" />
             <End Role="Subject" EntitySet="Subjects" />
           </AssociationSet>
         </EntityContainer>
@@ -869,7 +851,7 @@
           <NavigationProperty Name="Sources" Relationship="ATNModel.DataSource_Source_FK1" FromRole="DataSource" ToRole="Source" />
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.FK_CrawlQueue_DataSource" FromRole="DataSource" ToRole="CrawlQueue" />
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.FK_CrawlResult_DataSource" FromRole="DataSource" ToRole="CrawlResult" />
-          <NavigationProperty Name="Subject" Relationship="ATNModel.FK_Subject_DataSource" FromRole="DataSource" ToRole="Subject" />
+          <NavigationProperty Name="Subjects" Relationship="ATNModel.FK_Subject_DataSource" FromRole="DataSource" ToRole="Subject" />
         </EntityType>
         <EntityType Name="Editor">
           <Key>
@@ -1098,17 +1080,6 @@
           <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.FK_TheoryMembership_Run" FromRole="Run" ToRole="TheoryMembership" />
           <NavigationProperty Name="Theory" Relationship="ATNModel.Theory_Run_FK1" FromRole="Run" ToRole="Theory" />
         </EntityType>
-        <EntityType Name="Subject">
-          <Key>
-            <PropertyRef Name="SubjectId" />
-          </Key>
-          <Property Type="Int32" Name="SubjectId" Nullable="false" />
-          <NavigationProperty Name="Sources" Relationship="ATNModel.SourceSubject" FromRole="Subject" ToRole="Source" />
-          <Property Type="String" Name="SubjectText" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
-          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="DataSource" Relationship="ATNModel.FK_Subject_DataSource" FromRole="Subject" ToRole="DataSource" />
-        </EntityType>
         <EntityType Name="Theory">
           <Key>
             <PropertyRef Name="TheoryId" />
@@ -1214,10 +1185,6 @@
           <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
           <End Type="ATNModel.Source" Role="Source1" Multiplicity="*" />
         </Association>
-        <Association Name="SourceSubject">
-          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
-          <End Type="ATNModel.Subject" Role="Subject" Multiplicity="*" />
-        </Association>
         <EntityType Name="TheoryDefinition">
           <Key>
             <PropertyRef Name="TheoryDefinitionId" />
@@ -1264,17 +1231,32 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Subject">
+          <Key>
+            <PropertyRef Name="SubjectId" />
+          </Key>
+          <Property Type="Int32" Name="SubjectId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="SubjectText" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.FK_Subject_DataSource" FromRole="Subject" ToRole="DataSource" />
+          <NavigationProperty Name="Sources" Relationship="ATNModel.SourceSubject" FromRole="Subject" ToRole="Source" />
+        </EntityType>
         <Association Name="FK_Subject_DataSource">
           <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
-          <End Type="ATNModel.Subject" Role="Subject" Multiplicity="0..1" />
+          <End Type="ATNModel.Subject" Role="Subject" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="DataSource">
               <PropertyRef Name="DataSourceId" />
             </Principal>
             <Dependent Role="Subject">
-              <PropertyRef Name="SubjectId" />
+              <PropertyRef Name="DataSourceId" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="SourceSubject">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
+          <End Type="ATNModel.Subject" Role="Subject" Multiplicity="*" />
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -1422,16 +1404,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Subjects">
-            <EntityTypeMapping TypeName="ATNModel.Subject">
-              <MappingFragment StoreEntitySet="Subject">
-                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
-                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
-                <ScalarProperty Name="SubjectText" ColumnName="SubjectText" />
-                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Theories">
             <EntityTypeMapping TypeName="ATNModel.Theory">
               <MappingFragment StoreEntitySet="Theory">
@@ -1477,14 +1449,6 @@
               <ScalarProperty Name="SourceId" ColumnName="PrimarySourceId" />
             </EndProperty>
           </AssociationSetMapping>
-          <AssociationSetMapping Name="SourceSubject" TypeName="ATNModel.SourceSubject" StoreEntitySet="SourceSubject">
-            <EndProperty Name="Subject">
-              <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
-            </EndProperty>
-            <EndProperty Name="Source">
-              <ScalarProperty Name="SourceId" ColumnName="SourceId" />
-            </EndProperty>
-          </AssociationSetMapping>
           <EntitySetMapping Name="TheoryDefinitions">
             <EntityTypeMapping TypeName="ATNModel.TheoryDefinition">
               <MappingFragment StoreEntitySet="TheoryDefinition">
@@ -1495,6 +1459,24 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Subjects">
+            <EntityTypeMapping TypeName="ATNModel.Subject">
+              <MappingFragment StoreEntitySet="Subject">
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+                <ScalarProperty Name="SubjectText" ColumnName="SubjectText" />
+                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="SourceSubject" TypeName="ATNModel.SourceSubject" StoreEntitySet="SourceSubject">
+            <EndProperty Name="Subject">
+              <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+            </EndProperty>
+            <EndProperty Name="Source">
+              <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+            </EndProperty>
+          </AssociationSetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1516,15 +1498,15 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="ATNModel">
-        <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="3.5" Height="2.7494921875000102" />
-        <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="10.5" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="7.75" PointY="3.75" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="ATNModel.CrawlQueue" Width="1.5" PointX="5.25" PointY="14.125" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="ATNModel.CrawlResult" Width="1.5" PointX="8.25" PointY="12" Height="2.5571907552083388" />
-        <EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="10.375" Height="2.172587890624996" />
-        <EntityTypeShape EntityType="ATNModel.Editor" Width="1.5" PointX="3" PointY="10.125" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="ATNModel.EditorsReference" Width="1.5" PointX="8.25" PointY="15.875" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="3" PointY="13.125" Height="6.5955208333333353" />
+        <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="9.25" Height="2.7494921875000102" />
+        <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="9.625" Height="1.9802864583333388" />
+        <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="8" PointY="5.25" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.CrawlQueue" Width="1.5" PointX="10.25" PointY="8.25" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.CrawlResult" Width="1.5" PointX="13.25" PointY="12.25" Height="2.5571907552083388" />
+        <EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="12.375" Height="2.172587890624996" />
+        <EntityTypeShape EntityType="ATNModel.Editor" Width="1.5" PointX="3" PointY="12.75" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="ATNModel.EditorsReference" Width="1.5" PointX="5.25" PointY="13" Height="1.9802864583333388" />
+        <EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="8" PointY="10" Height="6.5955208333333353" />
         <AssociationConnector Association="ATNModel.Author_AuthorsReference_FK1" >
           <ConnectorPoint PointX="4.5" PointY="4.8747460937500051" />
           <ConnectorPoint PointX="6" PointY="4.8747460937500051" />
@@ -1603,30 +1585,30 @@
           <ConnectorPoint PointX="3.9784615384615383" PointY="19.970520833333339" />
           <ConnectorPoint PointX="3.9784615384615383" PointY="19.720520833333335" />
         </AssociationConnector>
-        <EntityTypeShape EntityType="ATNModel.Journal" Width="1.5" PointX="5.375" PointY="0.875" Height="1.7879850260416674" />
+        <EntityTypeShape EntityType="ATNModel.Journal" Width="1.5" PointX="5.75" PointY="15.75" Height="1.7879850260416674" />
         <AssociationConnector Association="ATNModel.JournalName_Source_FK1" >
           <ConnectorPoint PointX="6.84375" PointY="2.6629850260416674" />
           <ConnectorPoint PointX="6.84375" PointY="18.5639694350586" />
           <ConnectorPoint PointX="4.5" PointY="18.5639694350586" />
         </AssociationConnector>
-        <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="11.283239755445738" PointY="8.8857703399312538" />
-        <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="10.726351998153307" PointY="16.342354335050263" />
-        <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="7" PointY="19.75" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="0.875" PointY="3.625" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="0.36436036991158516" PointY="27.056207982383764" />
+        <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
+        <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="10.25" PointY="11.875" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="0.75" PointY="0.75" />
         <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
         <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
         <AssociationConnector Association="ATNModel.Theory_Run_FK1" />
         <AssociationConnector Association="ATNModel.Source_TheoryMembership_FK1" />
         <AssociationConnector Association="ATNModel.Theory_TheoryMembership_FK1" />
         <AssociationConnector Association="ATNModel.RelatedSources" />
-        <AssociationConnector Association="ATNModel.SourceSubject" />
-        <EntityTypeShape EntityType="ATNModel.TheoryDefinition" Width="1.5" PointX="1.0297081214514134" PointY="7.9193225539845056" />
+        <EntityTypeShape EntityType="ATNModel.TheoryDefinition" Width="1.5" PointX="8" PointY="1.625" />
         <AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
         <AssociationConnector Association="ATNModel.FK_CrawlQueue_DataSource" />
         <AssociationConnector Association="ATNModel.FK_CrawlResult_DataSource" />
+        <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="8.2853259315180239" PointY="13.475980779843397" />
         <AssociationConnector Association="ATNModel.FK_Subject_DataSource" />
-      </Diagram>
+        <AssociationConnector Association="ATNModel.SourceSubject" />
+        </Diagram>
     </Diagrams>
   </Designer>
 </edmx:Edmx>

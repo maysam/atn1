@@ -17,6 +17,7 @@ namespace ATN.Data
         public Source Source {get; set;}
         public Author[] Authors {get; set;}
         public Editor[] Editors { get; set; }
+        public Subject[] Subjects { get; set; }
         public Journal Journal { get; set; }
     }
 }

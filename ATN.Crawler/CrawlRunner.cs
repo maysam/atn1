@@ -16,11 +16,13 @@ namespace ATN.Crawler
     public class CrawlRunner
     {
         private CrawlerProgress _progress;
-        private Sources _sources = new Sources();
+        private Sources _sources;
+        private Subjects _subjects;
         public CrawlRunner(ATNEntities Entities = null)
         {
             _progress = new CrawlerProgress(Entities);
             _sources = new Sources(Entities);
+            _subjects = new Subjects(Entities);
         }
 
         /// <summary>
@@ -89,6 +91,13 @@ namespace ATN.Crawler
                         {
                             CompleteSource CanonicalCompleteSource = Crawler.GetSourceById(CanonicalDataSource.CanonicalIds.First().ToString());
                             AttachedCannonicalSource = _sources.AddDetachedSource(CanonicalCompleteSource);
+
+                            //First time we've seen this source, add Subjects for it
+                            foreach (Subject Subject in CanonicalCompleteSource.Subjects)
+                            {
+                                _subjects.GetOrAddSubject(Subject);
+                                _subjects.AddSubjectToSource(AttachedCannonicalSource.SourceId, Subject.SubjectId);
+                            }
                         }
 
                         //If there are multiple copies of the same source added, correlate each unique data-source ID to the canonical source ID
@@ -96,6 +105,7 @@ namespace ATN.Crawler
                         {
                             _progress.StoreCanonicalResult(Specifier.Crawl.CrawlId, ID, CanonicalDataSource.DataSource, AttachedCannonicalSource.SourceId);
                         }
+
                         CanonicalSources.Add(AttachedCannonicalSource, CanonicalDataSource);
                     }
                     _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.CanonicalPaperComplete);
@@ -244,8 +254,14 @@ namespace ATN.Crawler
                 if (SourceToComplete == null)
                 {
                     CompleteSource SourceToAdd = CrawlerForDataSource.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
-                    _sources.AddDetachedSource(SourceToAdd);
-                    SourceToComplete = SourceToAdd.Source;
+                    SourceToComplete = _sources.AddDetachedSource(SourceToAdd);
+
+                    foreach (Subject Subject in SourceToAdd.Subjects)
+                    {
+                        _subjects.GetOrAddSubject(Subject);
+                        _subjects.AddSubjectToSource(SourceToComplete.SourceId, Subject.SubjectId);
+                    }
+
                     Trace.WriteLine("Source does not exist in database, adding.", "Informational");
                 }
                 try

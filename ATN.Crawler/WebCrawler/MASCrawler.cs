@@ -235,8 +235,18 @@ namespace ATN.Crawler.WebCrawler
                 cs.Journal = Journal;
             }
 
+            List<Subject> Subjects = new List<Subject>();
+            foreach (Keyword k in RetrievedPublication.Keyword)
+            {
+                Subject s = new Subject();
+                s.DataSourceSpecificId = k.ID.ToString();
+                s.DataSourceId = (int)GetDataSource();
+                s.SubjectText = k.Name;
+                Subjects.Add(s);
+            }
             cs.IsDetached = true;
             cs.Authors = Authors.ToArray();
+            cs.Subjects = Subjects.ToArray();
             cs.Source = CanonicalPaper;
 
             return cs;

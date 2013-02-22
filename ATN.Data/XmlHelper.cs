@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace ATN.Crawler
+namespace ATN.Data
 {
     public class XmlHelper
     {
@@ -28,7 +28,11 @@ namespace ATN.Crawler
 
         public static T XmlDeserialize<T>(string xmlString)
         {
-            throw new NotImplementedException();
+            XmlSerializer xs = new XmlSerializer(typeof(T));
+            StringReader sr = new StringReader(xmlString);
+            T Object = (T)xs.Deserialize(sr);
+            sr.Close();
+            return Object;
         }
     }
 }

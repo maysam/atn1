@@ -38,11 +38,11 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "Source_TheoryMembership_FK1", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "TheoryMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryMembership), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "Theory_TheoryMembership_FK1", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "TheoryMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryMembership), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "RelatedSources", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Source1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source))]
-[assembly: EdmRelationshipAttribute("ATNModel", "SourceSubject", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject))]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_TheoryDefinition_Theory", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "TheoryDefinition", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryDefinition), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlQueue_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlQueue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlQueue), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlResult_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
-[assembly: EdmRelationshipAttribute("ATNModel", "FK_Subject_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ATN.Data.Subject), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_Subject_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "SourceSubject", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject))]
 
 #endregion
 
@@ -273,22 +273,6 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<Subject> Subjects
-        {
-            get
-            {
-                if ((_Subjects == null))
-                {
-                    _Subjects = base.CreateObjectSet<Subject>("Subjects");
-                }
-                return _Subjects;
-            }
-        }
-        private ObjectSet<Subject> _Subjects;
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
         public ObjectSet<Theory> Theories
         {
             get
@@ -349,6 +333,22 @@ namespace ATN.Data
             }
         }
         private ObjectSet<TheoryDefinition> _TheoryDefinitions;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<Subject> Subjects
+        {
+            get
+            {
+                if ((_Subjects == null))
+                {
+                    _Subjects = base.CreateObjectSet<Subject>("Subjects");
+                }
+                return _Subjects;
+            }
+        }
+        private ObjectSet<Subject> _Subjects;
 
         #endregion
 
@@ -443,14 +443,6 @@ namespace ATN.Data
         }
     
         /// <summary>
-        /// Deprecated Method for adding a new object to the Subjects EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
-        /// </summary>
-        public void AddToSubjects(Subject subject)
-        {
-            base.AddObject("Subjects", subject);
-        }
-    
-        /// <summary>
         /// Deprecated Method for adding a new object to the Theories EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
         public void AddToTheories(Theory theory)
@@ -480,6 +472,14 @@ namespace ATN.Data
         public void AddToTheoryDefinitions(TheoryDefinition theoryDefinition)
         {
             base.AddObject("TheoryDefinitions", theoryDefinition);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the Subjects EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToSubjects(Subject subject)
+        {
+            base.AddObject("Subjects", subject);
         }
 
         #endregion
@@ -2053,33 +2053,17 @@ namespace ATN.Data
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
         [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Subject_DataSource", "Subject")]
-        public Subject Subject
+        public EntityCollection<Subject> Subjects
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject").Value;
-            }
-            set
-            {
-                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject").Value = value;
-            }
-        }
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [BrowsableAttribute(false)]
-        [DataMemberAttribute()]
-        public EntityReference<Subject> SubjectReference
-        {
-            get
-            {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Subject>("ATNModel.FK_Subject_DataSource", "Subject");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Subject>("ATNModel.FK_Subject_DataSource", "Subject", value);
                 }
             }
         }
@@ -3792,28 +3776,6 @@ namespace ATN.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "SourceSubject", "Source")]
-        public EntityCollection<Source> Sources
-        {
-            get
-            {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.SourceSubject", "Source");
-            }
-            set
-            {
-                if ((value != null))
-                {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.SourceSubject", "Source", value);
-                }
-            }
-        }
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [XmlIgnoreAttribute()]
-        [SoapIgnoreAttribute()]
-        [DataMemberAttribute()]
         [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Subject_DataSource", "DataSource")]
         public DataSource DataSource
         {
@@ -3842,6 +3804,28 @@ namespace ATN.Data
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DataSource>("ATNModel.FK_Subject_DataSource", "DataSource", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "SourceSubject", "Source")]
+        public EntityCollection<Source> Sources
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<Source>("ATNModel.SourceSubject", "Source");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.SourceSubject", "Source", value);
                 }
             }
         }

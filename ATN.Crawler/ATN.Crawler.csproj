@@ -72,7 +72,6 @@
     <Compile Include="WebCrawler\CrawlInstantiator.cs" />
     <Compile Include="CrawlRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XmlHelper.cs" />
     <Compile Include="WebCrawler\ICrawler.cs" />
     <Compile Include="WebCrawler\RateLimit.cs" />
     <Compile Include="Service References\MAS\Reference.cs">

@@ -67,14 +67,16 @@
       <DependentUpon>ATNModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Authors.cs" />
-    <Compile Include="CompleteDetachedSource.cs" />
+    <Compile Include="CompleteSource.cs" />
     <Compile Include="CrawlerProgress.cs" />
     <Compile Include="CrawlSpecifier.cs" />
     <Compile Include="DatabaseInterface.cs" />
     <Compile Include="Journals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources.cs" />
+    <Compile Include="Subjects.cs" />
     <Compile Include="Theories.cs" />
+    <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="ATNModel.edmx">

@@ -87,6 +87,7 @@ namespace ATN.Data
             cs.Authors = RetrievedSource.AuthorsReferences.Join(Context.Authors, ar => ar.AuthorId, a => a.AuthorId, (ar, a) => a).ToArray();
             cs.Editors = RetrievedSource.EditorsReferences.Join(Context.Editors, er => er.EditorId, e => e.EditorId, (er, e) => e).ToArray();
             cs.Journal = RetrievedSource.Journal;
+            cs.Subjects = RetrievedSource.Subjects.ToArray();
 
             return cs;
         }
