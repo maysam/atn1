@@ -17,10 +17,10 @@ namespace ATN.Crawler
     {
         private CrawlerProgress _progress;
         private Sources _sources = new Sources();
-        public CrawlRunner()
+        public CrawlRunner(ATNEntities Entities = null)
         {
-            _progress = new CrawlerProgress();
-            _sources = new Sources();
+            _progress = new CrawlerProgress(Entities);
+            _sources = new Sources(Entities);
         }
 
         /// <summary>

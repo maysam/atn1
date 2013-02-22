@@ -13,10 +13,10 @@ namespace ATN.Data
     {
         Authors _authors;
         Journals _journals;
-        public Sources()
+        public Sources(ATNEntities Entities = null) : base(Entities)
         {
-            _authors = new Authors();
-            _journals = new Journals();
+            _authors = new Authors(Entities);
+            _journals = new Journals(Entities);
         }
 
         /// <summary>

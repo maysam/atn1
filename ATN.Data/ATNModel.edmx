@@ -65,6 +65,14 @@
             <End Role="DataSource" EntitySet="DataSource" />
             <End Role="CrawlResult" EntitySet="CrawlResult" />
           </AssociationSet>
+          <AssociationSet Name="FK_SourceSubject_SourceSubject" Association="ATNModel.Store.FK_SourceSubject_SourceSubject">
+            <End Role="SourceSubject" EntitySet="SourceSubject" />
+            <End Role="SourceSubject1" EntitySet="SourceSubject" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subject_DataSource" Association="ATNModel.Store.FK_Subject_DataSource">
+            <End Role="DataSource" EntitySet="DataSource" />
+            <End Role="Subject" EntitySet="Subject" />
+          </AssociationSet>
           <AssociationSet Name="FK_TheoryDefinition_Theory" Association="ATNModel.Store.FK_TheoryDefinition_Theory">
             <End Role="Theory" EntitySet="Theory" />
             <End Role="TheoryDefinition" EntitySet="TheoryDefinition" />
@@ -280,7 +288,9 @@
             <PropertyRef Name="SubjectId" />
           </Key>
           <Property Name="SubjectId" Type="int" Nullable="false" />
-          <Property Name="SubjectCategory" Type="text" />
+          <Property Name="SubjectText" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DataSourceId" Type="int" Nullable="false" />
+          <Property Name="DataSourceSpecificId" Type="nvarchar" Nullable="false" MaxLength="128" />
         </EntityType>
         <EntityType Name="Theory">
           <Key>
@@ -442,6 +452,32 @@
             </Principal>
             <Dependent Role="CrawlResult">
               <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SourceSubject_SourceSubject">
+          <End Role="SourceSubject" Type="ATNModel.Store.SourceSubject" Multiplicity="1" />
+          <End Role="SourceSubject1" Type="ATNModel.Store.SourceSubject" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="SourceSubject">
+              <PropertyRef Name="SourceId" />
+              <PropertyRef Name="SubjectId" />
+            </Principal>
+            <Dependent Role="SourceSubject1">
+              <PropertyRef Name="SourceId" />
+              <PropertyRef Name="SubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subject_DataSource">
+          <End Role="DataSource" Type="ATNModel.Store.DataSource" Multiplicity="1" />
+          <End Role="Subject" Type="ATNModel.Store.Subject" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Subject">
+              <PropertyRef Name="SubjectId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -750,6 +786,10 @@
             <End Role="DataSource" EntitySet="DataSources" />
             <End Role="CrawlResult" EntitySet="CrawlResults" />
           </AssociationSet>
+          <AssociationSet Name="FK_Subject_DataSource" Association="ATNModel.FK_Subject_DataSource">
+            <End Role="DataSource" EntitySet="DataSources" />
+            <End Role="Subject" EntitySet="Subjects" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Author">
           <Key>
@@ -829,6 +869,7 @@
           <NavigationProperty Name="Sources" Relationship="ATNModel.DataSource_Source_FK1" FromRole="DataSource" ToRole="Source" />
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.FK_CrawlQueue_DataSource" FromRole="DataSource" ToRole="CrawlQueue" />
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.FK_CrawlResult_DataSource" FromRole="DataSource" ToRole="CrawlResult" />
+          <NavigationProperty Name="Subject" Relationship="ATNModel.FK_Subject_DataSource" FromRole="DataSource" ToRole="Subject" />
         </EntityType>
         <EntityType Name="Editor">
           <Key>
@@ -1062,8 +1103,11 @@
             <PropertyRef Name="SubjectId" />
           </Key>
           <Property Type="Int32" Name="SubjectId" Nullable="false" />
-          <Property Type="String" Name="SubjectCategory" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Sources" Relationship="ATNModel.SourceSubject" FromRole="Subject" ToRole="Source" />
+          <Property Type="String" Name="SubjectText" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" />
+          <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DataSource" Relationship="ATNModel.FK_Subject_DataSource" FromRole="Subject" ToRole="DataSource" />
         </EntityType>
         <EntityType Name="Theory">
           <Key>
@@ -1220,6 +1264,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Subject_DataSource">
+          <End Type="ATNModel.DataSource" Role="DataSource" Multiplicity="1" />
+          <End Type="ATNModel.Subject" Role="Subject" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="DataSource">
+              <PropertyRef Name="DataSourceId" />
+            </Principal>
+            <Dependent Role="Subject">
+              <PropertyRef Name="SubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1369,7 +1425,9 @@
           <EntitySetMapping Name="Subjects">
             <EntityTypeMapping TypeName="ATNModel.Subject">
               <MappingFragment StoreEntitySet="Subject">
-                <ScalarProperty Name="SubjectCategory" ColumnName="SubjectCategory" />
+                <ScalarProperty Name="DataSourceSpecificId" ColumnName="DataSourceSpecificId" />
+                <ScalarProperty Name="DataSourceId" ColumnName="DataSourceId" />
+                <ScalarProperty Name="SubjectText" ColumnName="SubjectText" />
                 <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1567,6 +1625,7 @@
         <AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
         <AssociationConnector Association="ATNModel.FK_CrawlQueue_DataSource" />
         <AssociationConnector Association="ATNModel.FK_CrawlResult_DataSource" />
+        <AssociationConnector Association="ATNModel.FK_Subject_DataSource" />
       </Diagram>
     </Diagrams>
   </Designer>

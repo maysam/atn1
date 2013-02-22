@@ -10,7 +10,8 @@ namespace ATN.Data
     /// </summary>
     public class Journals : DatabaseInterface
     {
-        public Journals()
+        public Journals(ATNEntities Entities = null)
+            : base(Entities)
         {
 
         }

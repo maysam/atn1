@@ -42,6 +42,7 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_TheoryDefinition_Theory", "Theory", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Theory), "TheoryDefinition", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.TheoryDefinition), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlQueue_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlQueue", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlQueue), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlResult_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_Subject_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(ATN.Data.Subject), true)]
 
 #endregion
 
@@ -2044,6 +2045,44 @@ namespace ATN.Data
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Subject_DataSource", "Subject")]
+        public Subject Subject
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Subject> SubjectReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Subject>("ATNModel.FK_Subject_DataSource", "Subject", value);
+                }
+            }
+        }
 
         #endregion
 
@@ -3626,10 +3665,16 @@ namespace ATN.Data
         /// Create a new Subject object.
         /// </summary>
         /// <param name="subjectId">Initial value of the SubjectId property.</param>
-        public static Subject CreateSubject(global::System.Int32 subjectId)
+        /// <param name="subjectText">Initial value of the SubjectText property.</param>
+        /// <param name="dataSourceId">Initial value of the DataSourceId property.</param>
+        /// <param name="dataSourceSpecificId">Initial value of the DataSourceSpecificId property.</param>
+        public static Subject CreateSubject(global::System.Int32 subjectId, global::System.String subjectText, global::System.Int32 dataSourceId, global::System.String dataSourceSpecificId)
         {
             Subject subject = new Subject();
             subject.SubjectId = subjectId;
+            subject.SubjectText = subjectText;
+            subject.DataSourceId = dataSourceId;
+            subject.DataSourceSpecificId = dataSourceSpecificId;
             return subject;
         }
 
@@ -3667,26 +3712,74 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.String SubjectCategory
+        public global::System.String SubjectText
         {
             get
             {
-                return _SubjectCategory;
+                return _SubjectText;
             }
             set
             {
-                OnSubjectCategoryChanging(value);
-                ReportPropertyChanging("SubjectCategory");
-                _SubjectCategory = StructuralObject.SetValidValue(value, true);
-                ReportPropertyChanged("SubjectCategory");
-                OnSubjectCategoryChanged();
+                OnSubjectTextChanging(value);
+                ReportPropertyChanging("SubjectText");
+                _SubjectText = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("SubjectText");
+                OnSubjectTextChanged();
             }
         }
-        private global::System.String _SubjectCategory;
-        partial void OnSubjectCategoryChanging(global::System.String value);
-        partial void OnSubjectCategoryChanged();
+        private global::System.String _SubjectText;
+        partial void OnSubjectTextChanging(global::System.String value);
+        partial void OnSubjectTextChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 DataSourceId
+        {
+            get
+            {
+                return _DataSourceId;
+            }
+            set
+            {
+                OnDataSourceIdChanging(value);
+                ReportPropertyChanging("DataSourceId");
+                _DataSourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("DataSourceId");
+                OnDataSourceIdChanged();
+            }
+        }
+        private global::System.Int32 _DataSourceId;
+        partial void OnDataSourceIdChanging(global::System.Int32 value);
+        partial void OnDataSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String DataSourceSpecificId
+        {
+            get
+            {
+                return _DataSourceSpecificId;
+            }
+            set
+            {
+                OnDataSourceSpecificIdChanging(value);
+                ReportPropertyChanging("DataSourceSpecificId");
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("DataSourceSpecificId");
+                OnDataSourceSpecificIdChanged();
+            }
+        }
+        private global::System.String _DataSourceSpecificId;
+        partial void OnDataSourceSpecificIdChanging(global::System.String value);
+        partial void OnDataSourceSpecificIdChanged();
 
         #endregion
 
@@ -3711,6 +3804,44 @@ namespace ATN.Data
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.SourceSubject", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_Subject_DataSource", "DataSource")]
+        public DataSource DataSource
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_Subject_DataSource", "DataSource").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_Subject_DataSource", "DataSource").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<DataSource> DataSourceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DataSource>("ATNModel.FK_Subject_DataSource", "DataSource");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DataSource>("ATNModel.FK_Subject_DataSource", "DataSource", value);
                 }
             }
         }

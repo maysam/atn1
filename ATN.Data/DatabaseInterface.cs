@@ -16,9 +16,16 @@ namespace ATN.Data
     public abstract class DatabaseInterface
     {
         private ATNEntities _context;
-        public DatabaseInterface()
+        public DatabaseInterface(ATNEntities Entities = null)
         {
-            _context = new ATNEntities();
+            if (Entities == null)
+            {
+                _context = new ATNEntities();
+            }
+            else
+            {
+                _context = Entities;
+            }
         }
 
         /// <summary>

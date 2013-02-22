@@ -22,10 +22,12 @@ namespace ATN.Data
     /// </summary>
     public class CrawlerProgress : DatabaseInterface
     {
-        public CrawlerProgress()
+        public CrawlerProgress(ATNEntities Entities = null)
+            : base(Entities)
         {
 
         }
+
 
         /// <summary>
         /// Removes CrawlQueue items for the given CrawlId. Used when a crawl is interrupted to avoid enqueueing duplicate entries.
@@ -57,7 +59,7 @@ namespace ATN.Data
         /// <returns>A list of all existing Crawl items</returns>
         public Crawl[] GetExistingCrawls()
         {
-            return Context.Crawls.OrderByDescending(c => c.CrawlState).OrderByDescending(c => c.DateCrawled).ToArray();
+            return Context.Crawls.OrderByDescending(c => c.DateCrawled).ToArray();
         }
 
         /// <summary>

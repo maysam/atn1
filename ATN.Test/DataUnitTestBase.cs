@@ -11,10 +11,9 @@ namespace ATN.Test
     /// Summary description for DataUnitTestBase
     /// </summary>
     [TestClass]
-    public abstract class DataUnitTestBase
+    public abstract class DataUnitTestBase : DatabaseInterface
     {
-        private IUnitOfWork _modelContext;
-        public DataUnitTestBase()
+        public DataUnitTestBase() : base(new ATNEntities("name=ATNTest"))
         {
 
         }
@@ -40,21 +39,26 @@ namespace ATN.Test
         [TestInitialize]
         public void TestInitialize()
         {
-            _modelContext = new InMemoryUnitOfWork();
+            
         }
 
-        protected Crawl AddCrawl(int CrawlId = 1)
+        protected void DeleteCrawl(int CrawlId)
+        {
+            Context.Crawls.DeleteObject(Context.Crawls.Where(c => c.CrawlId == CrawlId).SingleOrDefault());
+            Context.SaveChanges();
+        }
+
+        protected Crawl AddCrawl()
         {
             Crawl c = new Crawl();
-            c.CrawlId = CrawlId;
             c.CrawlIntervalDays = 7;
             c.CrawlState = (int)CrawlerState.CanonicalPaperComplete;
             c.DateCrawled = DateTime.Now;
             c.LastEnumeratedSourceId = 1234;
             c.TheoryId = 1;
 
-            ModelContext.Crawls.AddObject(c);
-            ModelContext.SaveChanges();
+            Context.Crawls.AddObject(c);
+            Context.SaveChanges();
 
             return c;
         }
@@ -66,34 +70,25 @@ namespace ATN.Test
             t.TheoryId = 1;
             t.TheoryName = "Test Theory";
 
-            ModelContext.Theories.AddObject(t);
-            ModelContext.SaveChanges();
+            Context.Theories.AddObject(t);
+            Context.SaveChanges();
 
             return t;
         }
 
-        protected Crawl AddCrawl(DateTime DateAdded, int CrawlId = 1)
+        protected Crawl AddCrawl(DateTime DateAdded)
         {
             Crawl c = new Crawl();
-            c.CrawlId = CrawlId;
             c.CrawlIntervalDays = 7;
-            c.CrawlState = (int)CrawlerState.CanonicalPaperComplete;
+            c.CrawlState = (int)CrawlerState.ScheduledCrawlEnqueueingReferencesComplete;
             c.DateCrawled = DateAdded;
             c.LastEnumeratedSourceId = 1234;
             c.TheoryId = 1;
 
-            ModelContext.Crawls.AddObject(c);
-            ModelContext.SaveChanges();
+            Context.Crawls.AddObject(c);
+            Context.SaveChanges();
 
             return c;
-        }
-
-        public IUnitOfWork ModelContext
-        {
-            get
-            {
-                return _modelContext;
-            }
         }
     }
 }

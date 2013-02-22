@@ -22,11 +22,11 @@ namespace ATN.Test
             AuthorToAdd.LastName = "Author";
             AuthorToAdd.FullName = "Test Author";
             AuthorToAdd.Email = "testauthor@example.com";
-            AuthorToAdd.DataSourceSpecificId = "13371337";
+            AuthorToAdd.DataSourceSpecificId = "999999999999";
             AuthorToAdd.DataSourceId = 1;
             AuthorToAdd.AuthorId = 1;
 
-            Authors a = new Authors(ModelContext);
+            Authors a = new Authors(Context);
 
             //This first call adds the Author
             a.GetAuthorFromDetachedAuthor(AuthorToAdd);
@@ -34,6 +34,10 @@ namespace ATN.Test
             //This call gets the author out of the repository
             Author AddedAuthor = a.GetAuthorFromDetachedAuthor(AuthorToAdd);
             Assert.AreEqual(AddedAuthor, AuthorToAdd, "Authors are not equal");
+
+            //Cleanup
+            Context.DeleteObject(AddedAuthor);
+            Context.SaveChanges();
         }
 
         [TestMethod]
@@ -44,14 +48,14 @@ namespace ATN.Test
             AuthorToAdd.LastName = "Author";
             AuthorToAdd.FullName = "Test Author";
             AuthorToAdd.Email = "testauthor@example.com";
-            AuthorToAdd.DataSourceSpecificId = "13371337";
+            AuthorToAdd.DataSourceSpecificId = "999999999999";
             AuthorToAdd.DataSourceId = 1;
             AuthorToAdd.AuthorId = 1;
 
-            ModelContext.Authors.AddObject(AuthorToAdd);
-            ModelContext.SaveChanges();
+            Context.Authors.AddObject(AuthorToAdd);
+            Context.SaveChanges();
 
-            Authors a = new Authors(ModelContext);
+            Authors a = new Authors(Context);
 
             Author AuthorWithIdOnly = new Author();
             AuthorWithIdOnly.AuthorId = AuthorToAdd.AuthorId;
@@ -64,6 +68,10 @@ namespace ATN.Test
             //This call gets the author out of the repository specifically by id
             Author AddedAuthor = a.GetAuthorFromDetachedAuthor(AuthorWithIdOnly);
             Assert.AreSame(AddedAuthor, AuthorToAdd, "Authors are not equal");
+
+            //Cleanup
+            Context.DeleteObject(AddedAuthor);
+            Context.SaveChanges();
         }
     }
 }

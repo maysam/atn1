@@ -10,7 +10,7 @@ namespace ATN.Data
     /// </summary>
     public class Authors : DatabaseInterface
     {
-        public Authors()
+        public Authors(ATNEntities Entities = null) : base(Entities)
         {
 
         }
