@@ -20,12 +20,14 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryName">Name of the theory being added</param>
         /// <param name="CanonicalSources">The representation of canonical source identifiers for the theory</param>
+        /// <param name="TheoryComment">Any comments relating to the theory</param>
         /// <returns>A persistence-model attached representation of the added theory</returns>
-        public Theory AddTheory(string TheoryName, params CanonicalDataSource[] CanonicalSources)
+        public Theory AddTheory(string TheoryName, string TheoryComment, params CanonicalDataSource[] CanonicalSources)
         {
             Theory TheoryToAdd = new Theory();
             TheoryToAdd.TheoryName = TheoryName;
             TheoryToAdd.DateAdded = DateTime.Now;
+            TheoryToAdd.TheoryComment = TheoryComment;
             Context.Theories.AddObject(TheoryToAdd);
             Context.SaveChanges();
 

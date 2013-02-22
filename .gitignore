@@ -16,3 +16,4 @@
 /adhoc/*/*.suo
 /adhoc/*/*/*.suo
 /adhoc/HierarchicClustering/*.opensdf
+/TestResults

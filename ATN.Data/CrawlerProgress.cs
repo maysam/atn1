@@ -69,7 +69,7 @@ namespace ATN.Data
         {
             Crawl Crawl = Context.Crawls.Single(c => c.CrawlId == CrawlId);
             TheoryDefinition[] Definition = Context.TheoryDefinitions.Where(td => td.TheoryId == Crawl.TheoryId).ToArray();
-            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.TheoryId, Definition);
+            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.Theory.TheoryComment, Crawl.TheoryId, Definition);
         }
 
         /// <summary>

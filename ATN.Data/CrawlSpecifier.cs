@@ -48,10 +48,11 @@ namespace ATN.Data
         /// </summary>
         /// <param name="Crawl">The Crawl this object corresponds to</param>
         /// <param name="TheoryName">The name of the theory this crawl is for</param>
+        /// <param name="TheoryComment">Any additional information regarding the theory</param>
         /// <param name="TheoryId">The identifier for the named theory</param>
         /// <param name="CanonicalDataSourceIds">A representation of the canonical data-source specific sources for the given theory</param>
-        public ExistingCrawlSpecifier(Crawl Crawl, string TheoryName, int TheoryId, params CanonicalDataSource[] CanonicalDataSourceIds)
-            : base(TheoryId, TheoryName, Crawl.CrawlIntervalDays, CanonicalDataSourceIds)
+        public ExistingCrawlSpecifier(Crawl Crawl, string TheoryName, string TheoryComment, int TheoryId, params CanonicalDataSource[] CanonicalDataSourceIds)
+            : base(TheoryId, TheoryName, TheoryComment, Crawl.CrawlIntervalDays, CanonicalDataSourceIds)
         {
             this.Crawl = Crawl;
         }
@@ -61,10 +62,11 @@ namespace ATN.Data
         /// </summary>
         /// <param name="Crawl">The Crawl this object corresponds to</param>
         /// <param name="TheoryName">The name of the theory this crawl is for</param>
+        /// <param name="TheoryComment">Any additional information regarding the theory</param>
         /// <param name="TheoryId">The identifier for the named theory</param>
         /// <param name="CrawlDefinitions">An existing set of theory definitions for the named theory</param>
-        public ExistingCrawlSpecifier(Crawl Crawl, string TheoryName, int TheoryId, TheoryDefinition[] CrawlDefinitions) :
-            base(TheoryId, TheoryName, Crawl.CrawlIntervalDays, CrawlDefinitions)
+        public ExistingCrawlSpecifier(Crawl Crawl, string TheoryName, string TheoryComment, int TheoryId, TheoryDefinition[] CrawlDefinitions) :
+            base(TheoryId, TheoryName, TheoryComment, Crawl.CrawlIntervalDays, CrawlDefinitions)
         {
             this.Crawl = Crawl;
         }
@@ -74,7 +76,7 @@ namespace ATN.Data
         /// </summary>
         /// <param name="Crawl">The Crawl this object corresponds to</param>
         /// <param name="PendingSpecifier">An existing PendingCrawlSpecifier from which to derive</param>
-        public ExistingCrawlSpecifier(Crawl Crawl, PendingCrawlSpecifier PendingSpecifier) : base(PendingSpecifier.TheoryId, PendingSpecifier.TheoryName, PendingSpecifier.CrawlIntervalDays, PendingSpecifier.CanonicalDataSources)
+        public ExistingCrawlSpecifier(Crawl Crawl, PendingCrawlSpecifier PendingSpecifier) : base(PendingSpecifier.TheoryId, PendingSpecifier.TheoryName, PendingSpecifier.TheoryComment, PendingSpecifier.CrawlIntervalDays, PendingSpecifier.CanonicalDataSources)
         {
             this.Crawl = Crawl;
         }
@@ -102,8 +104,8 @@ namespace ATN.Data
         /// <param name="TheoryName">The name of the theory this crawl is for</param>
         /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of the named theory or null if the theory will not be automatically refreshed</param>
         /// <param name="CanonicalDataSourceIds">A representation of the canonical data-source specific sources for the given theory</param>
-        public PendingCrawlSpecifier(int TheoryId, string TheoryName, int? CrawlIntervalDays, params CanonicalDataSource[] CanonicalDataSourceIds)
-            : base(TheoryName, CanonicalDataSourceIds)
+        public PendingCrawlSpecifier(int TheoryId, string TheoryName, string TheoryComment, int? CrawlIntervalDays, params CanonicalDataSource[] CanonicalDataSourceIds)
+            : base(TheoryName, TheoryComment, CanonicalDataSourceIds)
         {
             this.TheoryId = TheoryId;
             this.CrawlIntervalDays = CrawlIntervalDays;
@@ -114,10 +116,11 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The identifier for the named theory</param>
         /// <param name="TheoryName">The name of the theory this crawl is for</param>
+        /// <param name="TheoryComment">Any additional information regarding the theory</param>
         /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of the named theory or null if the theory will not be automatically refreshed</param>
         /// <param name="TheoryDefinitions">An existing set of theory definitions for the named theory</param>
-        protected PendingCrawlSpecifier(int TheoryId, string TheoryName, int? CrawlIntervalDays, TheoryDefinition[] TheoryDefinitions)
-            : base(TheoryName, TheoryDefinitions)
+        protected PendingCrawlSpecifier(int TheoryId, string TheoryName, string TheoryComment, int? CrawlIntervalDays, TheoryDefinition[] TheoryDefinitions)
+            : base(TheoryName, TheoryComment, TheoryDefinitions)
         {
             this.TheoryId = TheoryId;
             this.CrawlIntervalDays = CrawlIntervalDays;
@@ -130,7 +133,7 @@ namespace ATN.Data
         /// <param name="NewSpecifier">An existing NewCrawlSpecifier from which to derive</param>
         /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of the named theory or null if the theory will not be automatically refreshed</param>
         public PendingCrawlSpecifier(int TheoryId, NewCrawlSpecifier NewSpecifier, int? CrawlIntervalDays)
-            : base(NewSpecifier.TheoryName, NewSpecifier.CanonicalDataSources)
+            : base(NewSpecifier.TheoryName, NewSpecifier.TheoryComment, NewSpecifier.CanonicalDataSources)
         {
             this.TheoryId = TheoryId;
             this.CrawlIntervalDays = CrawlIntervalDays;
@@ -148,6 +151,11 @@ namespace ATN.Data
         public string TheoryName { get; set; }
 
         /// <summary>
+        /// Any additional information regarding the theory
+        /// </summary>
+        public string TheoryComment { get; set; }
+
+        /// <summary>
         /// The canonical data-source specific sources for the given theory
         /// </summary>
         public CanonicalDataSource[] CanonicalDataSources { get; set; }
@@ -156,21 +164,25 @@ namespace ATN.Data
         /// Creates the crawl representation
         /// </summary>
         /// <param name="TheoryName">The name of the theory this crawl is for</param>
+        /// <param name="TheoryComment">Any additional information regarding the theory</param>
         /// <param name="CanonicalDataSourceIds">A representation of the canonical data-source specific sources for the given theory</param>
-        public NewCrawlSpecifier(string TheoryName, params CanonicalDataSource[] CanonicalDataSourceIds)
+        public NewCrawlSpecifier(string TheoryName, string TheoryComment, params CanonicalDataSource[] CanonicalDataSourceIds)
         {
             this.TheoryName = TheoryName;
             this.CanonicalDataSources = CanonicalDataSourceIds;
+            this.TheoryComment = TheoryComment;
         }
 
         /// <summary>
         /// Creates the crawl representation; provided for the use of deriving classes
         /// </summary>
         /// <param name="TheoryName">The name of the theory this crawl is for</param>
+        /// <param name="TheoryComment">Any additional information regarding the theory</param>
         /// <param name="TheoryDefinitions">An existing set of theory definitions for the named theory</param>
-        protected NewCrawlSpecifier(string TheoryName, TheoryDefinition[] TheoryDefinitions)
+        protected NewCrawlSpecifier(string TheoryName,  string TheoryComment, TheoryDefinition[] TheoryDefinitions)
         {
             this.TheoryName = TheoryName;
+            this.TheoryComment = TheoryComment;
             CanonicalDataSources = TheoryDefinitions.Select(cd => new CanonicalDataSource((CrawlerDataSource)cd.DataSourceId, cd.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries))).ToArray();
         }
     }
