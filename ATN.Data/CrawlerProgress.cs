@@ -107,7 +107,7 @@ namespace ATN.Data
         {
             Crawler.DateCrawled = DateTime.Now;
             Crawler.CrawlState = (short)State;
-            if (State != CrawlerState.ScheduledCrawlRetrievingCitationsComplete)
+            if (State != CrawlerState.ScheduledCrawlRetrievingCitationsComplete && State != CrawlerState.RetrievingCitationsComplete)
             {
                 Crawler.LastEnumeratedSourceId = null;
             }

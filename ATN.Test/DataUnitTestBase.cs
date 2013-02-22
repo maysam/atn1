@@ -44,6 +44,14 @@ namespace ATN.Test
 
         protected void DeleteCrawl(int CrawlId)
         {
+            foreach (var QueueItem in Context.CrawlQueues.Where(cq => cq.CrawlId == CrawlId))
+            {
+                Context.CrawlQueues.DeleteObject(QueueItem);
+            }
+            foreach (var CrawlResult in Context.CrawlResults.Where(cq => cq.CrawlId == CrawlId))
+            {
+                Context.CrawlResults.DeleteObject(CrawlResult);
+            }
             Context.Crawls.DeleteObject(Context.Crawls.Where(c => c.CrawlId == CrawlId).SingleOrDefault());
             Context.SaveChanges();
         }
@@ -89,6 +97,25 @@ namespace ATN.Test
             Context.SaveChanges();
 
             return c;
+        }
+
+        protected Source AddSource()
+        {
+            Source s = new Source();
+            s.DataSourceId = 1;
+            s.DataSourceSpecificId = Guid.NewGuid().ToString();
+            s.ArticleTitle = "Test Source";
+            s.SerializedDataSourceResponse = "<Response />";
+            Context.Sources.AddObject(s);
+            Context.SaveChanges();
+
+            return s;
+        }
+
+        protected void DeleteSource(long SourceId)
+        {
+            Context.DeleteObject(Context.Sources.SingleOrDefault(s => s.SourceId == SourceId));
+            Context.SaveChanges();
         }
     }
 }
