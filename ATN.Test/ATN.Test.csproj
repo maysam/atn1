@@ -71,9 +71,11 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AuthorsTests.cs" />
+    <Compile Include="SourcesTests.cs" />
     <Compile Include="CrawlerProgressTests.cs" />
     <Compile Include="DataUnitTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="JournalsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ATN.Analysis\ATN.Analysis.csproj">

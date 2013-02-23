@@ -24,12 +24,7 @@ namespace ATN.Test
         {
             int CurrentCount = Context.CrawlQueues.Count();
 
-            CrawlQueue cq = new CrawlQueue();
-            cq.CrawlReferenceDirection = (int)CrawlReferenceDirection.Citation;
-            cq.CrawlId = 2;
-            cq.DataSourceId = 1;
-            cq.DataSourceSpecificId = "999999999999";
-            cq.ReferencesSourceId = 1;
+            CrawlQueue cq = CreateCrawlQueue(false);
 
             Context.CrawlQueues.AddObject(cq);
             Context.SaveChanges();
@@ -42,7 +37,7 @@ namespace ATN.Test
         [TestMethod]
         public void VerifyLastReferencedSourceId()
         {
-            Crawl c = AddCrawl();
+            Crawl c = CreateCrawl(true);
             CrawlProgress.UpdateCrawlerLastEnumeratedSource(c, 1234);
             Assert.AreEqual(c.LastEnumeratedSourceId, CrawlProgress.GetLastSourceIdReferencedInCrawl(c.CrawlId), "Last referenced source id incorrect");
 
@@ -56,9 +51,9 @@ namespace ATN.Test
 
             DateTime Now = DateTime.Now.AddYears(1);
 
-            Crawls.Add(AddCrawl(Now.AddDays(1)));
-            Crawls.Add(AddCrawl(Now.AddDays(2)));
-            Crawls.Add(AddCrawl(Now.AddDays(3)));
+            Crawls.Add(CreateCrawl(Now.AddDays(1), true));
+            Crawls.Add(CreateCrawl(Now.AddDays(2), true));
+            Crawls.Add(CreateCrawl(Now.AddDays(3), true));
 
             Crawl[] ExistingCrawls = CrawlProgress.GetExistingCrawls();
 
@@ -77,7 +72,7 @@ namespace ATN.Test
         [TestMethod]
         public void VerifyStatusIsUpdated()
         {
-            Crawl Crawl = AddCrawl();
+            Crawl Crawl = CreateCrawl(true);
             CrawlProgress.UpdateCrawlerState(Crawl, CrawlerState.ScheduledCrawlRetrievingCitationsComplete);
             Assert.AreEqual(Crawl.CrawlState, (int)CrawlerState.ScheduledCrawlRetrievingCitationsComplete, "Crawl state was not set properly");
 
@@ -95,8 +90,8 @@ namespace ATN.Test
         [TestMethod]
         public void VerifyQueueWorkflow()
         {
-            Crawl c = AddCrawl();
-            Source s = AddSource();
+            Crawl c = CreateCrawl(true);
+            Source s = CreateSource(true);
             CrawlProgress.QueueReferenceCrawl(c.CrawlId, new string[] { s.DataSourceSpecificId }, CrawlerDataSource.MicrosoftAcademicSearch, s.SourceId, CrawlReferenceDirection.Reference);
             CrawlProgress.CommitQueue();
             CrawlQueue[] QueueItems = CrawlProgress.GetPendingCrawlsForCrawlId(c.CrawlId);

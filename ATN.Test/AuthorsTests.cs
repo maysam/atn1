@@ -9,23 +9,13 @@ namespace ATN.Test
     {
         public AuthorsTests()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+
         }
 
         [TestMethod]
         public void AddAuthor()
         {
-            Author AuthorToAdd = new Author();
-            AuthorToAdd.FirstName = "Test";
-            AuthorToAdd.LastName = "Author";
-            AuthorToAdd.FullName = "Test Author";
-            AuthorToAdd.Email = "testauthor@example.com";
-            AuthorToAdd.DataSourceSpecificId = "999999999999";
-            AuthorToAdd.DataSourceId = 1;
-            AuthorToAdd.AuthorId = 1;
-
+            Author AuthorToAdd = CreateAuthor(false);
             Authors a = new Authors(Context);
 
             //This first call adds the Author
@@ -43,14 +33,7 @@ namespace ATN.Test
         [TestMethod]
         public void GetAuthor()
         {
-            Author AuthorToAdd = new Author();
-            AuthorToAdd.FirstName = "Test";
-            AuthorToAdd.LastName = "Author";
-            AuthorToAdd.FullName = "Test Author";
-            AuthorToAdd.Email = "testauthor@example.com";
-            AuthorToAdd.DataSourceSpecificId = "999999999999";
-            AuthorToAdd.DataSourceId = 1;
-            AuthorToAdd.AuthorId = 1;
+            Author AuthorToAdd = CreateAuthor(false);
 
             Context.Authors.AddObject(AuthorToAdd);
             Context.SaveChanges();

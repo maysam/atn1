@@ -13,10 +13,12 @@ namespace ATN.Data
     {
         Authors _authors;
         Journals _journals;
+        Subjects _subjects;
         public Sources(ATNEntities Entities = null) : base(Entities)
         {
             _authors = new Authors(Entities);
             _journals = new Journals(Entities);
+            _subjects = new Subjects(Entities);
         }
 
         /// <summary>
@@ -126,6 +128,13 @@ namespace ATN.Data
                     AuthorReference.SourceId = SourceToAdd.Source.SourceId;
                     Context.AuthorsReferences.AddObject(AuthorReference);
                 }
+
+                foreach (Subject Subject in SourceToAdd.Subjects)
+                {
+                    _subjects.GetOrAddSubject(Subject);
+                    _subjects.AddSubjectToSource(SourceToAdd.Source.SourceId, Subject.SubjectId);
+                }
+
                 Context.SaveChanges();
                 SourceToAdd.IsDetached = false;
             }

@@ -91,13 +91,6 @@ namespace ATN.Crawler
                         {
                             CompleteSource CanonicalCompleteSource = Crawler.GetSourceById(CanonicalDataSource.CanonicalIds.First().ToString());
                             AttachedCannonicalSource = _sources.AddDetachedSource(CanonicalCompleteSource);
-
-                            //First time we've seen this source, add Subjects for it
-                            foreach (Subject Subject in CanonicalCompleteSource.Subjects)
-                            {
-                                _subjects.GetOrAddSubject(Subject);
-                                _subjects.AddSubjectToSource(AttachedCannonicalSource.SourceId, Subject.SubjectId);
-                            }
                         }
 
                         //If there are multiple copies of the same source added, correlate each unique data-source ID to the canonical source ID
@@ -255,12 +248,6 @@ namespace ATN.Crawler
                 {
                     CompleteSource SourceToAdd = CrawlerForDataSource.GetSourceById(CrawlsToComplete[i].DataSourceSpecificId);
                     SourceToComplete = _sources.AddDetachedSource(SourceToAdd);
-
-                    foreach (Subject Subject in SourceToAdd.Subjects)
-                    {
-                        _subjects.GetOrAddSubject(Subject);
-                        _subjects.AddSubjectToSource(SourceToComplete.SourceId, Subject.SubjectId);
-                    }
 
                     Trace.WriteLine("Source does not exist in database, adding.", "Informational");
                 }

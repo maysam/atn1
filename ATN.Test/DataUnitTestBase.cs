@@ -56,7 +56,7 @@ namespace ATN.Test
             Context.SaveChanges();
         }
 
-        protected Crawl AddCrawl()
+        protected Crawl CreateCrawl(bool Attach)
         {
             Crawl c = new Crawl();
             c.CrawlIntervalDays = 7;
@@ -65,26 +65,49 @@ namespace ATN.Test
             c.LastEnumeratedSourceId = 1234;
             c.TheoryId = 1;
 
-            Context.Crawls.AddObject(c);
-            Context.SaveChanges();
+            if (Attach)
+            {
+                Context.Crawls.AddObject(c);
+                Context.SaveChanges();
+            }
 
             return c;
         }
 
-        protected Theory AddTheory(DateTime DateAdded)
+        protected Theory CreateTheory(DateTime DateAdded, bool Attach)
         {
             Theory t = new Theory();
             t.DateAdded = DateAdded;
-            t.TheoryId = 1;
-            t.TheoryName = "Test Theory";
+            t.TheoryName = Guid.NewGuid().ToString();
 
-            Context.Theories.AddObject(t);
-            Context.SaveChanges();
+            if (Attach)
+            {
+                Context.Theories.AddObject(t);
+                Context.SaveChanges();
+            }
 
             return t;
         }
 
-        protected Crawl AddCrawl(DateTime DateAdded)
+        protected CrawlQueue CreateCrawlQueue(bool Attach)
+        {
+            CrawlQueue cq = new CrawlQueue();
+            cq.CrawlReferenceDirection = (int)CrawlReferenceDirection.Citation;
+            cq.CrawlId = 2;
+            cq.DataSourceId = 1;
+            cq.DataSourceSpecificId = Guid.NewGuid().ToString();
+            cq.ReferencesSourceId = 1;
+
+            if (Attach)
+            {
+                Context.CrawlQueues.AddObject(cq);
+                Context.SaveChanges();
+            }
+
+            return cq;
+        }
+
+        protected Crawl CreateCrawl(DateTime DateAdded, bool Attach)
         {
             Crawl c = new Crawl();
             c.CrawlIntervalDays = 7;
@@ -93,28 +116,97 @@ namespace ATN.Test
             c.LastEnumeratedSourceId = 1234;
             c.TheoryId = 1;
 
-            Context.Crawls.AddObject(c);
-            Context.SaveChanges();
+            if (Attach)
+            {
+                Context.Crawls.AddObject(c);
+                Context.SaveChanges();
+            }
 
             return c;
         }
 
-        protected Source AddSource()
+        protected Source CreateSource(bool Attach)
         {
+
             Source s = new Source();
             s.DataSourceId = 1;
             s.DataSourceSpecificId = Guid.NewGuid().ToString();
             s.ArticleTitle = "Test Source";
             s.SerializedDataSourceResponse = "<Response />";
-            Context.Sources.AddObject(s);
-            Context.SaveChanges();
+
+            if (Attach)
+            {
+                Context.Sources.AddObject(s);
+                Context.SaveChanges();
+            }
 
             return s;
+        }
+
+        protected Author CreateAuthor(bool Attach)
+        {
+            Author AuthorToAdd = new Author();
+            AuthorToAdd.FirstName = "Test";
+            AuthorToAdd.LastName = "Author";
+            AuthorToAdd.FullName = "Test Author";
+            AuthorToAdd.Email = "testauthor@example.com";
+            AuthorToAdd.DataSourceSpecificId = Guid.NewGuid().ToString();
+            AuthorToAdd.DataSourceId = 1;
+            AuthorToAdd.AuthorId = 1;
+
+
+            if (Attach)
+            {
+                Context.Authors.AddObject(AuthorToAdd);
+                Context.SaveChanges();
+            }
+
+            return AuthorToAdd;
+        }
+
+        protected Subject CreateSubject(bool Attach)
+        {
+            Subject SubjectToAdd = new Subject();
+            SubjectToAdd.DataSourceId = 1;
+            SubjectToAdd.DataSourceSpecificId = Guid.NewGuid().ToString();
+            SubjectToAdd.SubjectText = "Test Subject";
+
+            if (Attach)
+            {
+                Context.Subjects.AddObject(SubjectToAdd);
+                Context.SaveChanges();
+            }
+
+            return SubjectToAdd;
         }
 
         protected void DeleteSource(long SourceId)
         {
             Context.DeleteObject(Context.Sources.SingleOrDefault(s => s.SourceId == SourceId));
+            Context.SaveChanges();
+        }
+
+        protected void DeleteJournal(Journal Journal)
+        {
+            Context.DeleteObject(Journal);
+            Context.SaveChanges();
+        }
+
+        protected void DeleteAuthorsReference(AuthorsReference AuthorsReference)
+        {
+            Context.DeleteObject(AuthorsReference);
+            Context.SaveChanges();
+        }
+
+        protected void DeleteAuthor(Author Author)
+        {
+            Context.DeleteObject(Author);
+            Context.SaveChanges();
+        }
+
+        protected void DeleteSubject(Subject Subject)
+        {
+            Context.DeleteObject(Subject);
             Context.SaveChanges();
         }
     }
