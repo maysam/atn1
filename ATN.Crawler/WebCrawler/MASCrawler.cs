@@ -283,7 +283,6 @@ namespace ATN.Crawler.WebCrawler
                 case 4:
                     //Search method unsupported; this means there is a bug in the crawler code
                     Thread.Sleep(MillisecondsPerMinute * WaitDelayMinutes);
-                    Environment.Exit(1);
                     throw new Exception("MAS request failed; please try again.");
             }
         }

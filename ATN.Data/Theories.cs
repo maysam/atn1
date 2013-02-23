@@ -10,9 +10,10 @@ namespace ATN.Data
     /// </summary>
     public class Theories : DatabaseInterface
     {
-        public Theories()
+        Sources Sources;
+        public Theories(ATNEntities Entities = null) : base(Entities)
         {
-            
+            Sources = new Sources(Entities);
         }
 
         /// <summary>
@@ -51,14 +52,13 @@ namespace ATN.Data
         /// <returns></returns>
         public Source[] GetCanonicalSourcesForTheory(int TheoryId)
         {
-            Sources s = new Sources();
             TheoryDefinition[] CanonicalPapers = Context.Theories.Single(t => t.TheoryId == TheoryId).TheoryDefinitions.ToArray();
-            List<Source> Sources = new List<Source>(CanonicalPapers.Length);
+            List<Source> CanonicalSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                Sources.Add(s.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                CanonicalSources.Add(Sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
             }
-            return Sources.ToArray();
+            return CanonicalSources.ToArray();
         }
 
         /// <summary>
@@ -77,18 +77,17 @@ namespace ATN.Data
         /// <returns>All first level sources for the given theory</returns>
         public Source[] GetFirstLevelSourcesForTheory(int TheoryId)
         {
-            Sources s = new Sources();
             TheoryDefinition[] CanonicalPapers = Context.Theories.Single(t => t.TheoryId == TheoryId).TheoryDefinitions.ToArray();
-            List<Source> Sources = new List<Source>(CanonicalPapers.Length);
+            List<Source> FirstLevelSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                Source CanonicalSource = s.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                Source CanonicalSource = Sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
                 foreach (Source CitingSource in CanonicalSource.CitingSources)
                 {
-                    Sources.Add(CitingSource);
+                    FirstLevelSources.Add(CitingSource);
                 }
             }
-            return Sources.ToArray();
+            return FirstLevelSources.ToArray();
         }
 
         /// <summary>
@@ -105,6 +104,7 @@ namespace ATN.Data
                 ContributionSignificance = new TheoryMembershipSignificance();
                 ContributionSignificance.TheoryId = TheoryId;
                 ContributionSignificance.SourceId = SourceId;
+                Context.TheoryMembershipSignificances.AddObject(ContributionSignificance);
             }
 
             ContributionSignificance.RAMarkedContributing = RAMarkedContributing;

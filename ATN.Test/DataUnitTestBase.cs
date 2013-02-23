@@ -209,5 +209,16 @@ namespace ATN.Test
             Context.DeleteObject(Subject);
             Context.SaveChanges();
         }
+
+        protected void DeleteTheory(Theory Theory)
+        {
+            var TheoryDefs = Context.TheoryDefinitions.Where(td => td.TheoryId == Theory.TheoryId);
+            foreach (var TheoryDef in TheoryDefs)
+            {
+                Context.DeleteObject(TheoryDef);
+            }
+            Context.DeleteObject(Theory);
+            Context.SaveChanges();
+        }
     }
 }
