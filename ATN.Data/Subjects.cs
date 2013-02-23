@@ -39,33 +39,15 @@ namespace ATN.Data
 
         public Subject GetOrAddSubject(Subject SubjectToAdd)
         {
-            Context.Subjects.AddObject(SubjectToAdd);
-            Context.SaveChanges();
-
-            return SubjectToAdd;
-        }
-
-        public Subject GetOrAddSubject(string SubjectText, string DataSourceSpecificId, CrawlerDataSource DataSource)
-        {
-            Subject MaybeExistingSubject = Context.Subjects.SingleOrDefault(s => s.DataSourceSpecificId == DataSourceSpecificId && s.DataSourceId == (int)DataSource);
-
+            Subject MaybeExistingSubject = Context.Subjects.Where(s => s.DataSourceSpecificId == SubjectToAdd.DataSourceSpecificId && s.DataSourceId == SubjectToAdd.DataSourceId).SingleOrDefault();
             if (MaybeExistingSubject == null)
             {
-
-                Subject SubjectToCreate = new Subject();
-                SubjectToCreate.DataSourceId = (int)DataSource;
-                SubjectToCreate.DataSourceSpecificId = DataSourceSpecificId;
-                SubjectToCreate.SubjectText = SubjectText;
-
-                Context.Subjects.AddObject(SubjectToCreate);
+                Context.Subjects.AddObject(SubjectToAdd);
                 Context.SaveChanges();
+                MaybeExistingSubject = SubjectToAdd;
+            }
 
-                return SubjectToCreate;
-            }
-            else
-            {
-                return MaybeExistingSubject;
-            }
+            return MaybeExistingSubject;
         }
     }
 }
