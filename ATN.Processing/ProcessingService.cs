@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ATN.Crawler;
+using ATN.Data;
 
 namespace ATN.Processing
 {
@@ -29,7 +30,11 @@ namespace ATN.Processing
             {
                 try
                 {
-                    co.ProcessCurrentCrawls();
+                    ExistingCrawlSpecifier[] ChangedCrawls = co.ProcessCurrentCrawls();
+                    if (ChangedCrawls.Length > 0)
+                    {
+                        //Do analysis on changed crawls
+                    }
                 }
                 catch (Exception e)
                 {

@@ -26,34 +26,35 @@ namespace ATN.Crawler
         }
 
         /// <summary>
-        /// Enumerates all existing crawls and re-crawls them
-        /// </summary>
-        public void RefreshExistingCrawls()
-        {
-            RefreshExistingCrawls(null);
-        }
-
-        /// <summary>
         /// Enumerates all crawls, finishing incomplete ones and recrawling stale ones
         /// </summary>
-        public void ProcessCurrentCrawls()
+        public ExistingCrawlSpecifier[] ProcessCurrentCrawls()
         {
+            List<ExistingCrawlSpecifier> ChangedCrawls = new List<ExistingCrawlSpecifier>();
+
             Crawl[] ExistingCrawls = _progress.GetExistingCrawls();
             ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState < 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
             CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState > 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
             {
-                RefreshExistingCrawls(Specifier.Crawl.CrawlId);
+                if (RefreshExistingCrawls(Specifier.Crawl.CrawlId))
+                {
+                    ChangedCrawls.Add(Specifier);
+                }
             }
+
+            return ChangedCrawls.ToArray();
         }
 
         /// <summary>
         /// Refreshes all existing crawls, or a single crawl indicated by CrawlId
         /// </summary>
         /// <param name="CrawlId">CrawlId to refresh, if this is null all existing crawls will be refreshed</param>
-        private void RefreshExistingCrawls(int? CrawlId = null)
+        private bool RefreshExistingCrawls(int? CrawlId = null)
         {
+            bool Changed = false;
+
             //This translates specific data source identifier to an ICrawler implementation capable of crawling it
             Dictionary<CrawlerDataSource, ICrawler> DataSourceToCrawler = CrawlInstantiator.RetrieveCrawlerTranslations();
 
@@ -101,6 +102,7 @@ namespace ATN.Crawler
 
                         CanonicalSources.Add(AttachedCannonicalSource, CanonicalDataSource);
                     }
+                    Changed = true;
                     _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.CanonicalPaperComplete);
                     Trace.WriteLine("Canonical papers retrieved, crawl state committed", "Informational");
                 }
@@ -147,6 +149,11 @@ namespace ATN.Crawler
                             //Queue each citation as citing the canonical paper
                             _progress.QueueReferenceCrawl(Specifier.Crawl.CrawlId, NewCitations, CanonicalSource.DataSource, LocalSource.SourceId, CrawlReferenceDirection.Citation);
                             Trace.WriteLine(string.Format("Queued {0} citations", NewCitations.Length));
+
+                            if (NewCitations.Length > 0)
+                            {
+                                Changed = true;
+                            }
                         }
                     }
 
@@ -157,7 +164,10 @@ namespace ATN.Crawler
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlEnqueueingCitationsComplete || Specifier.Crawl.CrawlState == (int)CrawlerState.EnqueueingCitationsComplete)
                 {
-                    DequeueCitationsReferences(Specifier.Crawl);
+                    if (DequeueCitationsReferences(Specifier.Crawl))
+                    {
+                        Changed = true;
+                    }
                     _progress.UpdateCrawlerState(Specifier.Crawl, (CrawlerState)(Specifier.Crawl.CrawlState + 1));
                     Trace.WriteLine("Dequeueing citations complete", "Informational");
                 }
@@ -187,6 +197,11 @@ namespace ATN.Crawler
                             string[] UpdatedReferences = Crawler.GetReferencesBySourceId(Citations[i].DataSourceSpecificId);
                             string[] NewReferences = UpdatedReferences.Except(CurrentReferences).ToArray();
 
+                            if (NewReferences.Length > 0)
+                            {
+                                Changed = true;
+                            }
+
                             Trace.WriteLine(string.Format("Found {0} new references", NewReferences.Length));
 
                             //Queue the retrieved publication IDs for retrieval
@@ -204,11 +219,15 @@ namespace ATN.Crawler
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlEnqueueingReferencesComplete || Specifier.Crawl.CrawlState == (int)CrawlerState.EnqueueingReferencesComplete)
                 {
-                    DequeueCitationsReferences(Specifier.Crawl);
+                    if (DequeueCitationsReferences(Specifier.Crawl))
+                    {
+                        Changed = true;
+                    }
                     _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.Complete);
                     Trace.WriteLine("Dequeueing references complete", "Informational");
                 }
             }
+            return Changed;
         }
 
         /// <summary>
@@ -228,7 +247,8 @@ namespace ATN.Crawler
         /// Dequeues existing crawl-specific queue items for citations and references
         /// </summary>
         /// <param name="Crawl">The crawl to dequeue items for</param>
-        private void DequeueCitationsReferences(Crawl Crawl)
+        /// <returns>True if there were any citations or references dequeued; false otherwise</returns>
+        private bool DequeueCitationsReferences(Crawl Crawl)
         {
             Dictionary<CrawlerDataSource, ICrawler> DataSourceToCrawler = CrawlInstantiator.RetrieveCrawlerTranslations();
             Trace.WriteLine("Dequeueing and retreiving references", "Informational");
@@ -273,6 +293,15 @@ namespace ATN.Crawler
                 //Mark this queue item as completed
                 _progress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId, true);
                 Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
+            }
+
+            if (CrawlsToComplete.Length > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
