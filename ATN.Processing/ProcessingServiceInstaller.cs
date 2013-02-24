@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 namespace ATN.Processing
 {
     [RunInstaller(true)]
-    public class CrawlerServiceInstaller : Installer
+    public class ProcessingServiceInstaller : Installer
     {
         /// <summary>
         /// Public Constructor for WindowsServiceInstaller.
         /// - Put all of your Initialization code here.
         /// </summary>
-        public CrawlerServiceInstaller()
+        public ProcessingServiceInstaller()
         {
             ServiceProcessInstaller serviceProcessInstaller =
                    new ServiceProcessInstaller();
@@ -28,12 +28,12 @@ namespace ATN.Processing
             serviceProcessInstaller.Password = null;
 
             //# Service Information
-            serviceInstaller.DisplayName = "ATN Crawler";
+            serviceInstaller.DisplayName = "ATN Processing";
             serviceInstaller.StartType = ServiceStartMode.Automatic;
 
             //# This must be identical to the WindowsService.ServiceBase name
             //# set in the constructor of WindowsService.cs
-            serviceInstaller.ServiceName = "ATN Crawler";
+            serviceInstaller.ServiceName = "ATN Processing";
 
             this.Installers.Add(serviceProcessInstaller);
             this.Installers.Add(serviceInstaller);

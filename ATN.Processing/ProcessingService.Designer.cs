@@ -1,6 +1,6 @@
 ﻿namespace ATN.Processing
 {
-    partial class CrawlerService
+    partial class ProcessingService
     {
         /// <summary> 
         /// Required designer variable.

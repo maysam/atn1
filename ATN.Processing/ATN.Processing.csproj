@@ -65,13 +65,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CrawlerService.cs">
+    <Compile Include="ProcessingService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CrawlerService.Designer.cs">
-      <DependentUpon>CrawlerService.cs</DependentUpon>
+    <Compile Include="ProcessingService.Designer.cs">
+      <DependentUpon>ProcessingService.cs</DependentUpon>
     </Compile>
-    <Compile Include="CrawlerServiceInstaller.cs">
+    <Compile Include="ProcessingServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />

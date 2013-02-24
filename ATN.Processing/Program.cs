@@ -17,7 +17,7 @@ namespace ATN.Processing
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[] 
             { 
-                new CrawlerService() 
+                new ProcessingService() 
             };
             ServiceBase.Run(ServicesToRun);
         }

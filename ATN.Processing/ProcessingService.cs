@@ -12,13 +12,13 @@ using ATN.Crawler;
 
 namespace ATN.Processing
 {
-    public partial class CrawlerService : ServiceBase
+    public partial class ProcessingService : ServiceBase
     {
-        private Thread CrawlThread;
+        private Thread ProcessingThread;
         CrawlRunner co;
-        public CrawlerService()
+        public ProcessingService()
         {
-            ServiceName = "ATN Crawler";
+            ServiceName = "ATN Processing";
             EventLog.Log = "Application";
 
             InitializeComponent();
@@ -46,13 +46,13 @@ namespace ATN.Processing
         protected override void OnStart(string[] args)
         {
             co = new CrawlRunner();
-            CrawlThread = new Thread(new ThreadStart(PersistService));
-            CrawlThread.Start();
+            ProcessingThread = new Thread(new ThreadStart(PersistService));
+            ProcessingThread.Start();
         }
 
         protected override void OnStop()
         {
-            CrawlThread.Abort();
+            ProcessingThread.Abort();
         }
     }
 }
