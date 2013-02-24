@@ -8,7 +8,7 @@ using ATN.Data;
 namespace ATN.Test
 {
     /// <summary>
-    /// Summary description for DataUnitTestBase
+    /// Base class for all tests that interact with data
     /// </summary>
     [TestClass]
     public abstract class DataUnitTestBase : DatabaseInterface
@@ -20,10 +20,6 @@ namespace ATN.Test
 
         private TestContext testContextInstance;
 
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
         public TestContext TestContext
         {
             get

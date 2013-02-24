@@ -17,12 +17,12 @@ namespace ATN.Crawler
     {
         private CrawlerProgress _progress;
         private Sources _sources;
-        private Subjects _subjects;
+        private Theories _theories;
         public CrawlRunner(ATNEntities Entities = null)
         {
             _progress = new CrawlerProgress(Entities);
             _sources = new Sources(Entities);
-            _subjects = new Subjects(Entities);
+            _theories = new Theories(Entities);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace ATN.Crawler
         /// <summary>
         /// Enumerates all crawls, finishing incomplete ones and recrawling stale ones
         /// </summary>
-        public void ProcessStaleCrawls()
+        public void ProcessCurrentCrawls()
         {
             Crawl[] ExistingCrawls = _progress.GetExistingCrawls();
             ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState < 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
@@ -218,8 +218,7 @@ namespace ATN.Crawler
         /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of this crawl. If null, this theory will not be refreshed.</param>
         public void StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
         {
-            Theories Theories = new Theories();
-            Theory TheoryToCrawl = Theories.AddTheory(CrawlSpecifier.TheoryName, CrawlSpecifier.TheoryComment, CrawlSpecifier.CanonicalDataSources);
+            Theory TheoryToCrawl = _theories.AddTheory(CrawlSpecifier.TheoryName, CrawlSpecifier.TheoryComment, CrawlSpecifier.CanonicalDataSources);
             PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier, CrawlIntervalDays);
             Crawl Crawl = _progress.QueueTheoryCrawl(pcs);
             Trace.WriteLine(string.Format("Queueing crawl using for theory {0}", TheoryToCrawl.TheoryName, "Informational"));

@@ -29,7 +29,7 @@ namespace ATN.Processing
             {
                 try
                 {
-                    co.ProcessStaleCrawls();
+                    co.ProcessCurrentCrawls();
                 }
                 catch (Exception e)
                 {

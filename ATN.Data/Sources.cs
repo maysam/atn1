@@ -60,14 +60,14 @@ namespace ATN.Data
             }
         }
 
-        public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificId)
+        public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificIds)
         {
             Source SourceToReturn = null;
 
             //Find the canonical source from the database, stopping once one is found
-            for (int i = 0; i < DataSourceSpecificId.Length && SourceToReturn == null; i++)
+            for (int i = 0; i < DataSourceSpecificIds.Length && SourceToReturn == null; i++)
             {
-                SourceToReturn = GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificId[i]);
+                SourceToReturn = GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificIds[i]);
             }
 
             return SourceToReturn;

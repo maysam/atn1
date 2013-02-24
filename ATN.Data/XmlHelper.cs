@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace ATN.Data
 {
-    public class XmlHelper
+    public static class XmlHelper
     {
         /// <summary>
         /// Serializes the passed object into an XML string
@@ -26,6 +26,12 @@ namespace ATN.Data
             return XmlString;
         }
 
+        /// <summary>
+        /// Deserializes the XML representation of an object
+        /// </summary>
+        /// <typeparam name="T">The type of object the xmlString represents</typeparam>
+        /// <param name="xmlString">The serialized representation of an object</param>
+        /// <returns>An object constructed from the passed XML string</returns>
         public static T XmlDeserialize<T>(string xmlString)
         {
             XmlSerializer xs = new XmlSerializer(typeof(T));
