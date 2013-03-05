@@ -18,48 +18,55 @@ namespace ATN.Export
         {
             UnicodeEncoding UniEncoding = new UnicodeEncoding();
             Theories Theories = new Theories();
+            StreamWriter ExportDestination = new System.IO.StreamWriter(DestinationStream, Encoding.ASCII);
 
             // Write header to file
-            string ARFFHeader = "@RELATION atn\n";
-            ARFFHeader += "@ATTRIBUTE SourceId Numeric\n";
-            ARFFHeader += "@ATTRIBUTE EigenFactorValue Numeric\n";
-            ARFFHeader += "@ATTRIBUTE AttentionRatio Numeric\n";
-            ARFFHeader += "@ATTRIBUTE class {contributing, not-contributing}\n\n";
-            ARFFHeader += "@DATA\n\n";
-            DestinationStream.Write(UniEncoding.GetBytes(ARFFHeader),0,UniEncoding.GetByteCount(ARFFHeader));
+            ExportDestination.WriteLine("@RELATION atn\n");
+            ExportDestination.WriteLine("@ATTRIBUTE SourceId Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE EigenFactorValue Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE AttentionRatio Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE class {contributing, not-contributing}");
+            ExportDestination.WriteLine();
+            ExportDestination.WriteLine("@DATA");
+            ExportDestination.WriteLine();
 
             //Write training data to file
-            string datum = null;
             foreach (var Node in Nodes)
             {
                 TheoryMembership TM = Theories.GetTheoryMembershipForSource(Node.SourceId);
                 TheoryMembershipSignificance TMS = Theories.GetTheoryMembershipSignificanceForSource(Node.SourceId);
-                datum = "";
 
                 //SourceId
-                datum += TM.SourceId.ToString();
-                datum += ", ";
+                ExportDestination.WriteLine("{0}, ",TM.SourceId.ToString());
                 //EigenFactorValue
-                datum += TM.EigenFactorValue.ToString();
-                datum += ", ";
-                //AttentionRatio
-                datum += TM.AttentionRatio.ToString();
-                datum += ", ";
-                //class
-                if ((bool)TMS.RAMarkedContributing)
+                if (TM.EigenFactorValue.HasValue)
                 {
-                    datum += "contributing\n";
+                    ExportDestination.WriteLine("{0}, ",TM.EigenFactorValue.ToString());
                 }
                 else
                 {
-                    datum += "not-contributing\n";
+                    ExportDestination.WriteLine("?, ");
                 }
-
-                DestinationStream.Write(UniEncoding.GetBytes(datum), 0, UniEncoding.GetByteCount(datum));
+                //AttentionRatio
+                if (TM.AttentionRatio.HasValue)
+                {
+                    ExportDestination.WriteLine("{0}, ",TM.AttentionRatio.ToString());
+                }
+                else
+                {
+                    ExportDestination.WriteLine("?, ");
+                }
+                //class
+                if ((bool)TMS.RAMarkedContributing)
+                {
+                    ExportDestination.WriteLine("contributing");
+                }
+                else
+                {
+                    ExportDestination.WriteLine("not-contributing");
+                }
             }
-
-            DestinationStream.Flush();
-            DestinationStream.Close();
+            ExportDestination.Close();
         }
 
         /// <summary>
