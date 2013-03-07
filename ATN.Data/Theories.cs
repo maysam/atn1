@@ -89,7 +89,39 @@ namespace ATN.Data
             }
             return FirstLevelSources.ToArray();
         }
+        /// <summary>
+        /// Retrieves all papers marked by hand as either contributing or not. Used in the construction of ML training data.
+        /// </summary>
+        /// <param name="TheoryId">Theory for which to retrieve marked sources.</param>
+        /// <returns>All marked sources for a particular theory.</returns>
+        public Source[] GetMarkedSourcesForTheory(int TheoryId)
+        {
+            return Context.TheoryMembershipSignificances.Where(
+                s => s.TheoryId == TheoryId && s.RAMarkedContributing.HasValue).Join(
+                Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
+                ).ToArray();
+        }
 
+        /// <summary>
+        /// Retrieves the most recent TheoryMembership object for the specified source.
+        /// </summary>
+        /// <param name="SourceId">Source for which to retrieve the most recent TheoryMembership</param>
+        /// <returns>Most recent TheoryMembership</returns>
+        public TheoryMembership GetTheoryMembershipForSource(long SourceId)
+        {
+            return Context.TheoryMemberships.Where(
+                tm => tm.SourceId == SourceId
+                ).OrderByDescending(
+                tm => tm.RunId
+                ).FirstOrDefault();
+        }
+
+        public TheoryMembershipSignificance GetTheoryMembershipSignificanceForSource(long SourceId)
+        {
+            return Context.TheoryMembershipSignificances.Where(
+                tms => tms.SourceId == SourceId
+                ).FirstOrDefault();
+        }
         /// <summary>
         /// Marks the contribution of a theory as determined manually
         /// </summary>
