@@ -47,9 +47,6 @@
     <ClCompile Include="GreedyBase.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HierarchicClustering.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="infohiermap.cc">
       <Filter>Source Files</Filter>
     </ClCompile>

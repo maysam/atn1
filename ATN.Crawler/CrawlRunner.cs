@@ -15,14 +15,27 @@ namespace ATN.Crawler
     /// </summary>
     public class CrawlRunner
     {
+        private ATNEntities _context;
         private CrawlerProgress _progress;
         private Sources _sources;
         private Theories _theories;
         public CrawlRunner(ATNEntities Entities = null)
         {
+            _context = Entities;
             _progress = new CrawlerProgress(Entities);
             _sources = new Sources(Entities);
             _theories = new Theories(Entities);
+        }
+
+        public void Cleanup()
+        {
+            _context.Dispose();
+            _context = null;
+
+            _context = new ATNEntities();
+            _progress = new CrawlerProgress(_context);
+            _sources = new Sources(_context);
+            _theories = new Theories(_context);
         }
 
         /// <summary>
