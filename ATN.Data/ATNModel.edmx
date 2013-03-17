@@ -314,10 +314,9 @@
           <Property Name="TheoryId" Type="int" Nullable="false" />
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RunId" Type="int" Nullable="false" />
-          <Property Name="SourceSignifiance" Type="float" />
-          <Property Name="EigenFactorValue" Type="float" />
-          <Property Name="AttributionScore" Type="float" />
-          <Property Name="AttentionRatio" Type="float" />
+          <Property Name="ArticleLevelEigenFactor" Type="float" />
+          <Property Name="TheoryAttributionRatio" Type="float" />
+          <Property Name="ImpactFactor" Type="int" />
           <Property Name="TheoryNamePresent" Type="bit" />
           <Property Name="PredictionProbability" Type="float" />
           <Property Name="IsContributingPrediction" Type="bit" />
@@ -330,6 +329,8 @@
           <Property Name="TheoryId" Type="int" Nullable="false" />
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RAMarkedContributing" Type="bit" />
+          <Property Name="RAEvaluatedContribution" Type="bit" Nullable="false" />
+          <Property Name="IsMetaAnalysis" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Role="Author" Type="ATNModel.Store.Author" Multiplicity="1" />
@@ -1111,6 +1112,9 @@
           <NavigationProperty Name="Run" Relationship="ATNModel.FK_TheoryMembership_Run" FromRole="TheoryMembership" ToRole="Run" />
           <NavigationProperty Name="Source" Relationship="ATNModel.Source_TheoryMembership_FK1" FromRole="TheoryMembership" ToRole="Source" />
           <NavigationProperty Name="Theory" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="TheoryMembership" ToRole="Theory" />
+          <Property Type="Double" Name="ArticleLevelEigenFactor" />
+          <Property Type="Double" Name="TheoryAttributionRatio" />
+          <Property Type="Int32" Name="ImpactFactor" />
         </EntityType>
         <EntityType Name="TheoryMembershipSignificance">
           <Key>
@@ -1120,6 +1124,8 @@
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <Property Type="Boolean" Name="RAMarkedContributing" />
+          <Property Type="Boolean" Name="RAEvaluatedContribution" Nullable="false" />
+          <Property Type="Boolean" Name="IsMetaAnalysis" Nullable="false" />
         </EntityType>
         <Association Name="FK_Crawl_Theory">
           <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
@@ -1417,13 +1423,12 @@
           <EntitySetMapping Name="TheoryMemberships">
             <EntityTypeMapping TypeName="ATNModel.TheoryMembership">
               <MappingFragment StoreEntitySet="TheoryMembership">
+                <ScalarProperty Name="ImpactFactor" ColumnName="ImpactFactor" />
+                <ScalarProperty Name="TheoryAttributionRatio" ColumnName="TheoryAttributionRatio" />
+                <ScalarProperty Name="ArticleLevelEigenFactor" ColumnName="ArticleLevelEigenFactor" />
                 <ScalarProperty Name="IsContributingPrediction" ColumnName="IsContributingPrediction" />
                 <ScalarProperty Name="PredictionProbability" ColumnName="PredictionProbability" />
                 <ScalarProperty Name="TheoryNamePresent" ColumnName="TheoryNamePresent" />
-                <ScalarProperty Name="AttentionRatio" ColumnName="AttentionRatio" />
-                <ScalarProperty Name="AttributionScore" ColumnName="AttributionScore" />
-                <ScalarProperty Name="EigenFactorValue" ColumnName="EigenFactorValue" />
-                <ScalarProperty Name="SourceSignifiance" ColumnName="SourceSignifiance" />
                 <ScalarProperty Name="RunId" ColumnName="RunId" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
@@ -1434,6 +1439,8 @@
           <EntitySetMapping Name="TheoryMembershipSignificances">
             <EntityTypeMapping TypeName="ATNModel.TheoryMembershipSignificance">
               <MappingFragment StoreEntitySet="TheoryMembershipSignificance">
+                <ScalarProperty Name="IsMetaAnalysis" ColumnName="IsMetaAnalysis" />
+                <ScalarProperty Name="RAEvaluatedContribution" ColumnName="RAEvaluatedContribution" />
                 <ScalarProperty Name="RAMarkedContributing" ColumnName="RAMarkedContributing" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
@@ -1593,8 +1600,8 @@
         </AssociationConnector>
         <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
         <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="10.25" PointY="11.875" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="10.5" PointY="11.75" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="1.375" PointY="0.75" />
         <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
         <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
         <AssociationConnector Association="ATNModel.Theory_Run_FK1" />
@@ -1605,7 +1612,7 @@
         <AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
         <AssociationConnector Association="ATNModel.FK_CrawlQueue_DataSource" />
         <AssociationConnector Association="ATNModel.FK_CrawlResult_DataSource" />
-        <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="8.2853259315180239" PointY="13.475980779843397" />
+        <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="3.5" PointY="15.5" />
         <AssociationConnector Association="ATNModel.FK_Subject_DataSource" />
         <AssociationConnector Association="ATNModel.SourceSubject" />
         </Diagram>

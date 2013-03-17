@@ -15,15 +15,12 @@ namespace ATN.Analysis
         /// by the corresponding methods in ATN.Export, and
         /// generates a decision tree binary file from the data.
         /// 
-        /// AT THE MOMENT:
-        /// This function using the soybean sample data, to decouple
-        /// it from the database.
         /// </summary>
-        public static void GenerateDecisionTree()
+        public static void GenerateDecisionTree(string training_data_path, string decision_tree_path)
         {
             const string weka_archive_path = "weka.jar";
-            const string training_data_path = "soybean-train.arff";
-            const string decision_tree_path = "soybean-model.dat";
+            //const string training_data_path = "soybean-train.arff";
+            //const string decision_tree_path = "soybean-model.dat";
 
             ProcessStartInfo StartInfo = new ProcessStartInfo();
             StartInfo.CreateNoWindow = false;
@@ -51,20 +48,17 @@ namespace ATN.Analysis
         /// This method takes the test ARFF file exported from the 
         /// corresponding method in ATN.Export, and the stored decision
         /// tree from GenerateDecisionTree(), and classifies the test
-        /// data. The results are written to an output file.
+        /// data. The results are written to the output file passed
+        /// as a Stream to this method.
         /// 
-        /// AT THE MOMENT:
-        /// This function uses the soybean sample data, to decouple
-        /// it from the database.
         /// </summary>
-        public static void ClassifyData()
+        public static void ClassifyData(string test_data_path, string decision_tree_path, Stream ClassificationStream)
         {
             const string weka_archive_path = "weka.jar";
-            const string test_data_path = "soybean-test.arff";
-            const string decision_tree_path = "soybean-model.dat";
-            const string classification_outfile_path = @"C:\Users\fault_000\soybean-classification.txt";
+            //const string test_data_path = "soybean-test.arff";
+            //const string decision_tree_path = "soybean-model.dat";
+            //const string classification_outfile_path = @"C:\Users\fault_000\soybean-classification.txt";
 
-            FileStream ClassificationStream = File.Open(classification_outfile_path, FileMode.Create);
             StreamWriter ClassificationDestination = new System.IO.StreamWriter(ClassificationStream, Encoding.ASCII);
 
             MemoryStream ms = new MemoryStream();
@@ -78,7 +72,7 @@ namespace ATN.Analysis
             //StartInfo.WorkingDirectory = @"..\..\";
             StartInfo.Arguments = "-cp " +
                 weka_archive_path + " weka.classifiers.trees.J48 -l " +
-                decision_tree_path + " -T " + test_data_path + " -p 1-5";
+                decision_tree_path + " -T " + test_data_path + " -p 1-4";
 
             try
             {
