@@ -95,7 +95,7 @@ namespace ATN.Data
                 Context.Crawls.AddObject(PotentiallyExistingCrawl);
                 Context.SaveChanges();
             }
-            return PotentiallyExistingCrawl; 
+            return PotentiallyExistingCrawl;
         }
 
         /// <summary>
