@@ -230,5 +230,10 @@ namespace ATN.Data
             Context.CrawlResults.AddObject(cr);
             Context.SaveChanges();
         }
+
+        public DateTime GetLastCrawlDate(int theoryId)
+        {
+            return Context.Crawls.Single(t => t.TheoryId == theoryId).DateCrawled;
+        }
     }
 }
