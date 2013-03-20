@@ -153,7 +153,6 @@
   <ItemGroup>
     <ClCompile Include="Greedy.cc" />
     <ClCompile Include="GreedyBase.cc" />
-    <ClCompile Include="HierarchicClustering.cpp" />
     <ClCompile Include="infohiermap.cc" />
     <ClCompile Include="Node.cc" />
   </ItemGroup>

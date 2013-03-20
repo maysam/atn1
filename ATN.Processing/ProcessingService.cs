@@ -45,6 +45,14 @@ namespace ATN.Processing
                     Trace.WriteLine(e.TargetSite);
                     Trace.WriteLine(e.Data);
                 }
+                finally
+                {
+                    //Do cleanup
+                    co.Cleanup();
+                    co = null;
+                    GC.Collect();
+                    co = new CrawlRunner();
+                }
                 Thread.Sleep(new TimeSpan(1, 0, 0));
             }
         }

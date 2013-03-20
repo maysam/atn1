@@ -127,7 +127,9 @@ namespace ATN.Web
         protected void btnSubmit_LaunchCrawler(object sender, CommandEventArgs e)
         {
             string TheoryName;
+            string TheoryComment;
             TheoryName = txtNetworkName.Text;
+            TheoryComment = txtNetworkComments.Text;
 
             TextBox txtPaperNameTemp;
             TextBox txtMSAcademicSearchIdTemp;
@@ -148,7 +150,7 @@ namespace ATN.Web
            
             //prepare the datasource and specifications for the crawl
             CanonicalDataSource MASIds = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, msAcademicSearchIds);
-            NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName, MASIds);
+            NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName,TheoryComment, MASIds);
             //start a new crawl
             CrawlRunner NewCrawler = new CrawlRunner();
             NewCrawler.StartNewCrawl(CrawlSpecifier);

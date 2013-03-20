@@ -95,7 +95,7 @@ namespace ATN.Data
                 Context.Crawls.AddObject(PotentiallyExistingCrawl);
                 Context.SaveChanges();
             }
-            return PotentiallyExistingCrawl; 
+            return PotentiallyExistingCrawl;
         }
 
         /// <summary>
@@ -229,6 +229,11 @@ namespace ATN.Data
             cr.ReferenceRetrieved = ReferencesRetrieved;
             Context.CrawlResults.AddObject(cr);
             Context.SaveChanges();
+        }
+
+        public DateTime GetLastCrawlDate(int theoryId)
+        {
+            return Context.Crawls.Single(t => t.TheoryId == theoryId).DateCrawled;
         }
     }
 }
