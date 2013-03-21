@@ -28,6 +28,11 @@ namespace ATN.Data
             }
         }
 
+        public void Cleanup()
+        {
+            _context.Dispose();
+        }
+
         /// <summary>
         /// The persistence-model object used to communicate with database model
         /// </summary>

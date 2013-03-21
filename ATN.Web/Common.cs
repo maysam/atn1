@@ -16,6 +16,7 @@ namespace ATN.Web
             public const string LastEigenfactor = "LastEigenfactor";
             public const string LastMachineLearning = "LastMachineLearning";
             public const string LastRun = "LastRun";
+            public const string MetaAnalysis = "MetaAnalysis";
             public const string Network = "Network";
             public const string SecondLevel = "SecondLevel";
             public const string SortCol = "SortCol";

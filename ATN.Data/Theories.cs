@@ -71,6 +71,16 @@ namespace ATN.Data
         }
 
         /// <summary>
+        /// Retrieves a specific theory
+        /// </summary>
+        /// <param name="TheoryId">ID of theory to retrieve</param>
+        /// <returns>The requested theory</returns>
+        public Theory GetTheory(int TheoryId)
+        {
+            return Context.Theories.Single(t => t.TheoryId == TheoryId);
+        }
+
+        /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>
         /// <param name="TheoryId">The theory which to retrieve first-level sources</param>
@@ -90,18 +100,33 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
         /// <summary>
-        /// Retrieves all papers marked by hand as either contributing or not. Used in the construction of ML training data.
+        /// Retrieves all papers marked by hand as either contributing or not.
+        /// Used in the construction of ML training data. Meta Anlyses are
+        /// excluded from results array.
         /// </summary>
         /// <param name="TheoryId">Theory for which to retrieve marked sources.</param>
         /// <returns>All marked sources for a particular theory.</returns>
         public Source[] GetMarkedSourcesForTheory(int TheoryId)
         {
             return Context.TheoryMembershipSignificances.Where(
-                s => s.TheoryId == TheoryId && s.RAMarkedContributing.HasValue).Join(
+                s => s.TheoryId == TheoryId &&
+                    s.RAEvaluatedContribution == true &&
+                    s.IsMetaAnalysis == false
+                    ).Join(
                 Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
                 ).ToArray();
         }
 
+        public Source[] GetUnmarkedSourcesForTheory(int TheoryId)
+        {
+            return Context.TheoryMembershipSignificances.Where(
+                s => s.TheoryId == TheoryId &&
+                    s.RAEvaluatedContribution == false &&
+                    s.IsMetaAnalysis == false
+                    ).Join(
+                Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
+                ).ToArray();
+        }
         /// <summary>
         /// Retrieves the most recent TheoryMembership object for the specified source.
         /// </summary>
