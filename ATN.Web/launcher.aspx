@@ -6,7 +6,11 @@
         <h3><asp:Label ID="lblNetworkComments" runat="server" Text="Comments"></asp:Label></h3>
         <asp:TextBox ID="txtNetworkComments" runat="server" TextMode="MultiLine" Rows="3" Width="400px" Height="24px" />
         <br />
-        <asp:GridView ID="DataSourceGrid" runat="server" AutoGenerateColumns="False" ShowFooter="True" Width="673px" Height="94px">
+
+        <br />
+        <br />
+        <br />
+        <asp:GridView ID="DataSourceGrid" runat="server" AutoGenerateColumns="False" ShowFooter="True" Width="549px" >
             <Columns>
                
                 <asp:TemplateField>
@@ -14,34 +18,39 @@
                         <asp:Label ID="lbMasId1" runat="server" Text="MS Academic Search ID 1"></asp:Label>
                     </HeaderTemplate>
                     <ItemTemplate>
-                        <asp:TextBox ID="txtMasId1" runat="server" ></asp:TextBox>
+                        <asp:TextBox ID="txtMasId" runat="server" ></asp:TextBox>
                     </ItemTemplate>
 
-                    <FooterTemplate>
-                        <asp:Button ID="btnNewSource" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid"/>
-                    </FooterTemplate>
+                   
 
-                </asp:TemplateField>
+                    </asp:TemplateField>
+               
+             <asp:TemplateField>
 
-                <asp:TemplateField>
                     <HeaderTemplate>
                         <asp:Label ID="lbMasId2" runat="server" Text="MS Academic Search ID 2"></asp:Label>
                     </HeaderTemplate>
                     <ItemTemplate>
-                        <asp:TextBox ID="txtMasId2" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="txtMasId" runat="server"></asp:TextBox>
                     </ItemTemplate>
-
-                     
+                  
                 </asp:TemplateField>
-                
-                
-                
-                <asp:ButtonField ButtonType="Button" CommandName="AddNewDataSourcId" Text="Add Another MSAS ID" />
-                
-                
+
+
+              
                 
             </Columns>
-        </asp:GridView>
+       
+             </asp:GridView>
+   
+
+
+    <asp:Button ID="Button1" runat="server" OnCommand="AddNewDataSourceId" Text="Add More MSAS IDs " />
+                 
+                  
+    <asp:Button ID="btnNewSource" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid"/>
+        <br />
+        <br />
         <asp:CheckBox ID="recrawl" runat="server" Text="Re-Crawl:" OnCheckedChanged="recrawl_CheckedChanged" />
         <asp:DropDownList ID="crawlperiod" runat="server" Height="37px">
             <asp:ListItem Value="1">Daily</asp:ListItem>
