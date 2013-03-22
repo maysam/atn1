@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ATN.Data;
+using ATN.Analysis;
 using System.Xml;
 using System.IO;
 
@@ -12,6 +13,10 @@ namespace ATN.Export
     {
         static void Main(string[] args)
         {
+            FileStream DestinationClassStream = File.Open("soybean-classification.txt", FileMode.Create);
+            MachineLearning.GenerateDecisionTree("soybean-train.arff","soybean-model.dat");
+            MachineLearning.ClassifyData("soybean-test.arff","soybean-model.dat",DestinationClassStream);
+
             Theories Theories = new Theories();
             Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(6);
 
@@ -73,11 +78,14 @@ namespace ATN.Export
                     }
                 }*/
             }
-            FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
-            XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationXMLStream);
+            //FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
+            //XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationXMLStream);
 
-            FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
-            PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationNetStream);
+            //FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
+            //PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationNetStream);
+
+            FileStream DestinationARFFStream = File.Open("atn-train.arff", FileMode.Create);
+            ARFFExporter.ExportTrain(Nodes.Values.ToArray(), 6, DestinationARFFStream);
         }
     }
 }
