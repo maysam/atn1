@@ -28,37 +28,34 @@ namespace ATN.Processing
         {
             while (true)
             {
-                try
+                using (CrawlRunner co = new CrawlRunner())
                 {
-                    ExistingCrawlSpecifier[] ChangedCrawls = co.ProcessCurrentCrawls();
-                    if (ChangedCrawls.Length > 0)
+                    try
                     {
-                        //Do analysis on changed crawls
+                        //Thread.Sleep(new TimeSpan(0, 1, 0));
+                        ExistingCrawlSpecifier[] ChangedCrawls = co.ProcessCurrentCrawls();
+                        if (ChangedCrawls.Length > 0)
+                        {
+                            //Do analysis on changed crawls
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.WriteLine("Exception:", "Error");
+                        Trace.WriteLine(e.Message);
+                        Trace.WriteLine(e.Source);
+                        Trace.WriteLine(e.StackTrace);
+                        Trace.WriteLine(e.TargetSite);
+                        Trace.WriteLine(e.Data);
                     }
                 }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("Exception:", "Error");
-                    Trace.WriteLine(e.Message);
-                    Trace.WriteLine(e.Source);
-                    Trace.WriteLine(e.StackTrace);
-                    Trace.WriteLine(e.TargetSite);
-                    Trace.WriteLine(e.Data);
-                }
-                finally
-                {
-                    //Do cleanup
-                    co.Cleanup();
-                    co = null;
-                    GC.Collect();
-                    co = new CrawlRunner();
-                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 Thread.Sleep(new TimeSpan(1, 0, 0));
             }
         }
         protected override void OnStart(string[] args)
         {
-            co = new CrawlRunner();
             ProcessingThread = new Thread(new ThreadStart(PersistService));
             ProcessingThread.Start();
         }

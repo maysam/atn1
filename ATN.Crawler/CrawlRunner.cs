@@ -13,7 +13,7 @@ namespace ATN.Crawler
     /// <summary>
     /// A service for initiating crawls and refreshing existing crawls
     /// </summary>
-    public class CrawlRunner
+    public class CrawlRunner : IDisposable
     {
         private ATNEntities _context;
         private CrawlerProgress _progress;
@@ -21,21 +21,86 @@ namespace ATN.Crawler
         private Theories _theories;
         public CrawlRunner(ATNEntities Entities = null)
         {
-            _context = Entities;
-            _progress = new CrawlerProgress(Entities);
-            _sources = new Sources(Entities);
-            _theories = new Theories(Entities);
+            if (Entities == null)
+            {
+                _context = new ATNEntities();
+            }
+            else
+            {
+                _context = Entities;
+            }
+            _progress = new CrawlerProgress(_context);
+            _sources = new Sources(_context);
+            _theories = new Theories(_context);
+        }
+
+        private void TraceMemory(int MaxGeneration = -1)
+        {
+            //Trace.WriteLine("Forcing GC:");
+            Process CurrentProc = Process.GetCurrentProcess();
+            Trace.WriteLine("Working set memory: " + CurrentProc.WorkingSet64);
+            Trace.WriteLine("Peak working set memory: " + CurrentProc.PeakWorkingSet64);
+            Trace.WriteLine("Non-paged system memory: " + CurrentProc.NonpagedSystemMemorySize64.ToString());
+            Trace.WriteLine("Paged memory: " + CurrentProc.PagedMemorySize64);
+            Trace.WriteLine("Peak paged memory: " + CurrentProc.PeakPagedMemorySize64);
+            Trace.WriteLine("Paged system memory: " + CurrentProc.PagedSystemMemorySize64);
+            Trace.WriteLine("Peak virtual memory: " + CurrentProc.PeakVirtualMemorySize64);
+            Trace.WriteLine("Private memory: " + CurrentProc.PrivateMemorySize64);
+            Trace.WriteLine("Virtual memory: " + CurrentProc.VirtualMemorySize64);
+            Trace.WriteLine("GC memory: " + GC.GetTotalMemory(false).ToString());
+            //GC.Collect();
+            //GC.GetTotalMemory(true);
+            //GC.Collect(MaxGeneration > GC.MaxGeneration ? MaxGeneration : GC.MaxGeneration, GCCollectionMode.Forced);
+            //GC.WaitForPendingFinalizers();
+            //Trace.WriteLine("New memory: " + CurrentMemory.ToString());
+            //Trace.WriteLine("New GC memory: " + GC.GetTotalMemory(false).ToString());
         }
 
         public void Cleanup()
         {
+            var ObjectStateManager = _context.ObjectStateManager;
+            var Entities = ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Added)
+                .Union(ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Deleted))
+                .Union(ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Modified)).ToArray();
+
+            if(Entities.Length > 0)
+            {
+                Trace.WriteLine(string.Format("Cleanup() being called when there are {0} pending changes!", Entities.Count()), "Informational");
+                for(int i = 0; i < (Entities.Length > 5 ? 5 : Entities.Length); i++)
+                {
+                    Trace.WriteLine(Entities[i]);
+                }
+                Trace.WriteLine(Environment.StackTrace);
+            }
+
+            _sources.Dispose();
+            _progress.Dispose();
+            _theories.Dispose();
             _context.Dispose();
             _context = null;
+            _sources = null;
+            _theories = null;
+            _progress = null;
+
+            TraceMemory();
 
             _context = new ATNEntities();
             _progress = new CrawlerProgress(_context);
             _sources = new Sources(_context);
             _theories = new Theories(_context);
+        }
+
+        public void Dispose()
+        {
+            _sources.Dispose();
+            _progress.Dispose();
+            _theories.Dispose();
+            _context.Dispose();
+
+            _context = null;
+            _sources = null;
+            _theories = null;
+            _progress = null;
         }
 
         /// <summary>
@@ -128,6 +193,7 @@ namespace ATN.Crawler
                         CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds(CanonicalDataSource.DataSource, CanonicalDataSource.CanonicalIds), CanonicalDataSource);
                     }
                 }
+                TraceMemory();
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlStarted)
                 {
                     Trace.WriteLine(string.Format("Removing existing queue items for Crawl {0}", Specifier.Crawl.CrawlId), "Informational");
@@ -149,7 +215,8 @@ namespace ATN.Crawler
 
                         ICrawler Crawler = DataSourceToCrawler[CanonicalSource.DataSource];
 
-                        string[] CurrentCitations = LocalSource.CitingSources.Select(r => r.DataSourceSpecificId).ToArray();
+                        Source[] CurrentCitationSources = _sources.GetCitingSources(LocalSource).ToArray();
+                        string[] CurrentCitations = CurrentCitationSources.Select(r => r.DataSourceSpecificId).ToArray();
 
                         foreach (string ID in CanonicalSource.CanonicalIds)
                         {
@@ -168,11 +235,17 @@ namespace ATN.Crawler
                                 Changed = true;
                             }
                         }
+
+                        _sources.Detach(CurrentCitationSources);
+                        CurrentCitationSources = null;
                     }
 
                     _progress.CommitQueue();
                     _progress.UpdateCrawlerState(Specifier.Crawl, (CrawlerState)(Specifier.Crawl.CrawlState + 1));
                     Trace.WriteLine("Canonical paper retrieved, crawl state committed", "Informational");
+
+                    TraceMemory();
+                    //Cleanup();
                 }
 
                 if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlEnqueueingCitationsComplete || Specifier.Crawl.CrawlState == (int)CrawlerState.EnqueueingCitationsComplete)
@@ -198,11 +271,12 @@ namespace ATN.Crawler
                         //For instances where the crawl may be interrupted, get sources starting at the last referenced source id + 1
                         //On resume, references will be queued starting from the next source rather than the beginning
                         long LastReferencedSourceId = _progress.GetLastSourceIdReferencedInCrawl(Specifier.Crawl.CrawlId);
-                        var Citations = LocalSource.CitingSources.Where(c => c.SourceId > LastReferencedSourceId).OrderBy(c => c.SourceId).ToArray();
+                        var Citations = _sources.GetCitingSources(LocalSource).Where(c => c.SourceId > LastReferencedSourceId).OrderBy(c => c.SourceId).ToArray();
 
                         for (int i = 0; i < Citations.Length; i++)
                         {
-                            string[] CurrentReferences = Citations[i].References.Select(r => r.DataSourceSpecificId).ToArray();
+                            Source[] CurrentReferenceSources = _sources.GetReferenceSources(Citations[i]).ToArray();
+                            string[] CurrentReferences = CurrentReferenceSources.Select(r => r.DataSourceSpecificId).ToArray();
 
                             Trace.WriteLine(string.Format("Queueing references for paper {0}/{1}", i + 1, Citations.Length));
 
@@ -220,12 +294,17 @@ namespace ATN.Crawler
                             //Queue the retrieved publication IDs for retrieval
                             _progress.QueueReferenceCrawl(Specifier.Crawl.CrawlId, NewReferences, CanonicalSource.DataSource, Citations[i].SourceId, CrawlReferenceDirection.Reference);
                             _progress.CommitQueue();
-
                             _progress.UpdateCrawlerLastEnumeratedSource(Specifier.Crawl, Citations[i].SourceId);
+
+                            _sources.Detach(Citations[i]);
+                            _sources.Detach(CurrentReferenceSources);
+                            CurrentReferenceSources = null;
+                            Citations[i] = null;
                         }
+                        TraceMemory();
+                        //Cleanup();
                     }
 
-                    _progress.CommitQueue();
                     _progress.UpdateCrawlerState(Specifier.Crawl, (CrawlerState)(Specifier.Crawl.CrawlState + 1));
                     Trace.WriteLine("Reference queueing complete", "Informational");
                 }
@@ -306,7 +385,12 @@ namespace ATN.Crawler
                 //Mark this queue item as completed
                 _progress.CompleteQueueItem(CrawlsToComplete[i], SourceToComplete.SourceId, true);
                 Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
+
+                _sources.Detach(SourceToComplete);
+                _context.Detach(CrawlsToComplete[i]);
             }
+
+            TraceMemory();
 
             if (CrawlsToComplete.Length > 0)
             {
