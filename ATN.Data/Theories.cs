@@ -71,6 +71,16 @@ namespace ATN.Data
         }
 
         /// <summary>
+        /// Retrieves a specific theory
+        /// </summary>
+        /// <param name="TheoryId">ID of theory to retrieve</param>
+        /// <returns>The requested theory</returns>
+        public Theory GetTheory(int TheoryId)
+        {
+            return Context.Theories.Single(t => t.TheoryId == TheoryId);
+        }
+
+        /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>
         /// <param name="TheoryId">The theory which to retrieve first-level sources</param>

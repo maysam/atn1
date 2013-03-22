@@ -54,7 +54,8 @@ namespace ATN.Web
             {
                 Theory theory = e.Row.DataItem as Theory;
                 Theories dataRetriever = new Theories();
-                
+                CrawlerProgress lastCrawl = new CrawlerProgress();
+
                 ImageButton ImgVisualizationLink = e.Row.Cells[0].Controls[1] as ImageButton;
                 //ImgVisualizationLink.OnClientClick
                 //ImgVisualizationLink.ImageUrl = "/Images/visualizationButton.gif";
@@ -67,6 +68,7 @@ namespace ATN.Web
                 lblDate.Text = theory.DateAdded.ToString();
 
                 Label lblLastRun = e.Row.Cells[3].Controls[1] as Label;
+                lblLastRun.Text = lastCrawl.GetLastCrawlDate(theory.TheoryId).ToString();
 
                 Label lblLastEigenfactor = e.Row.Cells[4].Controls[1] as Label;
 

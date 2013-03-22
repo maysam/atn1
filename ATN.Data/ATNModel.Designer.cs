@@ -4371,102 +4371,6 @@ namespace ATN.Data
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Double> SourceSignifiance
-        {
-            get
-            {
-                return _SourceSignifiance;
-            }
-            set
-            {
-                OnSourceSignifianceChanging(value);
-                ReportPropertyChanging("SourceSignifiance");
-                _SourceSignifiance = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("SourceSignifiance");
-                OnSourceSignifianceChanged();
-            }
-        }
-        private Nullable<global::System.Double> _SourceSignifiance;
-        partial void OnSourceSignifianceChanging(Nullable<global::System.Double> value);
-        partial void OnSourceSignifianceChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public Nullable<global::System.Double> EigenFactorValue
-        {
-            get
-            {
-                return _EigenFactorValue;
-            }
-            set
-            {
-                OnEigenFactorValueChanging(value);
-                ReportPropertyChanging("EigenFactorValue");
-                _EigenFactorValue = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("EigenFactorValue");
-                OnEigenFactorValueChanged();
-            }
-        }
-        private Nullable<global::System.Double> _EigenFactorValue;
-        partial void OnEigenFactorValueChanging(Nullable<global::System.Double> value);
-        partial void OnEigenFactorValueChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public Nullable<global::System.Double> AttributionScore
-        {
-            get
-            {
-                return _AttributionScore;
-            }
-            set
-            {
-                OnAttributionScoreChanging(value);
-                ReportPropertyChanging("AttributionScore");
-                _AttributionScore = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("AttributionScore");
-                OnAttributionScoreChanged();
-            }
-        }
-        private Nullable<global::System.Double> _AttributionScore;
-        partial void OnAttributionScoreChanging(Nullable<global::System.Double> value);
-        partial void OnAttributionScoreChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
-        public Nullable<global::System.Double> AttentionRatio
-        {
-            get
-            {
-                return _AttentionRatio;
-            }
-            set
-            {
-                OnAttentionRatioChanging(value);
-                ReportPropertyChanging("AttentionRatio");
-                _AttentionRatio = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("AttentionRatio");
-                OnAttentionRatioChanged();
-            }
-        }
-        private Nullable<global::System.Double> _AttentionRatio;
-        partial void OnAttentionRatioChanging(Nullable<global::System.Double> value);
-        partial void OnAttentionRatioChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
         public Nullable<global::System.Boolean> TheoryNamePresent
         {
             get
@@ -4533,6 +4437,78 @@ namespace ATN.Data
         private Nullable<global::System.Boolean> _IsContributingPrediction;
         partial void OnIsContributingPredictionChanging(Nullable<global::System.Boolean> value);
         partial void OnIsContributingPredictionChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> ArticleLevelEigenFactor
+        {
+            get
+            {
+                return _ArticleLevelEigenFactor;
+            }
+            set
+            {
+                OnArticleLevelEigenFactorChanging(value);
+                ReportPropertyChanging("ArticleLevelEigenFactor");
+                _ArticleLevelEigenFactor = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ArticleLevelEigenFactor");
+                OnArticleLevelEigenFactorChanged();
+            }
+        }
+        private Nullable<global::System.Double> _ArticleLevelEigenFactor;
+        partial void OnArticleLevelEigenFactorChanging(Nullable<global::System.Double> value);
+        partial void OnArticleLevelEigenFactorChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Double> TheoryAttributionRatio
+        {
+            get
+            {
+                return _TheoryAttributionRatio;
+            }
+            set
+            {
+                OnTheoryAttributionRatioChanging(value);
+                ReportPropertyChanging("TheoryAttributionRatio");
+                _TheoryAttributionRatio = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryAttributionRatio");
+                OnTheoryAttributionRatioChanged();
+            }
+        }
+        private Nullable<global::System.Double> _TheoryAttributionRatio;
+        partial void OnTheoryAttributionRatioChanging(Nullable<global::System.Double> value);
+        partial void OnTheoryAttributionRatioChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> ImpactFactor
+        {
+            get
+            {
+                return _ImpactFactor;
+            }
+            set
+            {
+                OnImpactFactorChanging(value);
+                ReportPropertyChanging("ImpactFactor");
+                _ImpactFactor = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ImpactFactor");
+                OnImpactFactorChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _ImpactFactor;
+        partial void OnImpactFactorChanging(Nullable<global::System.Int32> value);
+        partial void OnImpactFactorChanged();
 
         #endregion
 
@@ -4673,12 +4649,16 @@ namespace ATN.Data
         /// <param name="theoryMembershipSignificanceId">Initial value of the TheoryMembershipSignificanceId property.</param>
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
-        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId)
+        /// <param name="rAEvaluatedContribution">Initial value of the RAEvaluatedContribution property.</param>
+        /// <param name="isMetaAnalysis">Initial value of the IsMetaAnalysis property.</param>
+        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean rAEvaluatedContribution, global::System.Boolean isMetaAnalysis)
         {
             TheoryMembershipSignificance theoryMembershipSignificance = new TheoryMembershipSignificance();
             theoryMembershipSignificance.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
             theoryMembershipSignificance.TheoryId = theoryId;
             theoryMembershipSignificance.SourceId = sourceId;
+            theoryMembershipSignificance.RAEvaluatedContribution = rAEvaluatedContribution;
+            theoryMembershipSignificance.IsMetaAnalysis = isMetaAnalysis;
             return theoryMembershipSignificance;
         }
 
@@ -4784,6 +4764,54 @@ namespace ATN.Data
         private Nullable<global::System.Boolean> _RAMarkedContributing;
         partial void OnRAMarkedContributingChanging(Nullable<global::System.Boolean> value);
         partial void OnRAMarkedContributingChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean RAEvaluatedContribution
+        {
+            get
+            {
+                return _RAEvaluatedContribution;
+            }
+            set
+            {
+                OnRAEvaluatedContributionChanging(value);
+                ReportPropertyChanging("RAEvaluatedContribution");
+                _RAEvaluatedContribution = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RAEvaluatedContribution");
+                OnRAEvaluatedContributionChanged();
+            }
+        }
+        private global::System.Boolean _RAEvaluatedContribution;
+        partial void OnRAEvaluatedContributionChanging(global::System.Boolean value);
+        partial void OnRAEvaluatedContributionChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean IsMetaAnalysis
+        {
+            get
+            {
+                return _IsMetaAnalysis;
+            }
+            set
+            {
+                OnIsMetaAnalysisChanging(value);
+                ReportPropertyChanging("IsMetaAnalysis");
+                _IsMetaAnalysis = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsMetaAnalysis");
+                OnIsMetaAnalysisChanged();
+            }
+        }
+        private global::System.Boolean _IsMetaAnalysis;
+        partial void OnIsMetaAnalysisChanging(global::System.Boolean value);
+        partial void OnIsMetaAnalysisChanged();
 
         #endregion
 

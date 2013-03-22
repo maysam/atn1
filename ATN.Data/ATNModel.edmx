@@ -1102,10 +1102,6 @@
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <Property Type="Int32" Name="RunId" Nullable="false" />
-          <Property Type="Double" Name="SourceSignifiance" />
-          <Property Type="Double" Name="EigenFactorValue" />
-          <Property Type="Double" Name="AttributionScore" />
-          <Property Type="Double" Name="AttentionRatio" />
           <Property Type="Boolean" Name="TheoryNamePresent" />
           <Property Type="Double" Name="PredictionProbability" />
           <Property Type="Boolean" Name="IsContributingPrediction" />
@@ -1504,7 +1500,7 @@
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
-      <Diagram Name="ATNModel">
+      <Diagram Name="ATNModel" ZoomLevel="79">
         <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="9.25" Height="2.7494921875000102" />
         <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="9.625" Height="1.9802864583333388" />
         <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="8" PointY="5.25" Height="2.3648893229166674" />
@@ -1600,7 +1596,7 @@
         </AssociationConnector>
         <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
         <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="1.5" PointX="10.5" PointY="11.75" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="2" PointX="10.5" PointY="11.75" />
         <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="1.375" PointY="0.75" />
         <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
         <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
