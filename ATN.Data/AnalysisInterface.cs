@@ -57,7 +57,7 @@ namespace ATN.Data
         {
             return Context.TheoryMembershipSignificances.Where(
                 s => s.TheoryId == TheoryId &&
-                    s.RAEvaluatedContribution == true &&
+                    s.RAMarkedContributing.HasValue &&
                     s.IsMetaAnalysis == false
                     ).Join(
                 Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
@@ -68,7 +68,7 @@ namespace ATN.Data
         {
             return Context.TheoryMembershipSignificances.Where(
                 s => s.TheoryId == TheoryId &&
-                    s.RAEvaluatedContribution == false &&
+                    s.RAMarkedContributing.HasValue == false &&
                     s.IsMetaAnalysis == false
                     ).Join(
                 Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
