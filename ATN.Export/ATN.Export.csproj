@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ARFFExporter.cs" />
     <Compile Include="PajekDotNetExporter.cs" />
     <Compile Include="SourceEdge.cs" />
     <Compile Include="SourceNode.cs" />

@@ -17,8 +17,20 @@ namespace ATN.Analysis
         public static void CalculateTheoryAttributionRatioForSource(long SourceId, int TheoryId)
         {
             //Add AEF of citing, divide by count of references
+            Theories Theories = new Theories();
             AnalysisInterface AnalysisInterface = new AnalysisInterface();
-            TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(SourceId, TheoryId);
+            
+            Source[] CitingSources = Theories.GetCitingSourcesForSource(SourceId);
+
+            double eigen_acc = 0;
+            foreach (Source s in CitingSources)
+            {
+                TheoryMembership tm = AnalysisInterface.GetTheoryMembershipForSource(s.SourceId, TheoryId);
+                eigen_acc += tm.ArticleLevelEigenFactor.Value;
+            }
+
+            double tar = (eigen_acc / CitingSources.Length);
+            AnalysisInterface.UpdateTheoryAttentionRatio(TheoryId, SourceId, tar);
         }
 
         public static void CalculateImpactFactorForSource(long SourceId, int TheoryId)

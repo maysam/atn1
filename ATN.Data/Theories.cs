@@ -80,6 +80,11 @@ namespace ATN.Data
             return Context.Theories.Single(t => t.TheoryId == TheoryId);
         }
 
+        public Source GetSource(long SourceId)
+        {
+            return Context.Sources.Single(s => s.SourceId == SourceId);
+        }
+
         /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>
@@ -99,12 +104,13 @@ namespace ATN.Data
             }
             return FirstLevelSources.ToArray();
         }
+
         /// <summary>
         /// Retrieves an array of Sources that reference the specified Source
         /// </summary>
         /// <param name="SourceId"></param>
         /// <returns></returns>
-        public Source[] GetCitingSourcesForSourceByTheory(long SourceId, int TheoryId)
+        public Source[] GetCitingSourcesForSource(long SourceId)
         {
             return Context.Sources.Single(s => s.SourceId == SourceId).CitingSources.ToArray();
         }
