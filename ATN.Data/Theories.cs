@@ -90,53 +90,24 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
         /// <summary>
-        /// Retrieves all papers marked by hand as either contributing or not.
-        /// Used in the construction of ML training data. Meta Anlyses are
-        /// excluded from results array.
+        /// Retrieves an array of Sources that reference the specified Source
         /// </summary>
-        /// <param name="TheoryId">Theory for which to retrieve marked sources.</param>
-        /// <returns>All marked sources for a particular theory.</returns>
-        public Source[] GetMarkedSourcesForTheory(int TheoryId)
+        /// <param name="SourceId"></param>
+        /// <returns></returns>
+        public Source[] GetCitingSourcesForSourceByTheory(long SourceId, int TheoryId)
         {
-            return Context.TheoryMembershipSignificances.Where(
-                s => s.TheoryId == TheoryId &&
-                    s.RAEvaluatedContribution == true &&
-                    s.IsMetaAnalysis == false
-                    ).Join(
-                Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
-                ).ToArray();
-        }
-
-        public Source[] GetUnmarkedSourcesForTheory(int TheoryId)
-        {
-            return Context.TheoryMembershipSignificances.Where(
-                s => s.TheoryId == TheoryId &&
-                    s.RAEvaluatedContribution == false &&
-                    s.IsMetaAnalysis == false
-                    ).Join(
-                Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
-                ).ToArray();
+            return Context.Sources.Single(s => s.SourceId == SourceId).CitingSources.ToArray();
         }
         /// <summary>
-        /// Retrieves the most recent TheoryMembership object for the specified source.
+        /// Retrieves an array of Sources that the specified Source references.
         /// </summary>
-        /// <param name="SourceId">Source for which to retrieve the most recent TheoryMembership</param>
-        /// <returns>Most recent TheoryMembership</returns>
-        public TheoryMembership GetTheoryMembershipForSource(long SourceId)
+        /// <param name="SourceId"></param>
+        /// <returns></returns>
+        public Source[] GetReferencesForSource(long SourceId)
         {
-            return Context.TheoryMemberships.Where(
-                tm => tm.SourceId == SourceId
-                ).OrderByDescending(
-                tm => tm.RunId
-                ).FirstOrDefault();
+            return Context.Sources.Single(s => s.SourceId == SourceId).References.ToArray();
         }
-
-        public TheoryMembershipSignificance GetTheoryMembershipSignificanceForSource(long SourceId)
-        {
-            return Context.TheoryMembershipSignificances.Where(
-                tms => tms.SourceId == SourceId
-                ).FirstOrDefault();
-        }
+        
         /// <summary>
         /// Marks the contribution of a theory as determined manually
         /// </summary>
