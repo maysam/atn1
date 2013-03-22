@@ -106,20 +106,6 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Gets the references cited in a certain source. This is used to find sources within a meta-analysis.
-        /// </summary>
-        /// <param name="DataSource">DataSource of the sources</param>
-        /// <param name="SourceId">The id of the source to find references for</param>
-        /// <param name="TheoryId">The theory of the given source</param>
-        /// <returns>A list of extended Sources that cite the given source</returns>
-        public List<ExtendedSource> GetReferencesForSourceId(CrawlerDataSource DataSource, int SourceId, int TheoryId)
-        {
-            List<ExtendedSource> sources = new List<ExtendedSource>();
-
-            return sources;
-        }
-
-        /// <summary>
         /// Adds a detached CompleteSource object
         /// </summary>
         /// <param name="SourceToAdd">A complete representation of the Source to add</param>
