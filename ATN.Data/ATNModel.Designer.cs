@@ -43,6 +43,8 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlResult_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_Subject_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "SourceSubject", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject))]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_MetaAnalysisMembership_Source", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "MetaAnalysisMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.MetaAnalysisMembership), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.TheoryMembershipSignificance), "MetaAnalysisMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.MetaAnalysisMembership), true)]
 
 #endregion
 
@@ -305,22 +307,6 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<TheoryMembershipSignificance> TheoryMembershipSignificances
-        {
-            get
-            {
-                if ((_TheoryMembershipSignificances == null))
-                {
-                    _TheoryMembershipSignificances = base.CreateObjectSet<TheoryMembershipSignificance>("TheoryMembershipSignificances");
-                }
-                return _TheoryMembershipSignificances;
-            }
-        }
-        private ObjectSet<TheoryMembershipSignificance> _TheoryMembershipSignificances;
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
         public ObjectSet<TheoryDefinition> TheoryDefinitions
         {
             get
@@ -349,6 +335,38 @@ namespace ATN.Data
             }
         }
         private ObjectSet<Subject> _Subjects;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<MetaAnalysisMembership> MetaAnalysisMemberships
+        {
+            get
+            {
+                if ((_MetaAnalysisMemberships == null))
+                {
+                    _MetaAnalysisMemberships = base.CreateObjectSet<MetaAnalysisMembership>("MetaAnalysisMemberships");
+                }
+                return _MetaAnalysisMemberships;
+            }
+        }
+        private ObjectSet<MetaAnalysisMembership> _MetaAnalysisMemberships;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<TheoryMembershipSignificance> TheoryMembershipSignificances
+        {
+            get
+            {
+                if ((_TheoryMembershipSignificances == null))
+                {
+                    _TheoryMembershipSignificances = base.CreateObjectSet<TheoryMembershipSignificance>("TheoryMembershipSignificances");
+                }
+                return _TheoryMembershipSignificances;
+            }
+        }
+        private ObjectSet<TheoryMembershipSignificance> _TheoryMembershipSignificances;
 
         #endregion
 
@@ -459,14 +477,6 @@ namespace ATN.Data
         }
     
         /// <summary>
-        /// Deprecated Method for adding a new object to the TheoryMembershipSignificances EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
-        /// </summary>
-        public void AddToTheoryMembershipSignificances(TheoryMembershipSignificance theoryMembershipSignificance)
-        {
-            base.AddObject("TheoryMembershipSignificances", theoryMembershipSignificance);
-        }
-    
-        /// <summary>
         /// Deprecated Method for adding a new object to the TheoryDefinitions EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
         public void AddToTheoryDefinitions(TheoryDefinition theoryDefinition)
@@ -480,6 +490,22 @@ namespace ATN.Data
         public void AddToSubjects(Subject subject)
         {
             base.AddObject("Subjects", subject);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the MetaAnalysisMemberships EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToMetaAnalysisMemberships(MetaAnalysisMembership metaAnalysisMembership)
+        {
+            base.AddObject("MetaAnalysisMemberships", metaAnalysisMembership);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the TheoryMembershipSignificances EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToTheoryMembershipSignificances(TheoryMembershipSignificance theoryMembershipSignificance)
+        {
+            base.AddObject("TheoryMembershipSignificances", theoryMembershipSignificance);
         }
 
         #endregion
@@ -2620,6 +2646,219 @@ namespace ATN.Data
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="MetaAnalysisMembership")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class MetaAnalysisMembership : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new MetaAnalysisMembership object.
+        /// </summary>
+        /// <param name="metaAnalysisMembershipId">Initial value of the MetaAnalysisMembershipId property.</param>
+        /// <param name="theoryMembershipSignificanceId">Initial value of the TheoryMembershipSignificanceId property.</param>
+        /// <param name="sourceId">Initial value of the SourceId property.</param>
+        public static MetaAnalysisMembership CreateMetaAnalysisMembership(global::System.Int64 metaAnalysisMembershipId, global::System.Int64 theoryMembershipSignificanceId, global::System.Int64 sourceId)
+        {
+            MetaAnalysisMembership metaAnalysisMembership = new MetaAnalysisMembership();
+            metaAnalysisMembership.MetaAnalysisMembershipId = metaAnalysisMembershipId;
+            metaAnalysisMembership.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
+            metaAnalysisMembership.SourceId = sourceId;
+            return metaAnalysisMembership;
+        }
+
+        #endregion
+
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 MetaAnalysisMembershipId
+        {
+            get
+            {
+                return _MetaAnalysisMembershipId;
+            }
+            set
+            {
+                if (_MetaAnalysisMembershipId != value)
+                {
+                    OnMetaAnalysisMembershipIdChanging(value);
+                    ReportPropertyChanging("MetaAnalysisMembershipId");
+                    _MetaAnalysisMembershipId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("MetaAnalysisMembershipId");
+                    OnMetaAnalysisMembershipIdChanged();
+                }
+            }
+        }
+        private global::System.Int64 _MetaAnalysisMembershipId;
+        partial void OnMetaAnalysisMembershipIdChanging(global::System.Int64 value);
+        partial void OnMetaAnalysisMembershipIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 TheoryMembershipSignificanceId
+        {
+            get
+            {
+                return _TheoryMembershipSignificanceId;
+            }
+            set
+            {
+                OnTheoryMembershipSignificanceIdChanging(value);
+                ReportPropertyChanging("TheoryMembershipSignificanceId");
+                _TheoryMembershipSignificanceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("TheoryMembershipSignificanceId");
+                OnTheoryMembershipSignificanceIdChanged();
+            }
+        }
+        private global::System.Int64 _TheoryMembershipSignificanceId;
+        partial void OnTheoryMembershipSignificanceIdChanging(global::System.Int64 value);
+        partial void OnTheoryMembershipSignificanceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 SourceId
+        {
+            get
+            {
+                return _SourceId;
+            }
+            set
+            {
+                OnSourceIdChanging(value);
+                ReportPropertyChanging("SourceId");
+                _SourceId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("SourceId");
+                OnSourceIdChanged();
+            }
+        }
+        private global::System.Int64 _SourceId;
+        partial void OnSourceIdChanging(global::System.Int64 value);
+        partial void OnSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> RAMarkedContributing
+        {
+            get
+            {
+                return _RAMarkedContributing;
+            }
+            set
+            {
+                OnRAMarkedContributingChanging(value);
+                ReportPropertyChanging("RAMarkedContributing");
+                _RAMarkedContributing = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RAMarkedContributing");
+                OnRAMarkedContributingChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _RAMarkedContributing;
+        partial void OnRAMarkedContributingChanging(Nullable<global::System.Boolean> value);
+        partial void OnRAMarkedContributingChanged();
+
+        #endregion
+
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_Source", "Source")]
+        public Source Source
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Source> SourceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance")]
+        public TheoryMembershipSignificance TheoryMembershipSignificance
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<TheoryMembershipSignificance> TheoryMembershipSignificanceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance", value);
+                }
+            }
+        }
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
     [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="Run")]
     [Serializable()]
     [DataContractAttribute(IsReference=true)]
@@ -3630,6 +3869,28 @@ namespace ATN.Data
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_Source", "MetaAnalysisMembership")]
+        public EntityCollection<MetaAnalysisMembership> MetaAnalysisMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_Source", "MetaAnalysisMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_Source", "MetaAnalysisMembership", value);
+                }
+            }
+        }
 
         #endregion
 
@@ -4253,13 +4514,17 @@ namespace ATN.Data
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
         /// <param name="runId">Initial value of the RunId property.</param>
-        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId)
+        /// <param name="impactFactor">Initial value of the ImpactFactor property.</param>
+        /// <param name="depth">Initial value of the Depth property.</param>
+        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId, global::System.Int32 impactFactor, global::System.Int16 depth)
         {
             TheoryMembership theoryMembership = new TheoryMembership();
             theoryMembership.TheoryMembershipId = theoryMembershipId;
             theoryMembership.TheoryId = theoryId;
             theoryMembership.SourceId = sourceId;
             theoryMembership.RunId = runId;
+            theoryMembership.ImpactFactor = impactFactor;
+            theoryMembership.Depth = depth;
             return theoryMembership;
         }
 
@@ -4489,9 +4754,9 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Int32> ImpactFactor
+        public global::System.Int32 ImpactFactor
         {
             get
             {
@@ -4506,9 +4771,33 @@ namespace ATN.Data
                 OnImpactFactorChanged();
             }
         }
-        private Nullable<global::System.Int32> _ImpactFactor;
-        partial void OnImpactFactorChanging(Nullable<global::System.Int32> value);
+        private global::System.Int32 _ImpactFactor;
+        partial void OnImpactFactorChanging(global::System.Int32 value);
         partial void OnImpactFactorChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int16 Depth
+        {
+            get
+            {
+                return _Depth;
+            }
+            set
+            {
+                OnDepthChanging(value);
+                ReportPropertyChanging("Depth");
+                _Depth = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("Depth");
+                OnDepthChanged();
+            }
+        }
+        private global::System.Int16 _Depth;
+        partial void OnDepthChanging(global::System.Int16 value);
+        partial void OnDepthChanged();
 
         #endregion
 
@@ -4649,15 +4938,13 @@ namespace ATN.Data
         /// <param name="theoryMembershipSignificanceId">Initial value of the TheoryMembershipSignificanceId property.</param>
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
-        /// <param name="rAEvaluatedContribution">Initial value of the RAEvaluatedContribution property.</param>
         /// <param name="isMetaAnalysis">Initial value of the IsMetaAnalysis property.</param>
-        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean rAEvaluatedContribution, global::System.Boolean isMetaAnalysis)
+        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean isMetaAnalysis)
         {
             TheoryMembershipSignificance theoryMembershipSignificance = new TheoryMembershipSignificance();
             theoryMembershipSignificance.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
             theoryMembershipSignificance.TheoryId = theoryId;
             theoryMembershipSignificance.SourceId = sourceId;
-            theoryMembershipSignificance.RAEvaluatedContribution = rAEvaluatedContribution;
             theoryMembershipSignificance.IsMetaAnalysis = isMetaAnalysis;
             return theoryMembershipSignificance;
         }
@@ -4770,30 +5057,6 @@ namespace ATN.Data
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.Boolean RAEvaluatedContribution
-        {
-            get
-            {
-                return _RAEvaluatedContribution;
-            }
-            set
-            {
-                OnRAEvaluatedContributionChanging(value);
-                ReportPropertyChanging("RAEvaluatedContribution");
-                _RAEvaluatedContribution = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("RAEvaluatedContribution");
-                OnRAEvaluatedContributionChanged();
-            }
-        }
-        private global::System.Boolean _RAEvaluatedContribution;
-        partial void OnRAEvaluatedContributionChanging(global::System.Boolean value);
-        partial void OnRAEvaluatedContributionChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
-        [DataMemberAttribute()]
         public global::System.Boolean IsMetaAnalysis
         {
             get
@@ -4816,6 +5079,32 @@ namespace ATN.Data
         #endregion
 
     
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_TheoryMembershipSignificance", "MetaAnalysisMembership")]
+        public EntityCollection<MetaAnalysisMembership> MetaAnalysisMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "MetaAnalysisMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "MetaAnalysisMembership", value);
+                }
+            }
+        }
+
+        #endregion
+
     }
 
     #endregion
