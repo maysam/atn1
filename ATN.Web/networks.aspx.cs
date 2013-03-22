@@ -82,6 +82,8 @@ namespace ATN.Web
                 Label lblThirdLevel = e.Row.Cells[8].Controls[1] as Label;
 
                 Label lblTheoryContributing  = e.Row.Cells[9].Controls[1] as Label;
+                //lblTheoryContributing.Text = 
+
 
                 LinkButton lnkEdit = e.Row.Cells[10].Controls[1] as LinkButton;
                 lnkEdit.PostBackUrl = Common.Pages.Launcher + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + theory.TheoryId.ToString();

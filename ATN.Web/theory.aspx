@@ -79,13 +79,13 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblCitationLevelHeader" runat="server" Text="Citation Level"/>
+                    <asp:Label ID="lblDepthHeader" runat="server" Text="Citation Level"/>
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:Label ID="lblCitationLevel" runat="server" />
+                    <asp:Label ID="lblDepth" runat="server" />
                 </ItemTemplate>
                 <FooterTemplate>
-                    <asp:TextBox ID="txtCitationLevel" runat="server" />
+                    <asp:TextBox ID="txtDepth" runat="server" />
                 </FooterTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
