@@ -104,11 +104,6 @@ namespace ATN.Data
             }
             return FirstLevelSources.ToArray();
         }
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 3f682a9bb02ce2bf77eee5a9891dd016b34c85d7
         /// <summary>
         /// Retrieves an array of Sources that reference the specified Source
         /// </summary>
