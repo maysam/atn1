@@ -97,6 +97,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ATN.Analysis\ATN.Analysis.csproj">
+      <Project>{01ef8a02-13fa-4012-8427-6bff1fc54f6d}</Project>
+      <Name>ATN.Analysis</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ATN.Crawler\ATN.Crawler.csproj">
       <Project>{31619954-f7b0-47f7-b9a1-21f722f1de51}</Project>
       <Name>ATN.Crawler</Name>
@@ -104,6 +108,10 @@
     <ProjectReference Include="..\ATN.Data\ATN.Data.csproj">
       <Project>{d656a9ed-9157-42b1-a870-ab260ecbeed2}</Project>
       <Name>ATN.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATN.Export\ATN.Export.csproj">
+      <Project>{7c83a4df-3cc8-4934-8034-c032bdf03136}</Project>
+      <Name>ATN.Export</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

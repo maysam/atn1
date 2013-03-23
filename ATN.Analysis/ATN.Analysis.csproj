@@ -84,6 +84,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AEF\alglibinternal.cs" />
+    <Compile Include="AEF\alglibmisc.cs" />
+    <Compile Include="AEF\ap.cs" />
+    <Compile Include="AEF\dataanalysis.cs" />
+    <Compile Include="AEF\diffequations.cs" />
+    <Compile Include="AEF\fasttransforms.cs" />
+    <Compile Include="AEF\integration.cs" />
+    <Compile Include="AEF\interpolation.cs" />
+    <Compile Include="AEF\linalg.cs" />
+    <Compile Include="AEF\optimization.cs" />
+    <Compile Include="AEF\solvers.cs" />
+    <Compile Include="AEF\specialfunctions.cs" />
+    <Compile Include="AEF\statistics.cs" />
+    <Compile Include="AEF\TupleList.cs" />
     <Compile Include="Analysis.cs" />
     <Compile Include="Features.cs" />
     <Compile Include="MachineLearning.cs" />
@@ -95,6 +109,7 @@
       <Name>ATN.Data</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
