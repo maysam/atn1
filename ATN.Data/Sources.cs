@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.Objects;
+using System.Data.Objects.DataClasses;
 
 namespace ATN.Data
 {
@@ -28,6 +29,16 @@ namespace ATN.Data
         public Source[] GetSources()
         {
             return Context.Sources.ToArray();
+        }
+
+        public EntityCollection<Source> GetCitingSources(Source SourceToRetrieveCitations)
+        {
+            return Context.Sources.Single(s => s.SourceId == SourceToRetrieveCitations.SourceId).CitingSources;
+        }
+
+        public EntityCollection<Source> GetReferenceSources(Source SourceToRetrieveReferences)
+        {
+            return Context.Sources.Single(s => s.SourceId == SourceToRetrieveReferences.SourceId).References;
         }
 
         /// <summary>

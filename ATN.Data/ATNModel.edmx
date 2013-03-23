@@ -16,6 +16,7 @@
           <EntitySet Name="Editor" EntityType="ATNModel.Store.Editor" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="EditorsReference" EntityType="ATNModel.Store.EditorsReference" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Journal" EntityType="ATNModel.Store.Journal" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="MetaAnalysisMembership" EntityType="ATNModel.Store.MetaAnalysisMembership" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="RelatedSources" EntityType="ATNModel.Store.RelatedSources" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Run" EntityType="ATNModel.Store.Run" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Source" EntityType="ATNModel.Store.Source" store:Type="Tables" Schema="dbo" />
@@ -64,6 +65,14 @@
           <AssociationSet Name="FK_CrawlResult_DataSource" Association="ATNModel.Store.FK_CrawlResult_DataSource">
             <End Role="DataSource" EntitySet="DataSource" />
             <End Role="CrawlResult" EntitySet="CrawlResult" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetaAnalysisMembership_Source" Association="ATNModel.Store.FK_MetaAnalysisMembership_Source">
+            <End Role="Source" EntitySet="Source" />
+            <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMembership" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance" Association="ATNModel.Store.FK_MetaAnalysisMembership_TheoryMembershipSignificance">
+            <End Role="TheoryMembershipSignificance" EntitySet="TheoryMembershipSignificance" />
+            <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMembership" />
           </AssociationSet>
           <AssociationSet Name="FK_SourceSubject_Source" Association="ATNModel.Store.FK_SourceSubject_Source">
             <End Role="Source" EntitySet="Source" />
@@ -229,6 +238,15 @@
           <Property Name="JournalName" Type="varchar" Nullable="false" MaxLength="256" />
           <Property Name="ExternalURL" Type="varchar" MaxLength="500" />
         </EntityType>
+        <EntityType Name="MetaAnalysisMembership">
+          <Key>
+            <PropertyRef Name="MetaAnalysisMembershipId" />
+          </Key>
+          <Property Name="MetaAnalysisMembershipId" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TheoryMembershipSignificanceId" Type="bigint" Nullable="false" />
+          <Property Name="SourceId" Type="bigint" Nullable="false" />
+          <Property Name="RAMarkedContributing" Type="bit" />
+        </EntityType>
         <EntityType Name="RelatedSources">
           <Key>
             <PropertyRef Name="PrimarySourceId" />
@@ -314,9 +332,10 @@
           <Property Name="TheoryId" Type="int" Nullable="false" />
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RunId" Type="int" Nullable="false" />
-          <Property Name="ArticleLevelEigenFactor" Type="float" />
+          <Property Name="Depth" Type="smallint" Nullable="false" />
+          <Property Name="ImpactFactor" Type="int" Nullable="false" />
           <Property Name="TheoryAttributionRatio" Type="float" />
-          <Property Name="ImpactFactor" Type="int" />
+          <Property Name="ArticleLevelEigenFactor" Type="float" />
           <Property Name="TheoryNamePresent" Type="bit" />
           <Property Name="PredictionProbability" Type="float" />
           <Property Name="IsContributingPrediction" Type="bit" />
@@ -329,7 +348,6 @@
           <Property Name="TheoryId" Type="int" Nullable="false" />
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RAMarkedContributing" Type="bit" />
-          <Property Name="RAEvaluatedContribution" Type="bit" Nullable="false" />
           <Property Name="IsMetaAnalysis" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
@@ -449,6 +467,30 @@
             </Principal>
             <Dependent Role="CrawlResult">
               <PropertyRef Name="DataSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetaAnalysisMembership_Source">
+          <End Role="Source" Type="ATNModel.Store.Source" Multiplicity="1" />
+          <End Role="MetaAnalysisMembership" Type="ATNModel.Store.MetaAnalysisMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="MetaAnalysisMembership">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance">
+          <End Role="TheoryMembershipSignificance" Type="ATNModel.Store.TheoryMembershipSignificance" Multiplicity="1" />
+          <End Role="MetaAnalysisMembership" Type="ATNModel.Store.MetaAnalysisMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TheoryMembershipSignificance">
+              <PropertyRef Name="TheoryMembershipSignificanceId" />
+            </Principal>
+            <Dependent Role="MetaAnalysisMembership">
+              <PropertyRef Name="TheoryMembershipSignificanceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -726,7 +768,6 @@
           <EntitySet Name="Runs" EntityType="ATNModel.Run" />
           <EntitySet Name="Theories" EntityType="ATNModel.Theory" />
           <EntitySet Name="TheoryMemberships" EntityType="ATNModel.TheoryMembership" />
-          <EntitySet Name="TheoryMembershipSignificances" EntityType="ATNModel.TheoryMembershipSignificance" />
           <AssociationSet Name="FK_Crawl_Theory" Association="ATNModel.FK_Crawl_Theory">
             <End Role="Theory" EntitySet="Theories" />
             <End Role="Crawl" EntitySet="Crawls" />
@@ -772,6 +813,16 @@
           <AssociationSet Name="SourceSubject" Association="ATNModel.SourceSubject">
             <End Role="Source" EntitySet="Sources" />
             <End Role="Subject" EntitySet="Subjects" />
+          </AssociationSet>
+          <EntitySet Name="MetaAnalysisMemberships" EntityType="ATNModel.MetaAnalysisMembership" />
+          <AssociationSet Name="FK_MetaAnalysisMembership_Source" Association="ATNModel.FK_MetaAnalysisMembership_Source">
+            <End Role="Source" EntitySet="Sources" />
+            <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMemberships" />
+          </AssociationSet>
+          <EntitySet Name="TheoryMembershipSignificances" EntityType="ATNModel.TheoryMembershipSignificance" />
+          <AssociationSet Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance" Association="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance">
+            <End Role="TheoryMembershipSignificance" EntitySet="TheoryMembershipSignificances" />
+            <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMemberships" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Author">
@@ -913,6 +964,7 @@
           <NavigationProperty Name="Source11" Relationship="ATNModel.RelatedSources" FromRole="Source" ToRole="Source1" />
           <NavigationProperty Name="Sources1" Relationship="ATNModel.RelatedSources" FromRole="Source1" ToRole="Source" />
           <NavigationProperty Name="Subjects" Relationship="ATNModel.SourceSubject" FromRole="Source" ToRole="Subject" />
+          <NavigationProperty Name="MetaAnalysisMemberships" Relationship="ATNModel.FK_MetaAnalysisMembership_Source" FromRole="Source" ToRole="MetaAnalysisMembership" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Type="ATNModel.Author" Role="Author" Multiplicity="1" />
@@ -1110,18 +1162,8 @@
           <NavigationProperty Name="Theory" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="TheoryMembership" ToRole="Theory" />
           <Property Type="Double" Name="ArticleLevelEigenFactor" />
           <Property Type="Double" Name="TheoryAttributionRatio" />
-          <Property Type="Int32" Name="ImpactFactor" />
-        </EntityType>
-        <EntityType Name="TheoryMembershipSignificance">
-          <Key>
-            <PropertyRef Name="TheoryMembershipSignificanceId" />
-          </Key>
-          <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="TheoryId" Nullable="false" />
-          <Property Type="Int64" Name="SourceId" Nullable="false" />
-          <Property Type="Boolean" Name="RAMarkedContributing" />
-          <Property Type="Boolean" Name="RAEvaluatedContribution" Nullable="false" />
-          <Property Type="Boolean" Name="IsMetaAnalysis" Nullable="false" />
+          <Property Type="Int32" Name="ImpactFactor" Nullable="false" />
+          <Property Type="Int16" Name="Depth" Nullable="false" />
         </EntityType>
         <Association Name="FK_Crawl_Theory">
           <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
@@ -1259,6 +1301,52 @@
         <Association Name="SourceSubject">
           <End Type="ATNModel.Source" Role="Source" Multiplicity="*" />
           <End Type="ATNModel.Subject" Role="Subject" Multiplicity="*" />
+        </Association>
+        <EntityType Name="MetaAnalysisMembership">
+          <Key>
+            <PropertyRef Name="MetaAnalysisMembershipId" />
+          </Key>
+          <Property Type="Int64" Name="MetaAnalysisMembershipId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <Property Type="Boolean" Name="RAMarkedContributing" />
+          <NavigationProperty Name="Source" Relationship="ATNModel.FK_MetaAnalysisMembership_Source" FromRole="MetaAnalysisMembership" ToRole="Source" />
+          <NavigationProperty Name="TheoryMembershipSignificance" Relationship="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" FromRole="MetaAnalysisMembership" ToRole="TheoryMembershipSignificance" />
+        </EntityType>
+        <Association Name="FK_MetaAnalysisMembership_Source">
+          <End Type="ATNModel.Source" Role="Source" Multiplicity="1" />
+          <End Type="ATNModel.MetaAnalysisMembership" Role="MetaAnalysisMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Source">
+              <PropertyRef Name="SourceId" />
+            </Principal>
+            <Dependent Role="MetaAnalysisMembership">
+              <PropertyRef Name="SourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TheoryMembershipSignificance">
+          <Key>
+            <PropertyRef Name="TheoryMembershipSignificanceId" />
+          </Key>
+          <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" />
+          <Property Type="Boolean" Name="RAMarkedContributing" />
+          <Property Type="Boolean" Name="IsMetaAnalysis" Nullable="false" />
+          <NavigationProperty Name="MetaAnalysisMemberships" Relationship="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" FromRole="TheoryMembershipSignificance" ToRole="MetaAnalysisMembership" />
+        </EntityType>
+        <Association Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance">
+          <End Type="ATNModel.TheoryMembershipSignificance" Role="TheoryMembershipSignificance" Multiplicity="1" />
+          <End Type="ATNModel.MetaAnalysisMembership" Role="MetaAnalysisMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TheoryMembershipSignificance">
+              <PropertyRef Name="TheoryMembershipSignificanceId" />
+            </Principal>
+            <Dependent Role="MetaAnalysisMembership">
+              <PropertyRef Name="TheoryMembershipSignificanceId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -1419,6 +1507,7 @@
           <EntitySetMapping Name="TheoryMemberships">
             <EntityTypeMapping TypeName="ATNModel.TheoryMembership">
               <MappingFragment StoreEntitySet="TheoryMembership">
+                <ScalarProperty Name="Depth" ColumnName="Depth" />
                 <ScalarProperty Name="ImpactFactor" ColumnName="ImpactFactor" />
                 <ScalarProperty Name="TheoryAttributionRatio" ColumnName="TheoryAttributionRatio" />
                 <ScalarProperty Name="ArticleLevelEigenFactor" ColumnName="ArticleLevelEigenFactor" />
@@ -1429,18 +1518,6 @@
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
                 <ScalarProperty Name="TheoryMembershipId" ColumnName="TheoryMembershipId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TheoryMembershipSignificances">
-            <EntityTypeMapping TypeName="ATNModel.TheoryMembershipSignificance">
-              <MappingFragment StoreEntitySet="TheoryMembershipSignificance">
-                <ScalarProperty Name="IsMetaAnalysis" ColumnName="IsMetaAnalysis" />
-                <ScalarProperty Name="RAEvaluatedContribution" ColumnName="RAEvaluatedContribution" />
-                <ScalarProperty Name="RAMarkedContributing" ColumnName="RAMarkedContributing" />
-                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
-                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
-                <ScalarProperty Name="TheoryMembershipSignificanceId" ColumnName="TheoryMembershipSignificanceId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1480,6 +1557,27 @@
               <ScalarProperty Name="SourceId" ColumnName="SourceId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="MetaAnalysisMemberships">
+            <EntityTypeMapping TypeName="ATNModel.MetaAnalysisMembership">
+              <MappingFragment StoreEntitySet="MetaAnalysisMembership">
+                <ScalarProperty Name="RAMarkedContributing" ColumnName="RAMarkedContributing" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="TheoryMembershipSignificanceId" ColumnName="TheoryMembershipSignificanceId" />
+                <ScalarProperty Name="MetaAnalysisMembershipId" ColumnName="MetaAnalysisMembershipId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TheoryMembershipSignificances">
+            <EntityTypeMapping TypeName="ATNModel.TheoryMembershipSignificance">
+              <MappingFragment StoreEntitySet="TheoryMembershipSignificance">
+                <ScalarProperty Name="IsMetaAnalysis" ColumnName="IsMetaAnalysis" />
+                <ScalarProperty Name="RAMarkedContributing" ColumnName="RAMarkedContributing" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
+                <ScalarProperty Name="TheoryMembershipSignificanceId" ColumnName="TheoryMembershipSignificanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1500,7 +1598,7 @@
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
-      <Diagram Name="ATNModel" ZoomLevel="79">
+      <Diagram Name="ATNModel" ZoomLevel="100">
         <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="9.25" Height="2.7494921875000102" />
         <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="9.625" Height="1.9802864583333388" />
         <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="8" PointY="5.25" Height="2.3648893229166674" />
@@ -1597,7 +1695,6 @@
         <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
         <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
         <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="2" PointX="10.5" PointY="11.75" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="1.375" PointY="0.75" />
         <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
         <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
         <AssociationConnector Association="ATNModel.Theory_Run_FK1" />
@@ -1611,6 +1708,10 @@
         <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="3.5" PointY="15.5" />
         <AssociationConnector Association="ATNModel.FK_Subject_DataSource" />
         <AssociationConnector Association="ATNModel.SourceSubject" />
+        <EntityTypeShape EntityType="ATNModel.MetaAnalysisMembership" Width="1.5" PointX="11.872790833875905" PointY="14.995196707078813" />
+        <AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_Source" />
+        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="9.59078411645758" PointY="26.713025135320159" />
+        <AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" />
         </Diagram>
     </Diagrams>
   </Designer>

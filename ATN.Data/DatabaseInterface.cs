@@ -13,7 +13,7 @@ namespace ATN.Data
     /// <summary>
     /// A light-weight service for providing persistence-model interaction
     /// </summary>
-    public abstract class DatabaseInterface
+    public abstract class DatabaseInterface : IDisposable
     {
         private ATNEntities _context;
         public DatabaseInterface(ATNEntities Entities = null)
@@ -28,9 +28,29 @@ namespace ATN.Data
             }
         }
 
-        public void Cleanup()
+        public void Detach(object EntityToDetach)
         {
-            _context.Dispose();
+            try
+            {
+                Context.Detach(EntityToDetach);
+            }
+            catch { }
+        }
+
+        public void Detach(object[] EntitiesToDetach)
+        {
+            foreach (object Entity in EntitiesToDetach)
+            {
+                Detach(Entity);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_context != null)
+            {
+                _context.Dispose();
+            }
         }
 
         /// <summary>

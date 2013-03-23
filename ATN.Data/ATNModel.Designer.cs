@@ -43,6 +43,8 @@ using System.Xml.Serialization;
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_CrawlResult_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "CrawlResult", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.CrawlResult), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "FK_Subject_DataSource", "DataSource", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.DataSource), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject), true)]
 [assembly: EdmRelationshipAttribute("ATNModel", "SourceSubject", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Source), "Subject", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.Subject))]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_MetaAnalysisMembership_Source", "Source", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.Source), "MetaAnalysisMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.MetaAnalysisMembership), true)]
+[assembly: EdmRelationshipAttribute("ATNModel", "FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(ATN.Data.TheoryMembershipSignificance), "MetaAnalysisMembership", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(ATN.Data.MetaAnalysisMembership), true)]
 
 #endregion
 
@@ -305,22 +307,6 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<TheoryMembershipSignificance> TheoryMembershipSignificances
-        {
-            get
-            {
-                if ((_TheoryMembershipSignificances == null))
-                {
-                    _TheoryMembershipSignificances = base.CreateObjectSet<TheoryMembershipSignificance>("TheoryMembershipSignificances");
-                }
-                return _TheoryMembershipSignificances;
-            }
-        }
-        private ObjectSet<TheoryMembershipSignificance> _TheoryMembershipSignificances;
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
         public ObjectSet<TheoryDefinition> TheoryDefinitions
         {
             get
@@ -349,6 +335,38 @@ namespace ATN.Data
             }
         }
         private ObjectSet<Subject> _Subjects;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<MetaAnalysisMembership> MetaAnalysisMemberships
+        {
+            get
+            {
+                if ((_MetaAnalysisMemberships == null))
+                {
+                    _MetaAnalysisMemberships = base.CreateObjectSet<MetaAnalysisMembership>("MetaAnalysisMemberships");
+                }
+                return _MetaAnalysisMemberships;
+            }
+        }
+        private ObjectSet<MetaAnalysisMembership> _MetaAnalysisMemberships;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<TheoryMembershipSignificance> TheoryMembershipSignificances
+        {
+            get
+            {
+                if ((_TheoryMembershipSignificances == null))
+                {
+                    _TheoryMembershipSignificances = base.CreateObjectSet<TheoryMembershipSignificance>("TheoryMembershipSignificances");
+                }
+                return _TheoryMembershipSignificances;
+            }
+        }
+        private ObjectSet<TheoryMembershipSignificance> _TheoryMembershipSignificances;
 
         #endregion
 
@@ -459,14 +477,6 @@ namespace ATN.Data
         }
     
         /// <summary>
-        /// Deprecated Method for adding a new object to the TheoryMembershipSignificances EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
-        /// </summary>
-        public void AddToTheoryMembershipSignificances(TheoryMembershipSignificance theoryMembershipSignificance)
-        {
-            base.AddObject("TheoryMembershipSignificances", theoryMembershipSignificance);
-        }
-    
-        /// <summary>
         /// Deprecated Method for adding a new object to the TheoryDefinitions EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
         public void AddToTheoryDefinitions(TheoryDefinition theoryDefinition)
@@ -480,6 +490,22 @@ namespace ATN.Data
         public void AddToSubjects(Subject subject)
         {
             base.AddObject("Subjects", subject);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the MetaAnalysisMemberships EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToMetaAnalysisMemberships(MetaAnalysisMembership metaAnalysisMembership)
+        {
+            base.AddObject("MetaAnalysisMemberships", metaAnalysisMembership);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the TheoryMembershipSignificances EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToTheoryMembershipSignificances(TheoryMembershipSignificance theoryMembershipSignificance)
+        {
+            base.AddObject("TheoryMembershipSignificances", theoryMembershipSignificance);
         }
 
         #endregion
@@ -519,7 +545,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -538,7 +564,7 @@ namespace ATN.Data
                 {
                     OnAuthorIdChanging(value);
                     ReportPropertyChanging("AuthorId");
-                    _AuthorId = StructuralObject.SetValidValue(value);
+                    _AuthorId = StructuralObject.SetValidValue(value, "AuthorId");
                     ReportPropertyChanged("AuthorId");
                     OnAuthorIdChanged();
                 }
@@ -563,7 +589,7 @@ namespace ATN.Data
             {
                 OnFullNameChanging(value);
                 ReportPropertyChanging("FullName");
-                _FullName = StructuralObject.SetValidValue(value, true);
+                _FullName = StructuralObject.SetValidValue(value, true, "FullName");
                 ReportPropertyChanged("FullName");
                 OnFullNameChanged();
             }
@@ -587,7 +613,7 @@ namespace ATN.Data
             {
                 OnFirstNameChanging(value);
                 ReportPropertyChanging("FirstName");
-                _FirstName = StructuralObject.SetValidValue(value, true);
+                _FirstName = StructuralObject.SetValidValue(value, true, "FirstName");
                 ReportPropertyChanged("FirstName");
                 OnFirstNameChanged();
             }
@@ -611,7 +637,7 @@ namespace ATN.Data
             {
                 OnLastNameChanging(value);
                 ReportPropertyChanging("LastName");
-                _LastName = StructuralObject.SetValidValue(value, false);
+                _LastName = StructuralObject.SetValidValue(value, false, "LastName");
                 ReportPropertyChanged("LastName");
                 OnLastNameChanged();
             }
@@ -635,7 +661,7 @@ namespace ATN.Data
             {
                 OnEmailChanging(value);
                 ReportPropertyChanging("Email");
-                _Email = StructuralObject.SetValidValue(value, true);
+                _Email = StructuralObject.SetValidValue(value, true, "Email");
                 ReportPropertyChanged("Email");
                 OnEmailChanged();
             }
@@ -659,7 +685,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -683,7 +709,7 @@ namespace ATN.Data
             {
                 OnDataSourceSpecificIdChanging(value);
                 ReportPropertyChanging("DataSourceSpecificId");
-                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false, "DataSourceSpecificId");
                 ReportPropertyChanged("DataSourceSpecificId");
                 OnDataSourceSpecificIdChanged();
             }
@@ -694,7 +720,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -788,7 +813,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -807,7 +832,7 @@ namespace ATN.Data
                 {
                     OnAuthorReferenceIdChanging(value);
                     ReportPropertyChanging("AuthorReferenceId");
-                    _AuthorReferenceId = StructuralObject.SetValidValue(value);
+                    _AuthorReferenceId = StructuralObject.SetValidValue(value, "AuthorReferenceId");
                     ReportPropertyChanged("AuthorReferenceId");
                     OnAuthorReferenceIdChanged();
                 }
@@ -832,7 +857,7 @@ namespace ATN.Data
             {
                 OnAuthorIdChanging(value);
                 ReportPropertyChanging("AuthorId");
-                _AuthorId = StructuralObject.SetValidValue(value);
+                _AuthorId = StructuralObject.SetValidValue(value, "AuthorId");
                 ReportPropertyChanged("AuthorId");
                 OnAuthorIdChanged();
             }
@@ -856,7 +881,7 @@ namespace ATN.Data
             {
                 OnSourceIdChanging(value);
                 ReportPropertyChanging("SourceId");
-                _SourceId = StructuralObject.SetValidValue(value);
+                _SourceId = StructuralObject.SetValidValue(value, "SourceId");
                 ReportPropertyChanged("SourceId");
                 OnSourceIdChanged();
             }
@@ -867,7 +892,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -979,7 +1003,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -998,7 +1022,7 @@ namespace ATN.Data
                 {
                     OnCrawlIdChanging(value);
                     ReportPropertyChanging("CrawlId");
-                    _CrawlId = StructuralObject.SetValidValue(value);
+                    _CrawlId = StructuralObject.SetValidValue(value, "CrawlId");
                     ReportPropertyChanged("CrawlId");
                     OnCrawlIdChanged();
                 }
@@ -1023,7 +1047,7 @@ namespace ATN.Data
             {
                 OnCrawlStateChanging(value);
                 ReportPropertyChanging("CrawlState");
-                _CrawlState = StructuralObject.SetValidValue(value);
+                _CrawlState = StructuralObject.SetValidValue(value, "CrawlState");
                 ReportPropertyChanged("CrawlState");
                 OnCrawlStateChanged();
             }
@@ -1047,7 +1071,7 @@ namespace ATN.Data
             {
                 OnDateCrawledChanging(value);
                 ReportPropertyChanging("DateCrawled");
-                _DateCrawled = StructuralObject.SetValidValue(value);
+                _DateCrawled = StructuralObject.SetValidValue(value, "DateCrawled");
                 ReportPropertyChanged("DateCrawled");
                 OnDateCrawledChanged();
             }
@@ -1071,7 +1095,7 @@ namespace ATN.Data
             {
                 OnLastEnumeratedSourceIdChanging(value);
                 ReportPropertyChanging("LastEnumeratedSourceId");
-                _LastEnumeratedSourceId = StructuralObject.SetValidValue(value);
+                _LastEnumeratedSourceId = StructuralObject.SetValidValue(value, "LastEnumeratedSourceId");
                 ReportPropertyChanged("LastEnumeratedSourceId");
                 OnLastEnumeratedSourceIdChanged();
             }
@@ -1095,7 +1119,7 @@ namespace ATN.Data
             {
                 OnTheoryIdChanging(value);
                 ReportPropertyChanging("TheoryId");
-                _TheoryId = StructuralObject.SetValidValue(value);
+                _TheoryId = StructuralObject.SetValidValue(value, "TheoryId");
                 ReportPropertyChanged("TheoryId");
                 OnTheoryIdChanged();
             }
@@ -1119,7 +1143,7 @@ namespace ATN.Data
             {
                 OnCrawlIntervalDaysChanging(value);
                 ReportPropertyChanging("CrawlIntervalDays");
-                _CrawlIntervalDays = StructuralObject.SetValidValue(value);
+                _CrawlIntervalDays = StructuralObject.SetValidValue(value, "CrawlIntervalDays");
                 ReportPropertyChanged("CrawlIntervalDays");
                 OnCrawlIntervalDaysChanged();
             }
@@ -1130,7 +1154,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -1250,7 +1273,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1269,7 +1292,7 @@ namespace ATN.Data
                 {
                     OnCrawQueueIdChanging(value);
                     ReportPropertyChanging("CrawQueueId");
-                    _CrawQueueId = StructuralObject.SetValidValue(value);
+                    _CrawQueueId = StructuralObject.SetValidValue(value, "CrawQueueId");
                     ReportPropertyChanged("CrawQueueId");
                     OnCrawQueueIdChanged();
                 }
@@ -1294,7 +1317,7 @@ namespace ATN.Data
             {
                 OnCrawlIdChanging(value);
                 ReportPropertyChanging("CrawlId");
-                _CrawlId = StructuralObject.SetValidValue(value);
+                _CrawlId = StructuralObject.SetValidValue(value, "CrawlId");
                 ReportPropertyChanged("CrawlId");
                 OnCrawlIdChanged();
             }
@@ -1318,7 +1341,7 @@ namespace ATN.Data
             {
                 OnDataSourceSpecificIdChanging(value);
                 ReportPropertyChanging("DataSourceSpecificId");
-                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false, "DataSourceSpecificId");
                 ReportPropertyChanged("DataSourceSpecificId");
                 OnDataSourceSpecificIdChanged();
             }
@@ -1342,7 +1365,7 @@ namespace ATN.Data
             {
                 OnCrawlReferenceDirectionChanging(value);
                 ReportPropertyChanging("CrawlReferenceDirection");
-                _CrawlReferenceDirection = StructuralObject.SetValidValue(value);
+                _CrawlReferenceDirection = StructuralObject.SetValidValue(value, "CrawlReferenceDirection");
                 ReportPropertyChanged("CrawlReferenceDirection");
                 OnCrawlReferenceDirectionChanged();
             }
@@ -1366,7 +1389,7 @@ namespace ATN.Data
             {
                 OnReferencesSourceIdChanging(value);
                 ReportPropertyChanging("ReferencesSourceId");
-                _ReferencesSourceId = StructuralObject.SetValidValue(value);
+                _ReferencesSourceId = StructuralObject.SetValidValue(value, "ReferencesSourceId");
                 ReportPropertyChanged("ReferencesSourceId");
                 OnReferencesSourceIdChanged();
             }
@@ -1390,7 +1413,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -1401,7 +1424,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -1557,7 +1579,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1576,7 +1598,7 @@ namespace ATN.Data
                 {
                     OnCrawlResultIdChanging(value);
                     ReportPropertyChanging("CrawlResultId");
-                    _CrawlResultId = StructuralObject.SetValidValue(value);
+                    _CrawlResultId = StructuralObject.SetValidValue(value, "CrawlResultId");
                     ReportPropertyChanged("CrawlResultId");
                     OnCrawlResultIdChanged();
                 }
@@ -1601,7 +1623,7 @@ namespace ATN.Data
             {
                 OnCrawlIdChanging(value);
                 ReportPropertyChanging("CrawlId");
-                _CrawlId = StructuralObject.SetValidValue(value);
+                _CrawlId = StructuralObject.SetValidValue(value, "CrawlId");
                 ReportPropertyChanged("CrawlId");
                 OnCrawlIdChanged();
             }
@@ -1625,7 +1647,7 @@ namespace ATN.Data
             {
                 OnDataSourceSpecificIdChanging(value);
                 ReportPropertyChanging("DataSourceSpecificId");
-                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false, "DataSourceSpecificId");
                 ReportPropertyChanged("DataSourceSpecificId");
                 OnDataSourceSpecificIdChanged();
             }
@@ -1649,7 +1671,7 @@ namespace ATN.Data
             {
                 OnSourceIdChanging(value);
                 ReportPropertyChanging("SourceId");
-                _SourceId = StructuralObject.SetValidValue(value);
+                _SourceId = StructuralObject.SetValidValue(value, "SourceId");
                 ReportPropertyChanged("SourceId");
                 OnSourceIdChanged();
             }
@@ -1673,7 +1695,7 @@ namespace ATN.Data
             {
                 OnDateRetreievedChanging(value);
                 ReportPropertyChanging("DateRetreieved");
-                _DateRetreieved = StructuralObject.SetValidValue(value);
+                _DateRetreieved = StructuralObject.SetValidValue(value, "DateRetreieved");
                 ReportPropertyChanged("DateRetreieved");
                 OnDateRetreievedChanged();
             }
@@ -1697,7 +1719,7 @@ namespace ATN.Data
             {
                 OnReferenceRetrievedChanging(value);
                 ReportPropertyChanging("ReferenceRetrieved");
-                _ReferenceRetrieved = StructuralObject.SetValidValue(value);
+                _ReferenceRetrieved = StructuralObject.SetValidValue(value, "ReferenceRetrieved");
                 ReportPropertyChanged("ReferenceRetrieved");
                 OnReferenceRetrievedChanged();
             }
@@ -1721,7 +1743,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -1732,7 +1754,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -1878,7 +1899,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1897,7 +1918,7 @@ namespace ATN.Data
                 {
                     OnDataSourceIdChanging(value);
                     ReportPropertyChanging("DataSourceId");
-                    _DataSourceId = StructuralObject.SetValidValue(value);
+                    _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                     ReportPropertyChanged("DataSourceId");
                     OnDataSourceIdChanged();
                 }
@@ -1922,7 +1943,7 @@ namespace ATN.Data
             {
                 OnDataSourceNameChanging(value);
                 ReportPropertyChanging("DataSourceName");
-                _DataSourceName = StructuralObject.SetValidValue(value, false);
+                _DataSourceName = StructuralObject.SetValidValue(value, false, "DataSourceName");
                 ReportPropertyChanged("DataSourceName");
                 OnDataSourceNameChanged();
             }
@@ -1933,7 +1954,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -2101,7 +2121,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -2120,7 +2140,7 @@ namespace ATN.Data
                 {
                     OnEditorIdChanging(value);
                     ReportPropertyChanging("EditorId");
-                    _EditorId = StructuralObject.SetValidValue(value);
+                    _EditorId = StructuralObject.SetValidValue(value, "EditorId");
                     ReportPropertyChanged("EditorId");
                     OnEditorIdChanged();
                 }
@@ -2145,7 +2165,7 @@ namespace ATN.Data
             {
                 OnFirstNameChanging(value);
                 ReportPropertyChanging("FirstName");
-                _FirstName = StructuralObject.SetValidValue(value, true);
+                _FirstName = StructuralObject.SetValidValue(value, true, "FirstName");
                 ReportPropertyChanged("FirstName");
                 OnFirstNameChanged();
             }
@@ -2169,7 +2189,7 @@ namespace ATN.Data
             {
                 OnLastNameChanging(value);
                 ReportPropertyChanging("LastName");
-                _LastName = StructuralObject.SetValidValue(value, false);
+                _LastName = StructuralObject.SetValidValue(value, false, "LastName");
                 ReportPropertyChanged("LastName");
                 OnLastNameChanged();
             }
@@ -2193,7 +2213,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -2217,7 +2237,7 @@ namespace ATN.Data
             {
                 OnDataSourceSpecificIdChanging(value);
                 ReportPropertyChanging("DataSourceSpecificId");
-                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false, "DataSourceSpecificId");
                 ReportPropertyChanged("DataSourceSpecificId");
                 OnDataSourceSpecificIdChanged();
             }
@@ -2228,7 +2248,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -2322,7 +2341,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -2341,7 +2360,7 @@ namespace ATN.Data
                 {
                     OnEditorReferenceIdChanging(value);
                     ReportPropertyChanging("EditorReferenceId");
-                    _EditorReferenceId = StructuralObject.SetValidValue(value);
+                    _EditorReferenceId = StructuralObject.SetValidValue(value, "EditorReferenceId");
                     ReportPropertyChanged("EditorReferenceId");
                     OnEditorReferenceIdChanged();
                 }
@@ -2366,7 +2385,7 @@ namespace ATN.Data
             {
                 OnEditorIdChanging(value);
                 ReportPropertyChanging("EditorId");
-                _EditorId = StructuralObject.SetValidValue(value);
+                _EditorId = StructuralObject.SetValidValue(value, "EditorId");
                 ReportPropertyChanged("EditorId");
                 OnEditorIdChanged();
             }
@@ -2390,7 +2409,7 @@ namespace ATN.Data
             {
                 OnSourceIdChanging(value);
                 ReportPropertyChanging("SourceId");
-                _SourceId = StructuralObject.SetValidValue(value);
+                _SourceId = StructuralObject.SetValidValue(value, "SourceId");
                 ReportPropertyChanged("SourceId");
                 OnSourceIdChanged();
             }
@@ -2401,7 +2420,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -2509,7 +2527,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -2528,7 +2546,7 @@ namespace ATN.Data
                 {
                     OnJournalIdChanging(value);
                     ReportPropertyChanging("JournalId");
-                    _JournalId = StructuralObject.SetValidValue(value);
+                    _JournalId = StructuralObject.SetValidValue(value, "JournalId");
                     ReportPropertyChanged("JournalId");
                     OnJournalIdChanged();
                 }
@@ -2553,7 +2571,7 @@ namespace ATN.Data
             {
                 OnJournalNameChanging(value);
                 ReportPropertyChanging("JournalName");
-                _JournalName = StructuralObject.SetValidValue(value, false);
+                _JournalName = StructuralObject.SetValidValue(value, false, "JournalName");
                 ReportPropertyChanged("JournalName");
                 OnJournalNameChanged();
             }
@@ -2577,7 +2595,7 @@ namespace ATN.Data
             {
                 OnExternalURLChanging(value);
                 ReportPropertyChanging("ExternalURL");
-                _ExternalURL = StructuralObject.SetValidValue(value, true);
+                _ExternalURL = StructuralObject.SetValidValue(value, true, "ExternalURL");
                 ReportPropertyChanged("ExternalURL");
                 OnExternalURLChanged();
             }
@@ -2588,7 +2606,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -2609,6 +2626,218 @@ namespace ATN.Data
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Source>("ATNModel.JournalName_Source_FK1", "Source", value);
+                }
+            }
+        }
+
+        #endregion
+
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="ATNModel", Name="MetaAnalysisMembership")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class MetaAnalysisMembership : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new MetaAnalysisMembership object.
+        /// </summary>
+        /// <param name="metaAnalysisMembershipId">Initial value of the MetaAnalysisMembershipId property.</param>
+        /// <param name="theoryMembershipSignificanceId">Initial value of the TheoryMembershipSignificanceId property.</param>
+        /// <param name="sourceId">Initial value of the SourceId property.</param>
+        public static MetaAnalysisMembership CreateMetaAnalysisMembership(global::System.Int64 metaAnalysisMembershipId, global::System.Int64 theoryMembershipSignificanceId, global::System.Int64 sourceId)
+        {
+            MetaAnalysisMembership metaAnalysisMembership = new MetaAnalysisMembership();
+            metaAnalysisMembership.MetaAnalysisMembershipId = metaAnalysisMembershipId;
+            metaAnalysisMembership.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
+            metaAnalysisMembership.SourceId = sourceId;
+            return metaAnalysisMembership;
+        }
+
+        #endregion
+
+        #region Simple Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 MetaAnalysisMembershipId
+        {
+            get
+            {
+                return _MetaAnalysisMembershipId;
+            }
+            set
+            {
+                if (_MetaAnalysisMembershipId != value)
+                {
+                    OnMetaAnalysisMembershipIdChanging(value);
+                    ReportPropertyChanging("MetaAnalysisMembershipId");
+                    _MetaAnalysisMembershipId = StructuralObject.SetValidValue(value, "MetaAnalysisMembershipId");
+                    ReportPropertyChanged("MetaAnalysisMembershipId");
+                    OnMetaAnalysisMembershipIdChanged();
+                }
+            }
+        }
+        private global::System.Int64 _MetaAnalysisMembershipId;
+        partial void OnMetaAnalysisMembershipIdChanging(global::System.Int64 value);
+        partial void OnMetaAnalysisMembershipIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 TheoryMembershipSignificanceId
+        {
+            get
+            {
+                return _TheoryMembershipSignificanceId;
+            }
+            set
+            {
+                OnTheoryMembershipSignificanceIdChanging(value);
+                ReportPropertyChanging("TheoryMembershipSignificanceId");
+                _TheoryMembershipSignificanceId = StructuralObject.SetValidValue(value, "TheoryMembershipSignificanceId");
+                ReportPropertyChanged("TheoryMembershipSignificanceId");
+                OnTheoryMembershipSignificanceIdChanged();
+            }
+        }
+        private global::System.Int64 _TheoryMembershipSignificanceId;
+        partial void OnTheoryMembershipSignificanceIdChanging(global::System.Int64 value);
+        partial void OnTheoryMembershipSignificanceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int64 SourceId
+        {
+            get
+            {
+                return _SourceId;
+            }
+            set
+            {
+                OnSourceIdChanging(value);
+                ReportPropertyChanging("SourceId");
+                _SourceId = StructuralObject.SetValidValue(value, "SourceId");
+                ReportPropertyChanged("SourceId");
+                OnSourceIdChanged();
+            }
+        }
+        private global::System.Int64 _SourceId;
+        partial void OnSourceIdChanging(global::System.Int64 value);
+        partial void OnSourceIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> RAMarkedContributing
+        {
+            get
+            {
+                return _RAMarkedContributing;
+            }
+            set
+            {
+                OnRAMarkedContributingChanging(value);
+                ReportPropertyChanging("RAMarkedContributing");
+                _RAMarkedContributing = StructuralObject.SetValidValue(value, "RAMarkedContributing");
+                ReportPropertyChanged("RAMarkedContributing");
+                OnRAMarkedContributingChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _RAMarkedContributing;
+        partial void OnRAMarkedContributingChanging(Nullable<global::System.Boolean> value);
+        partial void OnRAMarkedContributingChanged();
+
+        #endregion
+
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_Source", "Source")]
+        public Source Source
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<Source> SourceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<Source>("ATNModel.FK_MetaAnalysisMembership_Source", "Source", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance")]
+        public TheoryMembershipSignificance TheoryMembershipSignificance
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<TheoryMembershipSignificance> TheoryMembershipSignificanceReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<TheoryMembershipSignificance>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "TheoryMembershipSignificance", value);
                 }
             }
         }
@@ -2644,7 +2873,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -2663,7 +2892,7 @@ namespace ATN.Data
                 {
                     OnRunIdChanging(value);
                     ReportPropertyChanging("RunId");
-                    _RunId = StructuralObject.SetValidValue(value);
+                    _RunId = StructuralObject.SetValidValue(value, "RunId");
                     ReportPropertyChanged("RunId");
                     OnRunIdChanged();
                 }
@@ -2688,7 +2917,7 @@ namespace ATN.Data
             {
                 OnDateStartedChanging(value);
                 ReportPropertyChanging("DateStarted");
-                _DateStarted = StructuralObject.SetValidValue(value);
+                _DateStarted = StructuralObject.SetValidValue(value, "DateStarted");
                 ReportPropertyChanged("DateStarted");
                 OnDateStartedChanged();
             }
@@ -2712,7 +2941,7 @@ namespace ATN.Data
             {
                 OnTheoryIdChanging(value);
                 ReportPropertyChanging("TheoryId");
-                _TheoryId = StructuralObject.SetValidValue(value);
+                _TheoryId = StructuralObject.SetValidValue(value, "TheoryId");
                 ReportPropertyChanged("TheoryId");
                 OnTheoryIdChanged();
             }
@@ -2723,7 +2952,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -2821,7 +3049,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -2840,7 +3068,7 @@ namespace ATN.Data
                 {
                     OnSourceIdChanging(value);
                     ReportPropertyChanging("SourceId");
-                    _SourceId = StructuralObject.SetValidValue(value);
+                    _SourceId = StructuralObject.SetValidValue(value, "SourceId");
                     ReportPropertyChanged("SourceId");
                     OnSourceIdChanged();
                 }
@@ -2865,7 +3093,7 @@ namespace ATN.Data
             {
                 OnSourceTypeChanging(value);
                 ReportPropertyChanging("SourceType");
-                _SourceType = StructuralObject.SetValidValue(value);
+                _SourceType = StructuralObject.SetValidValue(value, "SourceType");
                 ReportPropertyChanged("SourceType");
                 OnSourceTypeChanged();
             }
@@ -2889,7 +3117,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -2913,7 +3141,7 @@ namespace ATN.Data
             {
                 OnProquestIdChanging(value);
                 ReportPropertyChanging("ProquestId");
-                _ProquestId = StructuralObject.SetValidValue(value);
+                _ProquestId = StructuralObject.SetValidValue(value, "ProquestId");
                 ReportPropertyChanged("ProquestId");
                 OnProquestIdChanged();
             }
@@ -2937,7 +3165,7 @@ namespace ATN.Data
             {
                 OnDOIChanging(value);
                 ReportPropertyChanging("DOI");
-                _DOI = StructuralObject.SetValidValue(value, true);
+                _DOI = StructuralObject.SetValidValue(value, true, "DOI");
                 ReportPropertyChanged("DOI");
                 OnDOIChanged();
             }
@@ -2961,7 +3189,7 @@ namespace ATN.Data
             {
                 OnArticleTitleChanging(value);
                 ReportPropertyChanging("ArticleTitle");
-                _ArticleTitle = StructuralObject.SetValidValue(value, true);
+                _ArticleTitle = StructuralObject.SetValidValue(value, true, "ArticleTitle");
                 ReportPropertyChanged("ArticleTitle");
                 OnArticleTitleChanged();
             }
@@ -2985,7 +3213,7 @@ namespace ATN.Data
             {
                 OnBookTitleChanging(value);
                 ReportPropertyChanging("BookTitle");
-                _BookTitle = StructuralObject.SetValidValue(value, true);
+                _BookTitle = StructuralObject.SetValidValue(value, true, "BookTitle");
                 ReportPropertyChanged("BookTitle");
                 OnBookTitleChanged();
             }
@@ -3009,7 +3237,7 @@ namespace ATN.Data
             {
                 OnISSNChanging(value);
                 ReportPropertyChanging("ISSN");
-                _ISSN = StructuralObject.SetValidValue(value);
+                _ISSN = StructuralObject.SetValidValue(value, "ISSN");
                 ReportPropertyChanged("ISSN");
                 OnISSNChanged();
             }
@@ -3033,7 +3261,7 @@ namespace ATN.Data
             {
                 OnIDSChanging(value);
                 ReportPropertyChanging("IDS");
-                _IDS = StructuralObject.SetValidValue(value);
+                _IDS = StructuralObject.SetValidValue(value, "IDS");
                 ReportPropertyChanged("IDS");
                 OnIDSChanged();
             }
@@ -3057,7 +3285,7 @@ namespace ATN.Data
             {
                 OnYearChanging(value);
                 ReportPropertyChanging("Year");
-                _Year = StructuralObject.SetValidValue(value);
+                _Year = StructuralObject.SetValidValue(value, "Year");
                 ReportPropertyChanged("Year");
                 OnYearChanged();
             }
@@ -3081,7 +3309,7 @@ namespace ATN.Data
             {
                 OnEditionChanging(value);
                 ReportPropertyChanging("Edition");
-                _Edition = StructuralObject.SetValidValue(value, true);
+                _Edition = StructuralObject.SetValidValue(value, true, "Edition");
                 ReportPropertyChanged("Edition");
                 OnEditionChanged();
             }
@@ -3105,7 +3333,7 @@ namespace ATN.Data
             {
                 OnVolumeChanging(value);
                 ReportPropertyChanging("Volume");
-                _Volume = StructuralObject.SetValidValue(value, true);
+                _Volume = StructuralObject.SetValidValue(value, true, "Volume");
                 ReportPropertyChanged("Volume");
                 OnVolumeChanged();
             }
@@ -3129,7 +3357,7 @@ namespace ATN.Data
             {
                 OnIssueChanging(value);
                 ReportPropertyChanging("Issue");
-                _Issue = StructuralObject.SetValidValue(value, true);
+                _Issue = StructuralObject.SetValidValue(value, true, "Issue");
                 ReportPropertyChanged("Issue");
                 OnIssueChanged();
             }
@@ -3153,7 +3381,7 @@ namespace ATN.Data
             {
                 OnPublisherChanging(value);
                 ReportPropertyChanging("Publisher");
-                _Publisher = StructuralObject.SetValidValue(value, true);
+                _Publisher = StructuralObject.SetValidValue(value, true, "Publisher");
                 ReportPropertyChanged("Publisher");
                 OnPublisherChanged();
             }
@@ -3177,7 +3405,7 @@ namespace ATN.Data
             {
                 OnLanguageChanging(value);
                 ReportPropertyChanging("Language");
-                _Language = StructuralObject.SetValidValue(value, true);
+                _Language = StructuralObject.SetValidValue(value, true, "Language");
                 ReportPropertyChanged("Language");
                 OnLanguageChanged();
             }
@@ -3201,7 +3429,7 @@ namespace ATN.Data
             {
                 OnPagesChanging(value);
                 ReportPropertyChanging("Pages");
-                _Pages = StructuralObject.SetValidValue(value, true);
+                _Pages = StructuralObject.SetValidValue(value, true, "Pages");
                 ReportPropertyChanged("Pages");
                 OnPagesChanged();
             }
@@ -3225,7 +3453,7 @@ namespace ATN.Data
             {
                 OnExternalURLChanging(value);
                 ReportPropertyChanging("ExternalURL");
-                _ExternalURL = StructuralObject.SetValidValue(value, true);
+                _ExternalURL = StructuralObject.SetValidValue(value, true, "ExternalURL");
                 ReportPropertyChanged("ExternalURL");
                 OnExternalURLChanged();
             }
@@ -3249,7 +3477,7 @@ namespace ATN.Data
             {
                 OnAbstractChanging(value);
                 ReportPropertyChanging("Abstract");
-                _Abstract = StructuralObject.SetValidValue(value, true);
+                _Abstract = StructuralObject.SetValidValue(value, true, "Abstract");
                 ReportPropertyChanged("Abstract");
                 OnAbstractChanged();
             }
@@ -3273,7 +3501,7 @@ namespace ATN.Data
             {
                 OnJournalIdChanging(value);
                 ReportPropertyChanging("JournalId");
-                _JournalId = StructuralObject.SetValidValue(value);
+                _JournalId = StructuralObject.SetValidValue(value, "JournalId");
                 ReportPropertyChanged("JournalId");
                 OnJournalIdChanged();
             }
@@ -3297,7 +3525,7 @@ namespace ATN.Data
             {
                 OnSerializedDataSourceResponseChanging(value);
                 ReportPropertyChanging("SerializedDataSourceResponse");
-                _SerializedDataSourceResponse = StructuralObject.SetValidValue(value, false);
+                _SerializedDataSourceResponse = StructuralObject.SetValidValue(value, false, "SerializedDataSourceResponse");
                 ReportPropertyChanged("SerializedDataSourceResponse");
                 OnSerializedDataSourceResponseChanged();
             }
@@ -3321,7 +3549,7 @@ namespace ATN.Data
             {
                 OnDataSourceSpecificIdChanging(value);
                 ReportPropertyChanging("DataSourceSpecificId");
-                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false, "DataSourceSpecificId");
                 ReportPropertyChanged("DataSourceSpecificId");
                 OnDataSourceSpecificIdChanged();
             }
@@ -3332,7 +3560,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -3630,6 +3857,28 @@ namespace ATN.Data
                 }
             }
         }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_Source", "MetaAnalysisMembership")]
+        public EntityCollection<MetaAnalysisMembership> MetaAnalysisMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_Source", "MetaAnalysisMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_Source", "MetaAnalysisMembership", value);
+                }
+            }
+        }
 
         #endregion
 
@@ -3664,7 +3913,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -3683,7 +3932,7 @@ namespace ATN.Data
                 {
                     OnSubjectIdChanging(value);
                     ReportPropertyChanging("SubjectId");
-                    _SubjectId = StructuralObject.SetValidValue(value);
+                    _SubjectId = StructuralObject.SetValidValue(value, "SubjectId");
                     ReportPropertyChanged("SubjectId");
                     OnSubjectIdChanged();
                 }
@@ -3708,7 +3957,7 @@ namespace ATN.Data
             {
                 OnSubjectTextChanging(value);
                 ReportPropertyChanging("SubjectText");
-                _SubjectText = StructuralObject.SetValidValue(value, false);
+                _SubjectText = StructuralObject.SetValidValue(value, false, "SubjectText");
                 ReportPropertyChanged("SubjectText");
                 OnSubjectTextChanged();
             }
@@ -3732,7 +3981,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -3756,7 +4005,7 @@ namespace ATN.Data
             {
                 OnDataSourceSpecificIdChanging(value);
                 ReportPropertyChanging("DataSourceSpecificId");
-                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false);
+                _DataSourceSpecificId = StructuralObject.SetValidValue(value, false, "DataSourceSpecificId");
                 ReportPropertyChanged("DataSourceSpecificId");
                 OnDataSourceSpecificIdChanged();
             }
@@ -3767,7 +4016,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -3861,7 +4109,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -3880,7 +4128,7 @@ namespace ATN.Data
                 {
                     OnTheoryIdChanging(value);
                     ReportPropertyChanging("TheoryId");
-                    _TheoryId = StructuralObject.SetValidValue(value);
+                    _TheoryId = StructuralObject.SetValidValue(value, "TheoryId");
                     ReportPropertyChanged("TheoryId");
                     OnTheoryIdChanged();
                 }
@@ -3905,7 +4153,7 @@ namespace ATN.Data
             {
                 OnTheoryNameChanging(value);
                 ReportPropertyChanging("TheoryName");
-                _TheoryName = StructuralObject.SetValidValue(value, false);
+                _TheoryName = StructuralObject.SetValidValue(value, false, "TheoryName");
                 ReportPropertyChanged("TheoryName");
                 OnTheoryNameChanged();
             }
@@ -3929,7 +4177,7 @@ namespace ATN.Data
             {
                 OnDateAddedChanging(value);
                 ReportPropertyChanging("DateAdded");
-                _DateAdded = StructuralObject.SetValidValue(value);
+                _DateAdded = StructuralObject.SetValidValue(value, "DateAdded");
                 ReportPropertyChanged("DateAdded");
                 OnDateAddedChanged();
             }
@@ -3953,7 +4201,7 @@ namespace ATN.Data
             {
                 OnTheoryCommentChanging(value);
                 ReportPropertyChanging("TheoryComment");
-                _TheoryComment = StructuralObject.SetValidValue(value, true);
+                _TheoryComment = StructuralObject.SetValidValue(value, true, "TheoryComment");
                 ReportPropertyChanged("TheoryComment");
                 OnTheoryCommentChanged();
             }
@@ -3964,7 +4212,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -4088,7 +4335,7 @@ namespace ATN.Data
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -4107,7 +4354,7 @@ namespace ATN.Data
                 {
                     OnTheoryDefinitionIdChanging(value);
                     ReportPropertyChanging("TheoryDefinitionId");
-                    _TheoryDefinitionId = StructuralObject.SetValidValue(value);
+                    _TheoryDefinitionId = StructuralObject.SetValidValue(value, "TheoryDefinitionId");
                     ReportPropertyChanged("TheoryDefinitionId");
                     OnTheoryDefinitionIdChanged();
                 }
@@ -4132,7 +4379,7 @@ namespace ATN.Data
             {
                 OnTheoryIdChanging(value);
                 ReportPropertyChanging("TheoryId");
-                _TheoryId = StructuralObject.SetValidValue(value);
+                _TheoryId = StructuralObject.SetValidValue(value, "TheoryId");
                 ReportPropertyChanged("TheoryId");
                 OnTheoryIdChanged();
             }
@@ -4156,7 +4403,7 @@ namespace ATN.Data
             {
                 OnCanonicalIdsChanging(value);
                 ReportPropertyChanging("CanonicalIds");
-                _CanonicalIds = StructuralObject.SetValidValue(value, false);
+                _CanonicalIds = StructuralObject.SetValidValue(value, false, "CanonicalIds");
                 ReportPropertyChanged("CanonicalIds");
                 OnCanonicalIdsChanged();
             }
@@ -4180,7 +4427,7 @@ namespace ATN.Data
             {
                 OnDataSourceIdChanging(value);
                 ReportPropertyChanging("DataSourceId");
-                _DataSourceId = StructuralObject.SetValidValue(value);
+                _DataSourceId = StructuralObject.SetValidValue(value, "DataSourceId");
                 ReportPropertyChanged("DataSourceId");
                 OnDataSourceIdChanged();
             }
@@ -4191,7 +4438,6 @@ namespace ATN.Data
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -4253,19 +4499,23 @@ namespace ATN.Data
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
         /// <param name="runId">Initial value of the RunId property.</param>
-        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId)
+        /// <param name="impactFactor">Initial value of the ImpactFactor property.</param>
+        /// <param name="depth">Initial value of the Depth property.</param>
+        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId, global::System.Int32 impactFactor, global::System.Int16 depth)
         {
             TheoryMembership theoryMembership = new TheoryMembership();
             theoryMembership.TheoryMembershipId = theoryMembershipId;
             theoryMembership.TheoryId = theoryId;
             theoryMembership.SourceId = sourceId;
             theoryMembership.RunId = runId;
+            theoryMembership.ImpactFactor = impactFactor;
+            theoryMembership.Depth = depth;
             return theoryMembership;
         }
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -4284,7 +4534,7 @@ namespace ATN.Data
                 {
                     OnTheoryMembershipIdChanging(value);
                     ReportPropertyChanging("TheoryMembershipId");
-                    _TheoryMembershipId = StructuralObject.SetValidValue(value);
+                    _TheoryMembershipId = StructuralObject.SetValidValue(value, "TheoryMembershipId");
                     ReportPropertyChanged("TheoryMembershipId");
                     OnTheoryMembershipIdChanged();
                 }
@@ -4309,7 +4559,7 @@ namespace ATN.Data
             {
                 OnTheoryIdChanging(value);
                 ReportPropertyChanging("TheoryId");
-                _TheoryId = StructuralObject.SetValidValue(value);
+                _TheoryId = StructuralObject.SetValidValue(value, "TheoryId");
                 ReportPropertyChanged("TheoryId");
                 OnTheoryIdChanged();
             }
@@ -4333,7 +4583,7 @@ namespace ATN.Data
             {
                 OnSourceIdChanging(value);
                 ReportPropertyChanging("SourceId");
-                _SourceId = StructuralObject.SetValidValue(value);
+                _SourceId = StructuralObject.SetValidValue(value, "SourceId");
                 ReportPropertyChanged("SourceId");
                 OnSourceIdChanged();
             }
@@ -4357,7 +4607,7 @@ namespace ATN.Data
             {
                 OnRunIdChanging(value);
                 ReportPropertyChanging("RunId");
-                _RunId = StructuralObject.SetValidValue(value);
+                _RunId = StructuralObject.SetValidValue(value, "RunId");
                 ReportPropertyChanged("RunId");
                 OnRunIdChanged();
             }
@@ -4381,7 +4631,7 @@ namespace ATN.Data
             {
                 OnTheoryNamePresentChanging(value);
                 ReportPropertyChanging("TheoryNamePresent");
-                _TheoryNamePresent = StructuralObject.SetValidValue(value);
+                _TheoryNamePresent = StructuralObject.SetValidValue(value, "TheoryNamePresent");
                 ReportPropertyChanged("TheoryNamePresent");
                 OnTheoryNamePresentChanged();
             }
@@ -4405,7 +4655,7 @@ namespace ATN.Data
             {
                 OnPredictionProbabilityChanging(value);
                 ReportPropertyChanging("PredictionProbability");
-                _PredictionProbability = StructuralObject.SetValidValue(value);
+                _PredictionProbability = StructuralObject.SetValidValue(value, "PredictionProbability");
                 ReportPropertyChanged("PredictionProbability");
                 OnPredictionProbabilityChanged();
             }
@@ -4429,7 +4679,7 @@ namespace ATN.Data
             {
                 OnIsContributingPredictionChanging(value);
                 ReportPropertyChanging("IsContributingPrediction");
-                _IsContributingPrediction = StructuralObject.SetValidValue(value);
+                _IsContributingPrediction = StructuralObject.SetValidValue(value, "IsContributingPrediction");
                 ReportPropertyChanged("IsContributingPrediction");
                 OnIsContributingPredictionChanged();
             }
@@ -4453,7 +4703,7 @@ namespace ATN.Data
             {
                 OnArticleLevelEigenFactorChanging(value);
                 ReportPropertyChanging("ArticleLevelEigenFactor");
-                _ArticleLevelEigenFactor = StructuralObject.SetValidValue(value);
+                _ArticleLevelEigenFactor = StructuralObject.SetValidValue(value, "ArticleLevelEigenFactor");
                 ReportPropertyChanged("ArticleLevelEigenFactor");
                 OnArticleLevelEigenFactorChanged();
             }
@@ -4477,7 +4727,7 @@ namespace ATN.Data
             {
                 OnTheoryAttributionRatioChanging(value);
                 ReportPropertyChanging("TheoryAttributionRatio");
-                _TheoryAttributionRatio = StructuralObject.SetValidValue(value);
+                _TheoryAttributionRatio = StructuralObject.SetValidValue(value, "TheoryAttributionRatio");
                 ReportPropertyChanged("TheoryAttributionRatio");
                 OnTheoryAttributionRatioChanged();
             }
@@ -4489,9 +4739,9 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Int32> ImpactFactor
+        public global::System.Int32 ImpactFactor
         {
             get
             {
@@ -4501,18 +4751,41 @@ namespace ATN.Data
             {
                 OnImpactFactorChanging(value);
                 ReportPropertyChanging("ImpactFactor");
-                _ImpactFactor = StructuralObject.SetValidValue(value);
+                _ImpactFactor = StructuralObject.SetValidValue(value, "ImpactFactor");
                 ReportPropertyChanged("ImpactFactor");
                 OnImpactFactorChanged();
             }
         }
-        private Nullable<global::System.Int32> _ImpactFactor;
-        partial void OnImpactFactorChanging(Nullable<global::System.Int32> value);
+        private global::System.Int32 _ImpactFactor;
+        partial void OnImpactFactorChanging(global::System.Int32 value);
         partial void OnImpactFactorChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int16 Depth
+        {
+            get
+            {
+                return _Depth;
+            }
+            set
+            {
+                OnDepthChanging(value);
+                ReportPropertyChanging("Depth");
+                _Depth = StructuralObject.SetValidValue(value, "Depth");
+                ReportPropertyChanged("Depth");
+                OnDepthChanged();
+            }
+        }
+        private global::System.Int16 _Depth;
+        partial void OnDepthChanging(global::System.Int16 value);
+        partial void OnDepthChanged();
 
         #endregion
 
-    
         #region Navigation Properties
     
         /// <summary>
@@ -4649,22 +4922,20 @@ namespace ATN.Data
         /// <param name="theoryMembershipSignificanceId">Initial value of the TheoryMembershipSignificanceId property.</param>
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
-        /// <param name="rAEvaluatedContribution">Initial value of the RAEvaluatedContribution property.</param>
         /// <param name="isMetaAnalysis">Initial value of the IsMetaAnalysis property.</param>
-        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean rAEvaluatedContribution, global::System.Boolean isMetaAnalysis)
+        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean isMetaAnalysis)
         {
             TheoryMembershipSignificance theoryMembershipSignificance = new TheoryMembershipSignificance();
             theoryMembershipSignificance.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
             theoryMembershipSignificance.TheoryId = theoryId;
             theoryMembershipSignificance.SourceId = sourceId;
-            theoryMembershipSignificance.RAEvaluatedContribution = rAEvaluatedContribution;
             theoryMembershipSignificance.IsMetaAnalysis = isMetaAnalysis;
             return theoryMembershipSignificance;
         }
 
         #endregion
 
-        #region Primitive Properties
+        #region Simple Properties
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -4683,7 +4954,7 @@ namespace ATN.Data
                 {
                     OnTheoryMembershipSignificanceIdChanging(value);
                     ReportPropertyChanging("TheoryMembershipSignificanceId");
-                    _TheoryMembershipSignificanceId = StructuralObject.SetValidValue(value);
+                    _TheoryMembershipSignificanceId = StructuralObject.SetValidValue(value, "TheoryMembershipSignificanceId");
                     ReportPropertyChanged("TheoryMembershipSignificanceId");
                     OnTheoryMembershipSignificanceIdChanged();
                 }
@@ -4708,7 +4979,7 @@ namespace ATN.Data
             {
                 OnTheoryIdChanging(value);
                 ReportPropertyChanging("TheoryId");
-                _TheoryId = StructuralObject.SetValidValue(value);
+                _TheoryId = StructuralObject.SetValidValue(value, "TheoryId");
                 ReportPropertyChanged("TheoryId");
                 OnTheoryIdChanged();
             }
@@ -4732,7 +5003,7 @@ namespace ATN.Data
             {
                 OnSourceIdChanging(value);
                 ReportPropertyChanging("SourceId");
-                _SourceId = StructuralObject.SetValidValue(value);
+                _SourceId = StructuralObject.SetValidValue(value, "SourceId");
                 ReportPropertyChanged("SourceId");
                 OnSourceIdChanged();
             }
@@ -4756,7 +5027,7 @@ namespace ATN.Data
             {
                 OnRAMarkedContributingChanging(value);
                 ReportPropertyChanging("RAMarkedContributing");
-                _RAMarkedContributing = StructuralObject.SetValidValue(value);
+                _RAMarkedContributing = StructuralObject.SetValidValue(value, "RAMarkedContributing");
                 ReportPropertyChanged("RAMarkedContributing");
                 OnRAMarkedContributingChanged();
             }
@@ -4764,30 +5035,6 @@ namespace ATN.Data
         private Nullable<global::System.Boolean> _RAMarkedContributing;
         partial void OnRAMarkedContributingChanging(Nullable<global::System.Boolean> value);
         partial void OnRAMarkedContributingChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
-        [DataMemberAttribute()]
-        public global::System.Boolean RAEvaluatedContribution
-        {
-            get
-            {
-                return _RAEvaluatedContribution;
-            }
-            set
-            {
-                OnRAEvaluatedContributionChanging(value);
-                ReportPropertyChanging("RAEvaluatedContribution");
-                _RAEvaluatedContribution = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("RAEvaluatedContribution");
-                OnRAEvaluatedContributionChanged();
-            }
-        }
-        private global::System.Boolean _RAEvaluatedContribution;
-        partial void OnRAEvaluatedContributionChanging(global::System.Boolean value);
-        partial void OnRAEvaluatedContributionChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -4804,7 +5051,7 @@ namespace ATN.Data
             {
                 OnIsMetaAnalysisChanging(value);
                 ReportPropertyChanging("IsMetaAnalysis");
-                _IsMetaAnalysis = StructuralObject.SetValidValue(value);
+                _IsMetaAnalysis = StructuralObject.SetValidValue(value, "IsMetaAnalysis");
                 ReportPropertyChanged("IsMetaAnalysis");
                 OnIsMetaAnalysisChanged();
             }
@@ -4815,10 +5062,34 @@ namespace ATN.Data
 
         #endregion
 
+        #region Navigation Properties
     
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("ATNModel", "FK_MetaAnalysisMembership_TheoryMembershipSignificance", "MetaAnalysisMembership")]
+        public EntityCollection<MetaAnalysisMembership> MetaAnalysisMemberships
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "MetaAnalysisMembership");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<MetaAnalysisMembership>("ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance", "MetaAnalysisMembership", value);
+                }
+            }
+        }
+
+        #endregion
+
     }
 
     #endregion
 
-    
 }
