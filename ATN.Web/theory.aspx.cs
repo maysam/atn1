@@ -26,7 +26,7 @@ namespace ATN.Web
             if (metaAnalysis == 0)
             {
                 //show the papers contributing to the theory
-                
+                //ExtendedSource allSources = 
                 Source[] firstLevelSources = sourceRetriever.GetFirstLevelSourcesForTheory(theoryId);
 
                 grdFirstLevelSources.DataSource = firstLevelSources;
@@ -62,6 +62,7 @@ namespace ATN.Web
             }
             else if (e.Row.RowType == DataControlRowType.DataRow)
             {
+                //ExtendedSource source = e.Row.DataItem as ExtendedSource;
                 Source source = e.Row.DataItem as Source; 
                 if (metaAnalysis == 0)
                 {
@@ -91,8 +92,8 @@ namespace ATN.Web
                     Label lblEigenfactor = e.Row.Cells[6].Controls[1] as Label;
                     //lblEigenfactor.Text
 
-                    Label lblCitationLevel = e.Row.Cells[7].Controls[1] as Label;
-                    //lblCitationLevel.Text
+                    Label lblDepth = e.Row.Cells[7].Controls[1] as Label;
+                    //lblDepth.Text
 
                     Label lblAuthors = e.Row.Cells[8].Controls[1] as Label;
                     //lblAuthors.Text = source;

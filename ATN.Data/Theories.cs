@@ -80,6 +80,11 @@ namespace ATN.Data
             return Context.Theories.Single(t => t.TheoryId == TheoryId);
         }
 
+        public Source GetSource(long SourceId)
+        {
+            return Context.Sources.Single(s => s.SourceId == SourceId);
+        }
+
         /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>
@@ -100,13 +105,24 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
 
+        /// <summary>
+        /// Retrieves all of the sources for a theory
+        /// </summary>
+        /// <param name="TheoryId">The id of the theory to retrieve sources for</param>
+        /// <returns>List of Extended Sources</returns>
+        public List<ExtendedSource> GetAllSourcesForTheory(int TheoryId)
+        {
+            List<ExtendedSource> sources = new List<ExtendedSource>();
+
+            return sources;
+        }
 
         /// <summary>
         /// Retrieves an array of Sources that reference the specified Source
         /// </summary>
         /// <param name="SourceId"></param>
         /// <returns></returns>
-        public Source[] GetCitingSourcesForSourceByTheory(long SourceId, int TheoryId)
+        public Source[] GetCitingSourcesForSource(long SourceId)
         {
             return Context.Sources.Single(s => s.SourceId == SourceId).CitingSources.ToArray();
         }
@@ -118,6 +134,18 @@ namespace ATN.Data
         public Source[] GetReferencesForSource(long SourceId)
         {
             return Context.Sources.Single(s => s.SourceId == SourceId).References.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the references cited in a certain source. This is used to find sources within a meta-analysis.
+        /// </summary>
+        /// <param name="SourceId">The id of the source to find references for</param>
+        /// <returns>A list of extended Sources that cite the given source</returns>
+        public List<ExtendedSource> GetReferencesForSourceId(long SourceId)
+        {
+            List<ExtendedSource> sources = new List<ExtendedSource>();
+
+            return sources;
         }
         
         /// <summary>
