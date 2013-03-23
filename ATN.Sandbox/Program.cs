@@ -16,18 +16,22 @@ namespace ATN.Analysis
         static void Main(string[] args)
         {
             Theories t = new Theories();
-            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(2);
+            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(7);
 
             Dictionary<long, SourceNode> Nodes = new Dictionary<long, SourceNode>();
             List<SourceEdge> Edges = new List<SourceEdge>();
 
+            Dictionary<long, int> IndexToIF = new Dictionary<long, int>();
             Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
             Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
 
             long CurrentSourceIndex = 0;
-
+            Sources Sources = new Sources();
+            List<Source> FirstLevelSources = new List<Source>();
+            List<Source> ReferenceSources = new List<Source>();
             foreach(Source CanonicalSource in CanonicalSources)
             {
+                IndexToIF.Add(CurrentSourceIndex, Sources.GetIFScoresBySourceId(CanonicalSource.SourceId, false));
                 SourceIdToIndex.Add(CanonicalSource.SourceId, CurrentSourceIndex);
                 IndexToSourceId.Add(CurrentSourceIndex, CanonicalSource.SourceId);
                 CurrentSourceIndex++;
@@ -37,12 +41,15 @@ namespace ATN.Analysis
                 //Write citation edges
                 foreach(Source CitingSource in CitingSources)
                 {
+                    FirstLevelSources.Add(CitingSource);
                     if (CitingSource.SourceId != CanonicalSource.SourceId)
                     {
                         if (!SourceIdToIndex.ContainsKey(CitingSource.SourceId))
                         {
                             SourceIdToIndex.Add(CitingSource.SourceId, CurrentSourceIndex);
                             IndexToSourceId.Add(CurrentSourceIndex, CitingSource.SourceId);
+                            IndexToIF.Add(CurrentSourceIndex, 0);
+
                             Edges.Add(new SourceEdge(CurrentSourceIndex, SourceIdToIndex[CanonicalSource.SourceId]));
                             CurrentSourceIndex++;
                         } else {
@@ -56,38 +63,55 @@ namespace ATN.Analysis
                 {
                     foreach (Source Reference in CitingSource.References)
                     {
-                        if (CitingSource.SourceId != Reference.SourceId)
+                        if (CitingSource.SourceId != Reference.SourceId && Reference.SourceId != CanonicalSource.SourceId)
                         {
+                            ReferenceSources.Add(Reference);
                             if (!SourceIdToIndex.ContainsKey(Reference.SourceId))
                             {
+                                IndexToIF.Add(CurrentSourceIndex, Sources.GetIFScoresBySourceId(Reference.SourceId, true));
                                 SourceIdToIndex.Add(Reference.SourceId, CurrentSourceIndex);
                                 IndexToSourceId.Add(CurrentSourceIndex, Reference.SourceId);
-                                Edges.Add(new SourceEdge(SourceIdToIndex[CitingSource.SourceId], CurrentSourceIndex));
+
+                                Edges.Add(new SourceEdge(SourceIdToIndex[CitingSource.SourceId], CurrentSourceIndex, 1));
                                 CurrentSourceIndex++;
                             }
                             else
                             {
-                                Edges.Add(new SourceEdge(SourceIdToIndex[CitingSource.SourceId], SourceIdToIndex[Reference.SourceId]));
+                                Edges.Add(new SourceEdge(SourceIdToIndex[CitingSource.SourceId], SourceIdToIndex[Reference.SourceId], 1));
                             }
                         }
                     }
                 }
+                //Get all sources citing each 1st level sources that are in the graph, and up each 1st level source's IF
             }
 
-            int x = 0;
-            int[,] edges = new int[,] {
-                {1,2},
-                {1,4},
-                {2,3},
-                {4,1},
-                {4,2},
-                {4,3},
-            };
-            int MatrixOrder = 4;
-            int NumberOfEdges = edges.GetLength(0);
-    
+            long[] SourceIdsInGraph = SourceIdToIndex.Keys.ToArray();
+            foreach (Source FirstLevelSource in FirstLevelSources)
+            {
+                Source[] Citations = FirstLevelSource.CitingSources.ToArray().Where(src => SourceIdsInGraph.Contains(src.SourceId)).ToArray();
+                foreach (Source Citation in Citations)
+                {
+                    if (!FirstLevelSources.Select(src => src.SourceId).Contains(Citation.SourceId))
+                    {
+                        Edges.Add(new SourceEdge(SourceIdToIndex[Citation.SourceId], SourceIdToIndex[FirstLevelSource.SourceId]));
+                    }
+                }
+                IndexToIF[SourceIdToIndex[FirstLevelSource.SourceId]] = Citations.Count();
+            }
+
+            foreach (Source ReferenceSource in ReferenceSources)
+            {
+                Source[] Citations = ReferenceSource.CitingSources.ToArray().Where(src => SourceIdsInGraph.Contains(src.SourceId)).ToArray();
+                IndexToIF[SourceIdToIndex[ReferenceSource.SourceId]] = Citations.Count();
+            }
+
+            int MatrixOrder = SourceIdToIndex.Keys.Count();
+            int NumberOfEdges = Edges.Count();
+
+            Edges = Edges.OrderBy(e => e.EndSourceId).ThenBy(e => e.StartSourceId).ToList();
+
             // Use IF (of citation network) scores to determine # of row entries
-            int[] IFArray = new int[] {2, 1, 0, 3};
+            int[] IFArray = IndexToIF.Values.ToArray();
 
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, IFArray, out s);
@@ -102,7 +126,16 @@ namespace ATN.Analysis
 
             /* Write E to sparse matrix. Must go left to right (will have to order in pull from db) */
             for (int i = 0; i < NumberOfEdges; i++)
-                alglib.sparseset(s, edges[i, 0] - 1, edges[i, 1] - 1, 1.0);
+            {
+                /*try
+                {*/
+                    alglib.sparseset(s, (int)(Edges[i].EndSourceId), (int)(Edges[i].StartSourceId), 1.0);
+                /*}
+                catch (Exception e)
+                {
+                    throw e;
+                }*/
+            }
 
 
             /* Print Sparse Matrix */
@@ -157,11 +190,11 @@ namespace ATN.Analysis
 
 
            /* PRINTS */
-           Console.Write("-- Normalized p -- \n p_norm = [ ");
-           for (int i = 0; i < MatrixOrder; i++)
-               Console.Write("{0:F4} ", p[i]);
-           Console.Write("]^T \n");
-           Console.Write("\n");
+           //Console.Write("-- Normalized p -- \n p_norm = [ ");
+           //for (int i = 0; i < MatrixOrder; i++)
+           //    Console.Write("{0:F4} ", p[i]);
+           //Console.Write("]^T \n");
+           //Console.Write("\n");
 
            //Console.Write("-- Row Sum-- \n RowSum = [ ");
            //for (int i = 0; i < MatrixOrder; i++)
@@ -177,23 +210,23 @@ namespace ATN.Analysis
                alglib.sparserewriteexisting(s, I, J, V/RowSum[I]);
 
             /* Print Stochastic matrix */
-           Console.Write("-- Stochastic matrix Z --\n");
+           //Console.Write("-- Stochastic matrix Z --\n");
            for (int i = 0; i < MatrixOrder; i++)
            {
-               Console.Write("[ ");
+               //Console.Write("[ ");
                for (int j = 0; j < MatrixOrder; j++)
                {
                    v = alglib.sparseget(s, i, j);
-                   Console.Write("{0:F2} ", v);
+                 //  Console.Write("{0:F2} ", v);
                }
-               Console.Write("]\n");
+               //Console.Write("]\n");
            }
-           Console.Write("\n");
+           //Console.Write("\n");
 
-           Console.Write("-- AEF (pre-normalization) p^T*Z --\n");
+           //Console.Write("-- AEF (pre-normalization) p^T*Z --\n");
            double[] AEFScore = new double[0];
            alglib.sparsemtv(s, p, ref AEFScore);
-           Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
+           //Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
            Console.Write("\n");
 
            /* Normalize AEF scores */
