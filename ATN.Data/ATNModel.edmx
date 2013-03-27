@@ -181,7 +181,7 @@
           <Property Name="DateCrawled" Type="datetime" Nullable="false" />
           <Property Name="LastEnumeratedSourceId" Type="bigint" />
           <Property Name="CrawlIntervalDays" Type="int" />
-          <Property Name="HasChanged" Type="bit" />
+          <Property Name="HasChanged" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -867,7 +867,7 @@
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <NavigationProperty Name="Theory" Relationship="ATNModel.FK_Crawl_Theory" FromRole="Crawl" ToRole="Theory" />
           <Property Type="Int32" Name="CrawlIntervalDays" />
-          <Property Type="Boolean" Name="HasChanged" />
+          <Property Type="Boolean" Name="HasChanged" Nullable="false" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>

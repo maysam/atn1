@@ -29,6 +29,12 @@ namespace ATN.Data
         }
 
 
+        public void SetCrawlerStateChanged(Crawl Crawl)
+        {
+            Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = true;
+            Context.SaveChanges();
+        }
+
         /// <summary>
         /// Removes CrawlQueue items for the given CrawlId. Used when a crawl is interrupted to avoid enqueueing duplicate entries.
         /// </summary>
@@ -110,6 +116,10 @@ namespace ATN.Data
             if (State != CrawlerState.ScheduledCrawlRetrievingCitationsComplete && State != CrawlerState.RetrievingCitationsComplete)
             {
                 Crawler.LastEnumeratedSourceId = null;
+            }
+            if (State == CrawlerState.Complete)
+            {
+                Crawler.HasChanged = false;
             }
             Context.SaveChanges();
         }

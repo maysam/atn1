@@ -991,13 +991,15 @@ namespace ATN.Data
         /// <param name="crawlState">Initial value of the CrawlState property.</param>
         /// <param name="dateCrawled">Initial value of the DateCrawled property.</param>
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
-        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int16 crawlState, global::System.DateTime dateCrawled, global::System.Int32 theoryId)
+        /// <param name="hasChanged">Initial value of the HasChanged property.</param>
+        public static Crawl CreateCrawl(global::System.Int32 crawlId, global::System.Int16 crawlState, global::System.DateTime dateCrawled, global::System.Int32 theoryId, global::System.Boolean hasChanged)
         {
             Crawl crawl = new Crawl();
             crawl.CrawlId = crawlId;
             crawl.CrawlState = crawlState;
             crawl.DateCrawled = dateCrawled;
             crawl.TheoryId = theoryId;
+            crawl.HasChanged = hasChanged;
             return crawl;
         }
 
@@ -1155,9 +1157,9 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Boolean> HasChanged
+        public global::System.Boolean HasChanged
         {
             get
             {
@@ -1172,8 +1174,8 @@ namespace ATN.Data
                 OnHasChangedChanged();
             }
         }
-        private Nullable<global::System.Boolean> _HasChanged;
-        partial void OnHasChangedChanging(Nullable<global::System.Boolean> value);
+        private global::System.Boolean _HasChanged;
+        partial void OnHasChangedChanging(global::System.Boolean value);
         partial void OnHasChangedChanged();
 
         #endregion
