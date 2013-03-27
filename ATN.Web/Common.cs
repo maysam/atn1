@@ -29,11 +29,15 @@ namespace ATN.Web
 
         public struct Symbols
         {
+            public const string Amp = "&";
             public const string Asc = "Asc";
             public const string Des = "Desc";
-            public const string Amp = "&";
             public const string Eq = "=";
+            public const string No = "No";
             public const string Question = "?";
+            public const string Yes = "Yes";
+            public const string Unknown = "No";
+            public const string Zero = "0";
         }
 
         public struct Pages
