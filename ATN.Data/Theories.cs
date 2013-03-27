@@ -113,6 +113,14 @@ namespace ATN.Data
         public List<ExtendedSource> GetAllSourcesForTheory(int TheoryId)
         {
             List<ExtendedSource> sources = new List<ExtendedSource>();
+            Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
+            foreach (Source CanonicalSource in CanonicalSources)
+            {
+                
+                ExtendedSource newSource = new ExtendedSource();
+                newSource.Source = CanonicalSource;
+
+            }
 
             return sources;
         }

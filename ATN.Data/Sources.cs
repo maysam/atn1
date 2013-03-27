@@ -106,6 +106,39 @@ namespace ATN.Data
         }
 
         /// <summary>
+        /// Retrieve a full representation of a Source
+        /// </summary>
+        /// <param name="sourceId">The source ID with which to retrieve the Source</param>
+        /// <returns>A complete representation of the desired Source</returns>
+        public CompleteSource GetCompleteSourceBySourceId(long sourceId)
+        {
+            Source RetrievedSource = Context.Sources.Single(s => s.SourceId == sourceId);
+
+            CompleteSource cs = new CompleteSource();
+            cs.IsDetached = false;
+            cs.Source = RetrievedSource;
+            cs.Authors = RetrievedSource.AuthorsReferences.Join(Context.Authors, ar => ar.AuthorId, a => a.AuthorId, (ar, a) => a).ToArray();
+            cs.Editors = RetrievedSource.EditorsReferences.Join(Context.Editors, er => er.EditorId, e => e.EditorId, (er, e) => e).ToArray();
+            cs.Journal = RetrievedSource.Journal;
+            cs.Subjects = RetrievedSource.Subjects.ToArray();
+
+            return cs;
+        }
+
+        public ExtendedSource GetExtendedSourceBySourceId(long sourceId)
+        {
+            CompleteSource RetrievedSource = GetCompleteSourceBySourceId(sourceId);
+            ExtendedSource es = new ExtendedSource(RetrievedSource);
+
+            //metaAnalysis 
+            //numContributing 
+            //isContributing 
+            //aefScore 
+            //depth 
+            return es;
+        }
+
+        /// <summary>
         /// Adds a detached CompleteSource object
         /// </summary>
         /// <param name="SourceToAdd">A complete representation of the Source to add</param>
