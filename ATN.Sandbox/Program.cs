@@ -8,112 +8,99 @@ using ATN.Crawler.MAS;
 using ATN.Data;
 using alglib = ATN.Analysis.AEF.alglib;
 using ATN.Export;
+using ATN.Sandbox;
 
 namespace ATN.Analysis
 {
     class Program
     {
+        static Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
+        static Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
+        static long CurrentSourceIndex = 0;
+
+        static Dictionary<long, List<long>> SourceIdCitedBy = new Dictionary<long, List<long>>();
+        static List<SourceEdge> Edges = new List<SourceEdge>();
+
+        static long GetIndexForSource(long SourceId)
+        {
+            if (!SourceIdToIndex.ContainsKey(SourceId))
+            {
+                SourceIdToIndex[SourceId] = CurrentSourceIndex;
+                IndexToSourceId[CurrentSourceIndex] = SourceId;
+                CurrentSourceIndex++;
+                return CurrentSourceIndex - 1;
+            }
+            else
+            {
+                return SourceIdToIndex[SourceId];
+            }
+        }
+
+        static void AddSourceToGraph(Source Source, long[] Citations)
+        {
+            SourceIdCitedBy[Source.SourceId] = Citations.ToList();
+        }
         static void Main(string[] args)
         {
             Theories t = new Theories();
-            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(7);
+            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(2);
 
             Sources Sources = new Sources();
-            List<KeyValuePair<long, Source>> FirstLevelSources = new List<KeyValuePair<long, Source>>();
-            List<KeyValuePair<long, Source>> SecondLevelSources = new List<KeyValuePair<long, Source>>();
+            
+            //This works by building a graph of all possible nodes in the graph such
+            //that ImpactFactor scores can be properly computed. Once all nodes have
+            //been added to the graph, all citations that are not in the graph are
+            //removed before edge objects are created
 
-            long CurrentSourceIndex = 0;
-            Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
-            Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
-            Dictionary<long, int> IndexToIF = new Dictionary<long, int>();
+            //Build raw list of all possible edges in the graph
             foreach(Source CanonicalSource in CanonicalSources)
             {
+                var CitingSources = CanonicalSource.CitingSources;
 
-                SourceIdToIndex[CanonicalSource.SourceId] = CurrentSourceIndex;
-                IndexToSourceId[CurrentSourceIndex] = CanonicalSource.SourceId;
-                IndexToIF[SourceIdToIndex[CanonicalSource.SourceId]] = 0;
-                CurrentSourceIndex++;
-
-                var CitingSources = CanonicalSource.CitingSources.ToArray();
-
-                //Write citation edges
+                AddSourceToGraph(CanonicalSource, CitingSources.Select(src => src.SourceId).ToArray());
+                
+                //Write citation nodes/edges
                 foreach(Source CitingSource in CitingSources)
                 {
-                    FirstLevelSources.Add(new KeyValuePair<long, Source>(CanonicalSource.SourceId, CitingSource));
-                    foreach (Source Reference in CitingSource.References)
+                    AddSourceToGraph(CitingSource, CitingSource.CitingSources.Select(src => src.SourceId).ToArray());
+
+                    //Write reference nodes/edges
+                    foreach (Source ReferenceSource in CitingSource.References)
                     {
-                        SecondLevelSources.Add(new KeyValuePair<long, Source>(CitingSource.SourceId, Reference));
+                        AddSourceToGraph(ReferenceSource, ReferenceSource.CitingSources.Select(src => src.SourceId).ToArray());
                     }
                 }
             }
 
-            List<SourceEdge> Edges = new List<SourceEdge>();
-
-            long[] SourceIdsInGraph = SecondLevelSources.Select(src => src.Key).Union(SecondLevelSources.Select(src => src.Value.SourceId))
-                .Union(SecondLevelSources.Select(src => src.Key))
-                .Union(SecondLevelSources.Select(src => src.Value.SourceId))
-                .ToArray();
-
-            foreach (KeyValuePair<long, Source> FirstLevelSource in FirstLevelSources)
+            //Prune raw list to remove citations which are not present
+            long[] AllKeys = SourceIdCitedBy.Keys.ToArray();
+            foreach (long SourceId in AllKeys)
             {
-                IndexToSourceId[CurrentSourceIndex] = FirstLevelSource.Value.SourceId;
-                SourceIdToIndex[FirstLevelSource.Value.SourceId] = CurrentSourceIndex;
-                IndexToIF[SourceIdToIndex[FirstLevelSource.Key]]++;
-
-                Edges.Add(new SourceEdge(CurrentSourceIndex, SourceIdToIndex[FirstLevelSource.Key]));
-                CurrentSourceIndex++;
-
-                Source[] Citations = FirstLevelSource.Value.CitingSources.ToArray().Where(src => SourceIdsInGraph.Contains(src.SourceId)).ToArray();
-                foreach (Source Citation in Citations)
+                List<long> CitedBySourceIds = new List<long>(SourceIdCitedBy[SourceId].Count);
+                foreach (long CitedBySourceId in SourceIdCitedBy[SourceId])
                 {
-                    if (!SourceIdToIndex.ContainsKey(Citation.SourceId))
+                    if (SourceIdCitedBy.ContainsKey(CitedBySourceId))
                     {
-                        IndexToSourceId[CurrentSourceIndex] = Citation.SourceId;
-                        SourceIdToIndex[Citation.SourceId] = CurrentSourceIndex;
-
-                        Edges.Add(new SourceEdge(SourceIdToIndex[Citation.SourceId], CurrentSourceIndex));
-                        CurrentSourceIndex++;
-                    }
-                    else
-                    {
-                        Edges.Add(new SourceEdge(SourceIdToIndex[Citation.SourceId], SourceIdToIndex[FirstLevelSource.Value.SourceId]));
+                        CitedBySourceIds.Add(CitedBySourceId);
                     }
                 }
-                IndexToIF[SourceIdToIndex[FirstLevelSource.Value.SourceId]] = Citations.Count();
+                SourceIdCitedBy[SourceId] = CitedBySourceIds;
             }
 
-            foreach (KeyValuePair<long, Source> SecondLevelSource in SecondLevelSources)
+            foreach (KeyValuePair<long, List<long>> SourceAndCitations in SourceIdCitedBy)
             {
-                IndexToSourceId[CurrentSourceIndex] = SecondLevelSource.Value.SourceId;
-                SourceIdToIndex[SecondLevelSource.Value.SourceId] = CurrentSourceIndex;
-                CurrentSourceIndex++;
-
-                Source[] Citations = SecondLevelSource.Value.CitingSources.ToArray().Where(src => SourceIdsInGraph.Contains(src.SourceId)).ToArray();
-                foreach (Source Citation in Citations)
+                foreach(long Citation in SourceAndCitations.Value)
                 {
-                    if (!SourceIdToIndex.ContainsKey(Citation.SourceId))
-                    {
-                        IndexToSourceId[CurrentSourceIndex] = Citation.SourceId;
-                        SourceIdToIndex[Citation.SourceId] = CurrentSourceIndex;
-
-                        Edges.Add(new SourceEdge(SourceIdToIndex[Citation.SourceId], CurrentSourceIndex));
-                        CurrentSourceIndex++;
-                    }
-                    else
-                    {
-                        Edges.Add(new SourceEdge(SourceIdToIndex[Citation.SourceId], SourceIdToIndex[SecondLevelSource.Value.SourceId]));
-                    }
+                    Edges.Add(new SourceEdge(GetIndexForSource(Citation), GetIndexForSource(SourceAndCitations.Key)));
                 }
-                IndexToIF[SourceIdToIndex[SecondLevelSource.Value.SourceId]] = Citations.Count();
             }
+            Edges = Edges.OrderBy(e => e.EndSourceId).ThenBy(e => e.StartSourceId).ToList();
 
             int MatrixOrder = SourceIdToIndex.Keys.Count();
             int NumberOfEdges = Edges.Count();
 
-            Edges = Edges.OrderBy(e => e.EndSourceId).ThenBy(e => e.StartSourceId).ToList();
-
             // Use IF (of citation network) scores to determine # of row entries
-            int[] IFArray = IndexToIF.Values.ToArray();
+            int[] IFArray = SourceIdCitedBy.OrderBy(kv => SourceIdToIndex[kv.Key]).Select(kv => kv.Value.Count()).ToArray();
 
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, IFArray, out s);
@@ -129,14 +116,7 @@ namespace ATN.Analysis
             /* Write E to sparse matrix. Must go left to right (will have to order in pull from db) */
             for (int i = 0; i < NumberOfEdges; i++)
             {
-                /*try
-                {*/
-                    alglib.sparseset(s, (int)(Edges[i].EndSourceId), (int)(Edges[i].StartSourceId), 1.0);
-                /*}
-                catch (Exception e)
-                {
-                    throw e;
-                }*/
+                alglib.sparseset(s, (int)(Edges[i].EndSourceId), (int)(Edges[i].StartSourceId), 1.0);
             }
 
 

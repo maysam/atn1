@@ -9,12 +9,10 @@ namespace ATN.Export
     {
         public long StartSourceId { get; set; }
         public long EndSourceId { get; set; }
-        public int IF { get; set; }
-        public SourceEdge(long StartSourceId, long EndSourceId, int IF = 1)
+        public SourceEdge(long StartSourceId, long EndSourceId)
         {
             this.StartSourceId = StartSourceId;
             this.EndSourceId = EndSourceId;
-            this.IF = IF;
         }
 
         public override string ToString()
