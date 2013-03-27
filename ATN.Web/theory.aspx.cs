@@ -75,14 +75,15 @@ namespace ATN.Web
 
                     Label lblSourceId = e.Row.Cells[2].Controls[1] as Label;
                     lblSourceId.Text = source.SourceId.ToString();
-
-                    CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
+                    
                     //if metaAnalysis then checked
-
+                    CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
 
                     //show number of papers contributing to this papers meta analysis
                     Label lblContributing = e.Row.Cells[4].Controls[1] as Label; 
                     //lblContributing.Text
+
+
                     RadioButtonList rblContributing = e.Row.Cells[4].Controls[2] as RadioButtonList;
                     rblContributing.Visible = false;
 
@@ -145,11 +146,61 @@ namespace ATN.Web
         protected void btnSubmit_OnClientClick(object sender, EventArgs e)
         {
             //save changes
+            save_results();
         }
 
         protected void lnkTitle_OnClientClick(object sender, EventArgs e)
         {
             //save changes
+            save_results();
+
+        }
+
+        protected void save_results()
+        {
+            Theories dataSaver = new Theories();
+
+            //not metaAnalysis
+            if (metaAnalysis == 0)
+            {
+
+                foreach (GridViewRow row in grdFirstLevelSources.Rows)
+                {
+                    ExtendedSource source = row.DataItem as ExtendedSource;
+                    CheckBox chkMetaAnalysis = row.Cells[3].Controls[1] as CheckBox;
+                    //mark the paper as metaAnalysis
+                    if (chkMetaAnalysis.Checked == true)
+                    {
+                        //save to database
+                    }
+                }
+            }
+            else
+            {
+                foreach (GridViewRow row in grdFirstLevelSources.Rows)
+                {
+                    ExtendedSource rowSource = row.DataItem as ExtendedSource;
+                    RadioButtonList rblContributing = row.Cells[4].Controls[1] as RadioButtonList;
+                    bool? contributing = null;
+                    //mark the paper as contributing
+                    if (rblContributing.SelectedValue == "Yes")
+                    {
+                        //paper is contributing
+                        contributing = true;
+                    }
+                    else if (rblContributing.SelectedValue == "No")
+                    {
+                        //paper is not contributing
+                        contributing = false;
+                    }
+                    else
+                    {
+                        //unmarked by RA
+                    }
+                    
+                    dataSaver.MarkSourceTheoryContribution(theoryId, rowSource.Source.SourceId, contributing);
+                }
+            }
         }
     }
 }

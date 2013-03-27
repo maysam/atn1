@@ -20,15 +20,4 @@ namespace ATN.Data
         public Subject[] Subjects { get; set; }
         public Journal Journal { get; set; }
     }
-
-    /// <summary>
-    /// Used for storing data items used on the theory webUI page
-    /// </summary>
-    public class ExtendedSource : CompleteSource
-    {
-        public bool metaAnalysis { get; set; }
-        public int? contributing { get; set; }
-        public double aefScore { get; set; }
-        public int depth { get; set; }
-    }
 }

@@ -147,7 +147,28 @@ namespace ATN.Data
 
             return sources;
         }
-        
+
+        /// <summary>
+        /// Returns the number of reference to a source that have been marked contributing
+        /// </summary>
+        /// <param name="SourceId">Id of Source to find contributing references</param>
+        /// <returns>Then number of contributing references</returns>
+        public int CountContributingToSource(long SourceId)
+        {
+            int count = 0;
+            return count;
+        }
+
+        /// <summary>
+        /// Marks the given source as being a metaAnalysis paper
+        /// </summary>
+        /// <param name="TheoryId">The theory the source corresponds to</param>
+        /// <param name="SourceId">The source having its metaAnalysis status evaluated</param>
+        public void MarkSourceMetaAnalysis(int TheoryId, long SourceId)
+        {
+
+        }
+
         /// <summary>
         /// Marks the contribution of a theory as determined manually
         /// </summary>
