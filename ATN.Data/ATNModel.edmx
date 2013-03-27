@@ -319,6 +319,7 @@
           <Property Name="ImpactFactor" Type="bit" Nullable="false" />
           <Property Name="DataMining" Type="bit" Nullable="false" />
           <Property Name="Clustering" Type="bit" Nullable="false" />
+          <Property Name="TheoryAttributionRatio" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TheoryDefinition">
           <Key>
@@ -1155,6 +1156,7 @@
           <Property Type="Boolean" Name="ImpactFactor" Nullable="false" />
           <Property Type="Boolean" Name="DataMining" Nullable="false" />
           <Property Type="Boolean" Name="Clustering" Nullable="false" />
+          <Property Type="Boolean" Name="TheoryAttributionRatio" Nullable="false" />
         </EntityType>
         <EntityType Name="TheoryMembership">
           <Key>
@@ -1508,6 +1510,7 @@
           <EntitySetMapping Name="Theories">
             <EntityTypeMapping TypeName="ATNModel.Theory">
               <MappingFragment StoreEntitySet="Theory">
+                <ScalarProperty Name="TheoryAttributionRatio" ColumnName="TheoryAttributionRatio" />
                 <ScalarProperty Name="Clustering" ColumnName="Clustering" />
                 <ScalarProperty Name="DataMining" ColumnName="DataMining" />
                 <ScalarProperty Name="ImpactFactor" ColumnName="ImpactFactor" />

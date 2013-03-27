@@ -28,7 +28,10 @@ namespace ATN.Data
 
         }
 
-
+        /// <summary>
+        /// Sets a Crawl as having been changed during the course of an analysis run.
+        /// </summary>
+        /// <param name="Crawl">The Crawl to be set as having changed</param>
         public void SetCrawlerStateChanged(Crawl Crawl)
         {
             Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = true;
@@ -77,7 +80,7 @@ namespace ATN.Data
         {
             Crawl Crawl = Context.Crawls.Single(c => c.CrawlId == CrawlId);
             TheoryDefinition[] Definition = Context.TheoryDefinitions.Where(td => td.TheoryId == Crawl.TheoryId).ToArray();
-            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.Theory.TheoryComment, Crawl.TheoryId, Crawl.Theory.ArticleLevelEigenfactor, Crawl.Theory.ImpactFactor, Crawl.Theory.DataMining, Crawl.Theory.Clustering, Definition);
+            return new ExistingCrawlSpecifier(Crawl, Crawl.Theory.TheoryName, Crawl.Theory.TheoryComment, Crawl.TheoryId, Crawl.Theory.ArticleLevelEigenfactor, Crawl.Theory.ImpactFactor, Crawl.Theory.TheoryAttributionRatio, Crawl.Theory.DataMining, Crawl.Theory.Clustering, Definition);
         }
 
         /// <summary>

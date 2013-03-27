@@ -4128,7 +4128,8 @@ namespace ATN.Data
         /// <param name="impactFactor">Initial value of the ImpactFactor property.</param>
         /// <param name="dataMining">Initial value of the DataMining property.</param>
         /// <param name="clustering">Initial value of the Clustering property.</param>
-        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded, global::System.Boolean articleLevelEigenfactor, global::System.Boolean impactFactor, global::System.Boolean dataMining, global::System.Boolean clustering)
+        /// <param name="theoryAttributionRatio">Initial value of the TheoryAttributionRatio property.</param>
+        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded, global::System.Boolean articleLevelEigenfactor, global::System.Boolean impactFactor, global::System.Boolean dataMining, global::System.Boolean clustering, global::System.Boolean theoryAttributionRatio)
         {
             Theory theory = new Theory();
             theory.TheoryId = theoryId;
@@ -4138,6 +4139,7 @@ namespace ATN.Data
             theory.ImpactFactor = impactFactor;
             theory.DataMining = dataMining;
             theory.Clustering = clustering;
+            theory.TheoryAttributionRatio = theoryAttributionRatio;
             return theory;
         }
 
@@ -4339,6 +4341,30 @@ namespace ATN.Data
         private global::System.Boolean _Clustering;
         partial void OnClusteringChanging(global::System.Boolean value);
         partial void OnClusteringChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean TheoryAttributionRatio
+        {
+            get
+            {
+                return _TheoryAttributionRatio;
+            }
+            set
+            {
+                OnTheoryAttributionRatioChanging(value);
+                ReportPropertyChanging("TheoryAttributionRatio");
+                _TheoryAttributionRatio = StructuralObject.SetValidValue(value, "TheoryAttributionRatio");
+                ReportPropertyChanged("TheoryAttributionRatio");
+                OnTheoryAttributionRatioChanged();
+            }
+        }
+        private global::System.Boolean _TheoryAttributionRatio;
+        partial void OnTheoryAttributionRatioChanging(global::System.Boolean value);
+        partial void OnTheoryAttributionRatioChanged();
 
         #endregion
 

@@ -31,23 +31,6 @@ namespace ATN.Data
             return Context.Sources.ToArray();
         }
 
-        public Source GetSourceById(long SourceId)
-        {
-            return Context.Sources.Single(s => s.SourceId == SourceId);
-        }
-
-        public int GetIFScoresBySourceId(long SourceId, bool Reference)
-        {
-            if(!Reference)
-            {
-                return Context.Sources.Single(s => s.SourceId == SourceId).CitingSources.Where(s => s.SourceId != SourceId).Count();
-            }
-            else
-            {
-                return 1;
-            }
-        }
-
         public EntityCollection<Source> GetCitingSources(Source SourceToRetrieveCitations)
         {
             return Context.Sources.Single(s => s.SourceId == SourceToRetrieveCitations.SourceId).CitingSources;
