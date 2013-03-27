@@ -13,12 +13,12 @@ namespace ATN.Export
     {
         static void Main(string[] args)
         {
-            FileStream DestinationClassStream = File.Open("soybean-classification.txt", FileMode.Create);
+            /*FileStream DestinationClassStream = File.Open("soybean-classification.txt", FileMode.Create);
             MachineLearning.GenerateDecisionTree("soybean-train.arff","soybean-model.dat");
-            MachineLearning.ClassifyData("soybean-test.arff","soybean-model.dat",DestinationClassStream);
+            MachineLearning.ClassifyData("soybean-test.arff","soybean-model.dat",DestinationClassStream);*/
 
             Theories Theories = new Theories();
-            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(6);
+            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(7);
 
             Dictionary<long, SourceNode> Nodes = new Dictionary<long, SourceNode>();
             List<SourceEdge> Edges = new List<SourceEdge>();
@@ -44,7 +44,7 @@ namespace ATN.Export
                 }
 
                 //Write reference nodes
-                /*for (int i = 0; i < CitingSources.Length; i++)
+                for (int i = 0; i < CitingSources.Length; i++)
                 {
                     Console.WriteLine("Writing references for node {0}/{1}", i + 1, CitingSources.Length);
                     var References = CitingSources[i].References.ToArray();
@@ -55,7 +55,7 @@ namespace ATN.Export
                             Nodes.Add(References[j].SourceId, new SourceNode(References[j].SourceId, References[j].ArticleTitle, References[j].CitingSources.Count));
                         }
                     }
-                }*/
+                }
 
                 //Write citation edges
                 foreach (var Citation in CitingSources)
@@ -67,7 +67,7 @@ namespace ATN.Export
                 }
 
                 //Write reference edges
-                /*foreach (var Citation in CitingSources)
+                foreach (var Citation in CitingSources)
                 {
                     foreach (var Reference in Citation.References)
                     {
@@ -76,16 +76,16 @@ namespace ATN.Export
                             Edges.Add(new SourceEdge(Citation.SourceId, Reference.SourceId));
                         }
                     }
-                }*/
+                }
             }
             //FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
             //XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationXMLStream);
 
-            //FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
-            //PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationNetStream);
+            FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
+            PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationNetStream);
 
-            FileStream DestinationARFFStream = File.Open("atn-train.arff", FileMode.Create);
-            ARFFExporter.ExportTrain(Nodes.Values.ToArray(), 6, DestinationARFFStream);
+            //FileStream DestinationARFFStream = File.Open("atn-train.arff", FileMode.Create);
+            //ARFFExporter.ExportTrain(Nodes.Values.ToArray(), 6, DestinationARFFStream);
         }
     }
 }

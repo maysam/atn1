@@ -79,7 +79,7 @@ namespace ATN.Analysis
                 List<long> CitedBySourceIds = new List<long>(SourceIdCitedBy[SourceId].Count);
                 foreach (long CitedBySourceId in SourceIdCitedBy[SourceId])
                 {
-                    if (SourceIdCitedBy.ContainsKey(CitedBySourceId))
+                    if (SourceIdCitedBy.ContainsKey(CitedBySourceId) && CitedBySourceId != SourceId)
                     {
                         CitedBySourceIds.Add(CitedBySourceId);
                     }
