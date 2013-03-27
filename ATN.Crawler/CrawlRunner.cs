@@ -111,9 +111,9 @@ namespace ATN.Crawler
             List<ExistingCrawlSpecifier> ChangedCrawls = new List<ExistingCrawlSpecifier>();
 
             Crawl[] ExistingCrawls = _progress.GetExistingCrawls();
-            ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState < 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
-            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState > 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
-            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+            ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState < 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray())).ToArray();
+            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState > 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+            CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
             {
                 if (RefreshExistingCrawls(Specifier.Crawl.CrawlId))
@@ -141,13 +141,13 @@ namespace ATN.Crawler
             ExistingCrawlSpecifier[] CrawlSpecifiers;
             if (CrawlId.HasValue)
             {
-                CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlId == CrawlId.Value).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
+                CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlId == CrawlId.Value).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray())).ToArray();
             }
             else
             {
                 //Prioritize crawls that haven't been run yet, then sort by how close each crawl is to completion
-                CrawlSpecifiers = ExistingCrawls.Where(ec => ec.CrawlState < (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).OrderBy(ec => ec.DateCrawled).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray())).ToArray();
-                CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(ec => ec.CrawlState >= (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+                CrawlSpecifiers = ExistingCrawls.Where(ec => ec.CrawlState < (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).OrderBy(ec => ec.DateCrawled).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray())).ToArray();
+                CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(ec => ec.CrawlState >= (int)CrawlerState.Complete).OrderByDescending(ec => ec.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             }
 
             Trace.WriteLine(string.Format("Refreshing {0} crawls", CrawlSpecifiers.Length), "Informational");
@@ -330,7 +330,7 @@ namespace ATN.Crawler
         public void StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
         {
             Theory TheoryToCrawl = _theories.AddTheory(CrawlSpecifier.TheoryName, CrawlSpecifier.TheoryComment, CrawlSpecifier.CanonicalDataSources);
-            PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier, CrawlIntervalDays);
+            PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier, CrawlIntervalDays, TheoryToCrawl.ArticleLevelEigenfactor, TheoryToCrawl.ImpactFactor, TheoryToCrawl.DataMining, TheoryToCrawl.Clustering);
             Crawl Crawl = _progress.QueueTheoryCrawl(pcs);
             Trace.WriteLine(string.Format("Queueing crawl using for theory {0}", TheoryToCrawl.TheoryName, "Informational"));
         }

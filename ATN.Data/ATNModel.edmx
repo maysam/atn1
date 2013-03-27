@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ATNModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+    <Schema Namespace="ATNModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="ATNModelStoreContainer">
           <EntitySet Name="Author" EntityType="ATNModel.Store.Author" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="AuthorsReference" EntityType="ATNModel.Store.AuthorsReference" store:Type="Tables" Schema="dbo" />
@@ -181,6 +181,7 @@
           <Property Name="DateCrawled" Type="datetime" Nullable="false" />
           <Property Name="LastEnumeratedSourceId" Type="bigint" />
           <Property Name="CrawlIntervalDays" Type="int" />
+          <Property Name="HasChanged" Type="bit" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
@@ -314,6 +315,10 @@
           <Property Name="TheoryName" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DateAdded" Type="datetime" Nullable="false" />
           <Property Name="TheoryComment" Type="nvarchar(max)" />
+          <Property Name="ArticleLevelEigenfactor" Type="bit" Nullable="false" />
+          <Property Name="ImpactFactor" Type="bit" Nullable="false" />
+          <Property Name="DataMining" Type="bit" Nullable="false" />
+          <Property Name="Clustering" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="TheoryDefinition">
           <Key>
@@ -701,8 +706,8 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="ATNModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="ATNEntities" annotation:LazyLoadingEnabled="true" a:TypeAccess="Public" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
+      <Schema Namespace="ATNModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="ATNEntities" annotation:LazyLoadingEnabled="true" a:TypeAccess="Public" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration">
           <EntitySet Name="Authors" EntityType="ATNModel.Author" />
           <EntitySet Name="AuthorsReferences" EntityType="ATNModel.AuthorsReference" />
           <EntitySet Name="Crawls" EntityType="ATNModel.Crawl" />
@@ -829,7 +834,7 @@
           <Key>
             <PropertyRef Name="AuthorId" />
           </Key>
-          <Property Type="Int64" Name="AuthorId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="AuthorId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="String" Name="FullName" MaxLength="384" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="FirstName" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="LastName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -843,7 +848,7 @@
           <Key>
             <PropertyRef Name="AuthorReferenceId" />
           </Key>
-          <Property Type="Int64" Name="AuthorReferenceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="AuthorReferenceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int64" Name="AuthorId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <NavigationProperty Name="Author" Relationship="ATNModel.Author_AuthorsReference_FK1" FromRole="AuthorsReference" ToRole="Author" />
@@ -853,7 +858,7 @@
           <Key>
             <PropertyRef Name="CrawlId" />
           </Key>
-          <Property Type="Int32" Name="CrawlId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="CrawlId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int16" Name="CrawlState" Nullable="false" />
           <NavigationProperty Name="CrawlQueues" Relationship="ATNModel.Crawl_CrawlQueue_FK1" FromRole="Crawl" ToRole="CrawlQueue" />
           <NavigationProperty Name="CrawlResults" Relationship="ATNModel.Crawl_CrawlResult_FK1" FromRole="Crawl" ToRole="CrawlResult" />
@@ -862,12 +867,13 @@
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <NavigationProperty Name="Theory" Relationship="ATNModel.FK_Crawl_Theory" FromRole="Crawl" ToRole="Theory" />
           <Property Type="Int32" Name="CrawlIntervalDays" />
+          <Property Type="Boolean" Name="HasChanged" />
         </EntityType>
         <EntityType Name="CrawlQueue">
           <Key>
             <PropertyRef Name="CrawQueueId" />
           </Key>
-          <Property Type="Int64" Name="CrawQueueId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="CrawQueueId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int32" Name="CrawlId" Nullable="false" />
           <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Type="Int16" Name="CrawlReferenceDirection" Nullable="false" />
@@ -881,7 +887,7 @@
           <Key>
             <PropertyRef Name="CrawlResultId" />
           </Key>
-          <Property Type="Int64" Name="CrawlResultId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="CrawlResultId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int32" Name="CrawlId" Nullable="false" />
           <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
@@ -896,7 +902,7 @@
           <Key>
             <PropertyRef Name="DataSourceId" />
           </Key>
-          <Property Type="Int32" Name="DataSourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="DataSourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="String" Name="DataSourceName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Authors" Relationship="ATNModel.DataSource_Author_FK1" FromRole="DataSource" ToRole="Author" />
           <NavigationProperty Name="Editors" Relationship="ATNModel.DataSource_Editor_FK1" FromRole="DataSource" ToRole="Editor" />
@@ -909,7 +915,7 @@
           <Key>
             <PropertyRef Name="EditorId" />
           </Key>
-          <Property Type="Int64" Name="EditorId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="EditorId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="String" Name="FirstName" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="LastName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="DataSourceId" Nullable="false" />
@@ -921,7 +927,7 @@
           <Key>
             <PropertyRef Name="EditorReferenceId" />
           </Key>
-          <Property Type="Int64" Name="EditorReferenceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="EditorReferenceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int64" Name="EditorId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <NavigationProperty Name="Editor" Relationship="ATNModel.Editor_EditorsReference_FK1" FromRole="EditorsReference" ToRole="Editor" />
@@ -931,7 +937,7 @@
           <Key>
             <PropertyRef Name="SourceId" />
           </Key>
-          <Property Type="Int64" Name="SourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="SourceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int32" Name="SourceType" Nullable="false" />
           <Property Type="Int32" Name="DataSourceId" Nullable="false" />
           <Property Type="Int32" Name="ProquestId" />
@@ -1106,7 +1112,7 @@
           <Key>
             <PropertyRef Name="JournalId" />
           </Key>
-          <Property Type="Int32" Name="JournalId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="JournalId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="String" Name="JournalName" Nullable="false" MaxLength="256" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="ExternalURL" MaxLength="500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Sources" Relationship="ATNModel.JournalName_Source_FK1" FromRole="Journal" ToRole="Source" />
@@ -1127,7 +1133,7 @@
           <Key>
             <PropertyRef Name="RunId" />
           </Key>
-          <Property Type="Int32" Name="RunId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="RunId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="DateTime" Name="DateStarted" Nullable="false" Precision="3" />
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.FK_TheoryMembership_Run" FromRole="Run" ToRole="TheoryMembership" />
@@ -1137,7 +1143,7 @@
           <Key>
             <PropertyRef Name="TheoryId" />
           </Key>
-          <Property Type="Int32" Name="TheoryId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="TheoryId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="String" Name="TheoryName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="DateAdded" Nullable="false" Precision="3" />
           <NavigationProperty Name="Crawl" Relationship="ATNModel.FK_Crawl_Theory" FromRole="Theory" ToRole="Crawl" />
@@ -1145,12 +1151,16 @@
           <NavigationProperty Name="TheoryMemberships" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="Theory" ToRole="TheoryMembership" />
           <NavigationProperty Name="TheoryDefinitions" Relationship="ATNModel.FK_TheoryDefinition_Theory" FromRole="Theory" ToRole="TheoryDefinition" />
           <Property Type="String" Name="TheoryComment" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="ArticleLevelEigenfactor" Nullable="false" />
+          <Property Type="Boolean" Name="ImpactFactor" Nullable="false" />
+          <Property Type="Boolean" Name="DataMining" Nullable="false" />
+          <Property Type="Boolean" Name="Clustering" Nullable="false" />
         </EntityType>
         <EntityType Name="TheoryMembership">
           <Key>
             <PropertyRef Name="TheoryMembershipId" />
           </Key>
-          <Property Type="Int64" Name="TheoryMembershipId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="TheoryMembershipId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <Property Type="Int32" Name="RunId" Nullable="false" />
@@ -1233,7 +1243,7 @@
           <Key>
             <PropertyRef Name="TheoryDefinitionId" />
           </Key>
-          <Property Type="Int32" Name="TheoryDefinitionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="TheoryDefinitionId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="String" Name="CanonicalIds" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Theory" Relationship="ATNModel.FK_TheoryDefinition_Theory" FromRole="TheoryDefinition" ToRole="Theory" />
@@ -1279,7 +1289,7 @@
           <Key>
             <PropertyRef Name="SubjectId" />
           </Key>
-          <Property Type="Int32" Name="SubjectId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="SubjectId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="String" Name="SubjectText" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="DataSourceId" Nullable="false" />
           <Property Type="String" Name="DataSourceSpecificId" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -1306,7 +1316,7 @@
           <Key>
             <PropertyRef Name="MetaAnalysisMembershipId" />
           </Key>
-          <Property Type="Int64" Name="MetaAnalysisMembershipId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="MetaAnalysisMembershipId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <Property Type="Boolean" Name="RAMarkedContributing" />
@@ -1329,7 +1339,7 @@
           <Key>
             <PropertyRef Name="TheoryMembershipSignificanceId" />
           </Key>
-          <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int64" Name="TheoryMembershipSignificanceId" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <Property Type="Boolean" Name="RAMarkedContributing" />
@@ -1352,7 +1362,7 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="ATNModelStoreContainer" CdmEntityContainer="ATNEntities">
           <EntitySetMapping Name="Authors">
             <EntityTypeMapping TypeName="ATNModel.Author">
@@ -1379,6 +1389,7 @@
           <EntitySetMapping Name="Crawls">
             <EntityTypeMapping TypeName="ATNModel.Crawl">
               <MappingFragment StoreEntitySet="Crawl">
+                <ScalarProperty Name="HasChanged" ColumnName="HasChanged" />
                 <ScalarProperty Name="CrawlIntervalDays" ColumnName="CrawlIntervalDays" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
                 <ScalarProperty Name="LastEnumeratedSourceId" ColumnName="LastEnumeratedSourceId" />
@@ -1497,6 +1508,10 @@
           <EntitySetMapping Name="Theories">
             <EntityTypeMapping TypeName="ATNModel.Theory">
               <MappingFragment StoreEntitySet="Theory">
+                <ScalarProperty Name="Clustering" ColumnName="Clustering" />
+                <ScalarProperty Name="DataMining" ColumnName="DataMining" />
+                <ScalarProperty Name="ImpactFactor" ColumnName="ImpactFactor" />
+                <ScalarProperty Name="ArticleLevelEigenfactor" ColumnName="ArticleLevelEigenfactor" />
                 <ScalarProperty Name="TheoryComment" ColumnName="TheoryComment" />
                 <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
                 <ScalarProperty Name="TheoryName" ColumnName="TheoryName" />
@@ -1583,136 +1598,136 @@
     </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
-    <Connection>
-      <DesignerInfoPropertySet>
-        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
-      </DesignerInfoPropertySet>
-    </Connection>
-    <Options>
-      <DesignerInfoPropertySet>
-        <DesignerProperty Name="ValidateOnBuild" Value="true" />
-        <DesignerProperty Name="EnablePluralization" Value="True" />
-        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
-      </DesignerInfoPropertySet>
-    </Options>
+  <edmx:Designer>
+    <edmx:Connection>
+      <edmx:DesignerInfoPropertySet>
+        <edmx:DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </edmx:DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <edmx:DesignerInfoPropertySet>
+        <edmx:DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <edmx:DesignerProperty Name="EnablePluralization" Value="True" />
+        <edmx:DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </edmx:DesignerInfoPropertySet>
+    </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams>
-      <Diagram Name="ATNModel" ZoomLevel="100">
-        <EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="9.25" Height="2.7494921875000102" />
-        <EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="9.625" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="8" PointY="5.25" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="ATNModel.CrawlQueue" Width="1.5" PointX="10.25" PointY="8.25" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="ATNModel.CrawlResult" Width="1.5" PointX="13.25" PointY="12.25" Height="2.5571907552083388" />
-        <EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="12.375" Height="2.172587890624996" />
-        <EntityTypeShape EntityType="ATNModel.Editor" Width="1.5" PointX="3" PointY="12.75" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="ATNModel.EditorsReference" Width="1.5" PointX="5.25" PointY="13" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="8" PointY="10" Height="6.5955208333333353" />
-        <AssociationConnector Association="ATNModel.Author_AuthorsReference_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="4.8747460937500051" />
-          <ConnectorPoint PointX="6" PointY="4.8747460937500051" />
-          <ConnectorPoint PointX="6" PointY="10.5" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.DataSource_Author_FK1" >
-          <ConnectorPoint PointX="1.5" PointY="10.375" />
-          <ConnectorPoint PointX="1.5" PointY="4.8747460937500051" />
-          <ConnectorPoint PointX="3" PointY="4.8747460937500051" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Source_AuthorsReference_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="13.126152846153847" />
-          <ConnectorPoint PointX="4.875" PointY="12.751152846153847" />
-          <ConnectorPoint PointX="4.875" PointY="12.856439304487186" />
-          <ConnectorPoint PointX="4.8785744349011209" PointY="12.852864869586062" />
-          <ConnectorPoint PointX="4.9964255650988791" PointY="12.735013739388306" />
-          <ConnectorPoint PointX="5.2511528461538459" PointY="12.480286458333339" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Crawl_CrawlQueue_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="9.49488206290064" />
-          <ConnectorPoint PointX="4.9375" PointY="9.93238206290064" />
-          <ConnectorPoint PointX="4.9375" PointY="15.676961118164064" />
-          <ConnectorPoint PointX="5.25" PointY="15.676961118164064" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Crawl_CrawlResult_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="8.21618853145032" />
-          <ConnectorPoint PointX="5.916666666666667" PointY="8.21618853145032" />
-          <ConnectorPoint PointX="6.083333333333333" PointY="8.21618853145032" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="8.21618853145032" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="8.21618853145032" />
-          <ConnectorPoint PointX="9" PointY="8.21618853145032" />
-          <ConnectorPoint PointX="9" PointY="12" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Source_CrawlQueue_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="14.838480559082033" />
-          <ConnectorPoint PointX="4.822916666666667" PointY="14.838480559082033" />
-          <ConnectorPoint PointX="5.020833333333333" PointY="14.838480559082033" />
-          <ConnectorPoint PointX="5.25" PointY="14.838480559082033" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Source_CrawlResult_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="13.625578923076917" />
-          <ConnectorPoint PointX="4.822916666666667" PointY="13.625578923076917" />
-          <ConnectorPoint PointX="5.020833333333333" PointY="13.625578923076917" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="13.625578923076917" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="13.625578923076917" />
-          <ConnectorPoint PointX="8.25" PointY="13.625578923076917" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.DataSource_Editor_FK1" >
-          <ConnectorPoint PointX="2.25" PointY="11.432444661458334" />
-          <ConnectorPoint PointX="3" PointY="11.432444661458334" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.DataSource_Source_FK1" >
-          <ConnectorPoint PointX="1.5" PointY="12.547587890624996" />
-          <ConnectorPoint PointX="1.5" PointY="16.422760416666669" />
-          <ConnectorPoint PointX="3" PointY="16.422760416666669" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Editor_EditorsReference_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="12.458734476762821" />
-          <ConnectorPoint PointX="4.90625" PointY="12.864984476762821" />
-          <ConnectorPoint PointX="4.90625" PointY="17.407418036783859" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="17.407418036783859" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="17.407418036783859" />
-          <ConnectorPoint PointX="8.25" PointY="17.407418036783859" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.Source_EditorsReference_FK1" >
-          <ConnectorPoint PointX="4.5" PointY="16.917403679850263" />
-          <ConnectorPoint PointX="4.822916666666667" PointY="16.917403679850263" />
-          <ConnectorPoint PointX="4.989583333333333" PointY="16.917403679850263" />
-          <ConnectorPoint PointX="6.760416666666667" PointY="16.917403679850263" />
-          <ConnectorPoint PointX="6.927083333333333" PointY="16.917403679850263" />
-          <ConnectorPoint PointX="8.25" PointY="16.917403679850263" />
-        </AssociationConnector>
-        <AssociationConnector Association="ATNModel.CitationsReference" >
-          <ConnectorPoint PointX="3.5319230769230767" PointY="19.720520833333335" />
-          <ConnectorPoint PointX="3.5319230769230767" PointY="19.970520833333339" />
-          <ConnectorPoint PointX="3.9784615384615383" PointY="19.970520833333339" />
-          <ConnectorPoint PointX="3.9784615384615383" PointY="19.720520833333335" />
-        </AssociationConnector>
-        <EntityTypeShape EntityType="ATNModel.Journal" Width="1.5" PointX="5.75" PointY="15.75" Height="1.7879850260416674" />
-        <AssociationConnector Association="ATNModel.JournalName_Source_FK1" >
-          <ConnectorPoint PointX="6.84375" PointY="2.6629850260416674" />
-          <ConnectorPoint PointX="6.84375" PointY="18.5639694350586" />
-          <ConnectorPoint PointX="4.5" PointY="18.5639694350586" />
-        </AssociationConnector>
-        <EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
-        <EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="2" PointX="10.5" PointY="11.75" />
-        <AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
-        <AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
-        <AssociationConnector Association="ATNModel.Theory_Run_FK1" />
-        <AssociationConnector Association="ATNModel.Source_TheoryMembership_FK1" />
-        <AssociationConnector Association="ATNModel.Theory_TheoryMembership_FK1" />
-        <AssociationConnector Association="ATNModel.RelatedSources" />
-        <EntityTypeShape EntityType="ATNModel.TheoryDefinition" Width="1.5" PointX="8" PointY="1.625" />
-        <AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
-        <AssociationConnector Association="ATNModel.FK_CrawlQueue_DataSource" />
-        <AssociationConnector Association="ATNModel.FK_CrawlResult_DataSource" />
-        <EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="3.5" PointY="15.5" />
-        <AssociationConnector Association="ATNModel.FK_Subject_DataSource" />
-        <AssociationConnector Association="ATNModel.SourceSubject" />
-        <EntityTypeShape EntityType="ATNModel.MetaAnalysisMembership" Width="1.5" PointX="11.872790833875905" PointY="14.995196707078813" />
-        <AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_Source" />
-        <EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="9.59078411645758" PointY="26.713025135320159" />
-        <AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" />
-        </Diagram>
-    </Diagrams>
-  </Designer>
+    <edmx:Diagrams>
+      <edmx:Diagram Name="ATNModel" ZoomLevel="100">
+        <edmx:EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="9.25" Height="2.7494921875000102" />
+        <edmx:EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="9.625" Height="1.9802864583333388" />
+        <edmx:EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="8" PointY="5.25" Height="2.3648893229166674" />
+        <edmx:EntityTypeShape EntityType="ATNModel.CrawlQueue" Width="1.5" PointX="10.25" PointY="8.25" Height="2.3648893229166674" />
+        <edmx:EntityTypeShape EntityType="ATNModel.CrawlResult" Width="1.5" PointX="13.25" PointY="12.25" Height="2.5571907552083388" />
+        <edmx:EntityTypeShape EntityType="ATNModel.DataSource" Width="1.5" PointX="0.75" PointY="12.375" Height="2.172587890624996" />
+        <edmx:EntityTypeShape EntityType="ATNModel.Editor" Width="1.5" PointX="3" PointY="12.75" Height="2.3648893229166674" />
+        <edmx:EntityTypeShape EntityType="ATNModel.EditorsReference" Width="1.5" PointX="5.25" PointY="13" Height="1.9802864583333388" />
+        <edmx:EntityTypeShape EntityType="ATNModel.Source" Width="1.5" PointX="8" PointY="10" Height="6.5955208333333353" />
+        <edmx:AssociationConnector Association="ATNModel.Author_AuthorsReference_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="4.8747460937500051" />
+          <edmx:ConnectorPoint PointX="6" PointY="4.8747460937500051" />
+          <edmx:ConnectorPoint PointX="6" PointY="10.5" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.DataSource_Author_FK1">
+          <edmx:ConnectorPoint PointX="1.5" PointY="10.375" />
+          <edmx:ConnectorPoint PointX="1.5" PointY="4.8747460937500051" />
+          <edmx:ConnectorPoint PointX="3" PointY="4.8747460937500051" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Source_AuthorsReference_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="13.126152846153847" />
+          <edmx:ConnectorPoint PointX="4.875" PointY="12.751152846153847" />
+          <edmx:ConnectorPoint PointX="4.875" PointY="12.856439304487186" />
+          <edmx:ConnectorPoint PointX="4.8785744349011209" PointY="12.852864869586062" />
+          <edmx:ConnectorPoint PointX="4.9964255650988791" PointY="12.735013739388306" />
+          <edmx:ConnectorPoint PointX="5.2511528461538459" PointY="12.480286458333339" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Crawl_CrawlQueue_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="9.49488206290064" />
+          <edmx:ConnectorPoint PointX="4.9375" PointY="9.93238206290064" />
+          <edmx:ConnectorPoint PointX="4.9375" PointY="15.676961118164064" />
+          <edmx:ConnectorPoint PointX="5.25" PointY="15.676961118164064" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Crawl_CrawlResult_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="8.21618853145032" />
+          <edmx:ConnectorPoint PointX="5.916666666666667" PointY="8.21618853145032" />
+          <edmx:ConnectorPoint PointX="6.083333333333333" PointY="8.21618853145032" />
+          <edmx:ConnectorPoint PointX="6.760416666666667" PointY="8.21618853145032" />
+          <edmx:ConnectorPoint PointX="6.927083333333333" PointY="8.21618853145032" />
+          <edmx:ConnectorPoint PointX="9" PointY="8.21618853145032" />
+          <edmx:ConnectorPoint PointX="9" PointY="12" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Source_CrawlQueue_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="14.838480559082033" />
+          <edmx:ConnectorPoint PointX="4.822916666666667" PointY="14.838480559082033" />
+          <edmx:ConnectorPoint PointX="5.020833333333333" PointY="14.838480559082033" />
+          <edmx:ConnectorPoint PointX="5.25" PointY="14.838480559082033" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Source_CrawlResult_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="13.625578923076917" />
+          <edmx:ConnectorPoint PointX="4.822916666666667" PointY="13.625578923076917" />
+          <edmx:ConnectorPoint PointX="5.020833333333333" PointY="13.625578923076917" />
+          <edmx:ConnectorPoint PointX="6.760416666666667" PointY="13.625578923076917" />
+          <edmx:ConnectorPoint PointX="6.927083333333333" PointY="13.625578923076917" />
+          <edmx:ConnectorPoint PointX="8.25" PointY="13.625578923076917" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.DataSource_Editor_FK1">
+          <edmx:ConnectorPoint PointX="2.25" PointY="11.432444661458334" />
+          <edmx:ConnectorPoint PointX="3" PointY="11.432444661458334" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.DataSource_Source_FK1">
+          <edmx:ConnectorPoint PointX="1.5" PointY="12.547587890624996" />
+          <edmx:ConnectorPoint PointX="1.5" PointY="16.422760416666669" />
+          <edmx:ConnectorPoint PointX="3" PointY="16.422760416666669" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Editor_EditorsReference_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="12.458734476762821" />
+          <edmx:ConnectorPoint PointX="4.90625" PointY="12.864984476762821" />
+          <edmx:ConnectorPoint PointX="4.90625" PointY="17.407418036783859" />
+          <edmx:ConnectorPoint PointX="6.760416666666667" PointY="17.407418036783859" />
+          <edmx:ConnectorPoint PointX="6.927083333333333" PointY="17.407418036783859" />
+          <edmx:ConnectorPoint PointX="8.25" PointY="17.407418036783859" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.Source_EditorsReference_FK1">
+          <edmx:ConnectorPoint PointX="4.5" PointY="16.917403679850263" />
+          <edmx:ConnectorPoint PointX="4.822916666666667" PointY="16.917403679850263" />
+          <edmx:ConnectorPoint PointX="4.989583333333333" PointY="16.917403679850263" />
+          <edmx:ConnectorPoint PointX="6.760416666666667" PointY="16.917403679850263" />
+          <edmx:ConnectorPoint PointX="6.927083333333333" PointY="16.917403679850263" />
+          <edmx:ConnectorPoint PointX="8.25" PointY="16.917403679850263" />
+        </edmx:AssociationConnector>
+        <edmx:AssociationConnector Association="ATNModel.CitationsReference">
+          <edmx:ConnectorPoint PointX="3.5319230769230767" PointY="19.720520833333335" />
+          <edmx:ConnectorPoint PointX="3.5319230769230767" PointY="19.970520833333339" />
+          <edmx:ConnectorPoint PointX="3.9784615384615383" PointY="19.970520833333339" />
+          <edmx:ConnectorPoint PointX="3.9784615384615383" PointY="19.720520833333335" />
+        </edmx:AssociationConnector>
+        <edmx:EntityTypeShape EntityType="ATNModel.Journal" Width="1.5" PointX="5.75" PointY="15.75" Height="1.7879850260416674" />
+        <edmx:AssociationConnector Association="ATNModel.JournalName_Source_FK1">
+          <edmx:ConnectorPoint PointX="6.84375" PointY="2.6629850260416674" />
+          <edmx:ConnectorPoint PointX="6.84375" PointY="18.5639694350586" />
+          <edmx:ConnectorPoint PointX="4.5" PointY="18.5639694350586" />
+        </edmx:AssociationConnector>
+        <edmx:EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
+        <edmx:EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
+        <edmx:EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="2" PointX="10.5" PointY="11.75" />
+        <edmx:AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
+        <edmx:AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />
+        <edmx:AssociationConnector Association="ATNModel.Theory_Run_FK1" />
+        <edmx:AssociationConnector Association="ATNModel.Source_TheoryMembership_FK1" />
+        <edmx:AssociationConnector Association="ATNModel.Theory_TheoryMembership_FK1" />
+        <edmx:AssociationConnector Association="ATNModel.RelatedSources" />
+        <edmx:EntityTypeShape EntityType="ATNModel.TheoryDefinition" Width="1.5" PointX="8" PointY="1.625" />
+        <edmx:AssociationConnector Association="ATNModel.FK_TheoryDefinition_Theory" />
+        <edmx:AssociationConnector Association="ATNModel.FK_CrawlQueue_DataSource" />
+        <edmx:AssociationConnector Association="ATNModel.FK_CrawlResult_DataSource" />
+        <edmx:EntityTypeShape EntityType="ATNModel.Subject" Width="1.5" PointX="3.5" PointY="15.5" />
+        <edmx:AssociationConnector Association="ATNModel.FK_Subject_DataSource" />
+        <edmx:AssociationConnector Association="ATNModel.SourceSubject" />
+        <edmx:EntityTypeShape EntityType="ATNModel.MetaAnalysisMembership" Width="1.5" PointX="11.872790833875905" PointY="14.995196707078813" />
+        <edmx:AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_Source" />
+        <edmx:EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="9.59078411645758" PointY="26.713025135320159" />
+        <edmx:AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" />
+        </edmx:Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
 </edmx:Edmx>

@@ -1151,6 +1151,30 @@ namespace ATN.Data
         private Nullable<global::System.Int32> _CrawlIntervalDays;
         partial void OnCrawlIntervalDaysChanging(Nullable<global::System.Int32> value);
         partial void OnCrawlIntervalDaysChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Boolean> HasChanged
+        {
+            get
+            {
+                return _HasChanged;
+            }
+            set
+            {
+                OnHasChangedChanging(value);
+                ReportPropertyChanging("HasChanged");
+                _HasChanged = StructuralObject.SetValidValue(value, "HasChanged");
+                ReportPropertyChanged("HasChanged");
+                OnHasChangedChanged();
+            }
+        }
+        private Nullable<global::System.Boolean> _HasChanged;
+        partial void OnHasChangedChanging(Nullable<global::System.Boolean> value);
+        partial void OnHasChangedChanged();
 
         #endregion
 
@@ -4098,12 +4122,20 @@ namespace ATN.Data
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="theoryName">Initial value of the TheoryName property.</param>
         /// <param name="dateAdded">Initial value of the DateAdded property.</param>
-        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded)
+        /// <param name="articleLevelEigenfactor">Initial value of the ArticleLevelEigenfactor property.</param>
+        /// <param name="impactFactor">Initial value of the ImpactFactor property.</param>
+        /// <param name="dataMining">Initial value of the DataMining property.</param>
+        /// <param name="clustering">Initial value of the Clustering property.</param>
+        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded, global::System.Boolean articleLevelEigenfactor, global::System.Boolean impactFactor, global::System.Boolean dataMining, global::System.Boolean clustering)
         {
             Theory theory = new Theory();
             theory.TheoryId = theoryId;
             theory.TheoryName = theoryName;
             theory.DateAdded = dateAdded;
+            theory.ArticleLevelEigenfactor = articleLevelEigenfactor;
+            theory.ImpactFactor = impactFactor;
+            theory.DataMining = dataMining;
+            theory.Clustering = clustering;
             return theory;
         }
 
@@ -4209,6 +4241,102 @@ namespace ATN.Data
         private global::System.String _TheoryComment;
         partial void OnTheoryCommentChanging(global::System.String value);
         partial void OnTheoryCommentChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean ArticleLevelEigenfactor
+        {
+            get
+            {
+                return _ArticleLevelEigenfactor;
+            }
+            set
+            {
+                OnArticleLevelEigenfactorChanging(value);
+                ReportPropertyChanging("ArticleLevelEigenfactor");
+                _ArticleLevelEigenfactor = StructuralObject.SetValidValue(value, "ArticleLevelEigenfactor");
+                ReportPropertyChanged("ArticleLevelEigenfactor");
+                OnArticleLevelEigenfactorChanged();
+            }
+        }
+        private global::System.Boolean _ArticleLevelEigenfactor;
+        partial void OnArticleLevelEigenfactorChanging(global::System.Boolean value);
+        partial void OnArticleLevelEigenfactorChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean ImpactFactor
+        {
+            get
+            {
+                return _ImpactFactor;
+            }
+            set
+            {
+                OnImpactFactorChanging(value);
+                ReportPropertyChanging("ImpactFactor");
+                _ImpactFactor = StructuralObject.SetValidValue(value, "ImpactFactor");
+                ReportPropertyChanged("ImpactFactor");
+                OnImpactFactorChanged();
+            }
+        }
+        private global::System.Boolean _ImpactFactor;
+        partial void OnImpactFactorChanging(global::System.Boolean value);
+        partial void OnImpactFactorChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean DataMining
+        {
+            get
+            {
+                return _DataMining;
+            }
+            set
+            {
+                OnDataMiningChanging(value);
+                ReportPropertyChanging("DataMining");
+                _DataMining = StructuralObject.SetValidValue(value, "DataMining");
+                ReportPropertyChanged("DataMining");
+                OnDataMiningChanged();
+            }
+        }
+        private global::System.Boolean _DataMining;
+        partial void OnDataMiningChanging(global::System.Boolean value);
+        partial void OnDataMiningChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean Clustering
+        {
+            get
+            {
+                return _Clustering;
+            }
+            set
+            {
+                OnClusteringChanging(value);
+                ReportPropertyChanging("Clustering");
+                _Clustering = StructuralObject.SetValidValue(value, "Clustering");
+                ReportPropertyChanged("Clustering");
+                OnClusteringChanged();
+            }
+        }
+        private global::System.Boolean _Clustering;
+        partial void OnClusteringChanging(global::System.Boolean value);
+        partial void OnClusteringChanged();
 
         #endregion
 

@@ -16,7 +16,6 @@ namespace ATN.Processing
     public partial class ProcessingService : ServiceBase
     {
         private Thread ProcessingThread;
-        CrawlRunner co;
         public ProcessingService()
         {
             ServiceName = "ATN Processing";
@@ -32,7 +31,6 @@ namespace ATN.Processing
                 {
                     try
                     {
-                        //Thread.Sleep(new TimeSpan(0, 1, 0));
                         ExistingCrawlSpecifier[] ChangedCrawls = co.ProcessCurrentCrawls();
                         if (ChangedCrawls.Length > 0)
                         {
