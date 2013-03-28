@@ -108,24 +108,14 @@ namespace ATN.Data
         /// <returns>An array of extended sources which are members of the given theory</returns>
         public ExportSource[] GetExportSourcesForTheory(int TheoryId)
         {
-            SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId);
-            long[] SourceIdsInTheory = AllSources.Select(s => s.SourceId).ToArray();
-            Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Unchanged).ToList().ForEach(delegate(ObjectStateEntry o)
-            {
-                if (o.Entity != null)
-                {
-                    Context.Detach(o.Entity);
-                }
-            });
-            AllSources = null;
+            SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId).OrderBy(sid => sid.Depth).ToArray();
             StringBuilder QueryBuilder = new StringBuilder();
-            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint PRIMARY KEY);");
-            string[] Values = SourceIdsInTheory.Distinct().Select(v => "(" + v.ToString() + ")").ToArray();
-            for (int i = 0; i < Values.Length / 1000 + 1; i++)
+            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint PRIMARY KEY, Depth smallint);");
+            for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
-                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", Values.Skip(i * 1000).Take(1000).ToArray()) + ";");
+                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
             }
-            QueryBuilder.AppendLine("SELECT s.SourceId as SourceId, DataSourceSpecificId as MasId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal FROM Source s JOIN #SourceIdTable st ON st.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId;");
+            QueryBuilder.AppendLine("SELECT s.SourceId as SourceId, DataSourceSpecificId as MasId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal FROM Source s JOIN #SourceIdTable st ON st.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.Depth ASC;");
             QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
             ExportSource[] ExportSources = Context.ExecuteStoreQuery<ExportSource>(QueryBuilder.ToString()).ToArray();
             return ExportSources;
@@ -154,41 +144,46 @@ namespace ATN.Data
         /// <returns>All Sources in the given theory</returns>
         public SourceIdWithDepth[] GetAllSourcesForTheory(int TheoryId)
         {
-            Dictionary<long, SourceIdWithDepth[]> SourceIdCitedBy = new Dictionary<long, SourceIdWithDepth[]>();
+            Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = new Dictionary<long, List<SourceIdWithDepth>>();
 
             Theories t = new Theories(Context);
             Sources Sources = new Sources(Context);
             Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(TheoryId);
 
-            //This works by building a graph of all possible nodes in the graph such
-            //that ImpactFactor scores can be properly computed. Once all nodes have
-            //been added to the graph, all citations that are not in the graph are
-            //removed
+            SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
+                @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
+                INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
+                INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
+                INSERT INTO #SourceIdTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
+                SELECT * FROM #SourceIdTable
+                DROP TABLE #SourceIdTable"
+            ).ToArray();
 
-            Dictionary<long, SourceIdWithDepth> AllLevelSources = new Dictionary<long, SourceIdWithDepth>();
-
-            //Build raw list of all possible nodes in the graph
-            foreach (Source CanonicalSource in CanonicalSources)
+            const int CanonicalSourceKey = -1;
+            foreach (SourceIdCitedByWithDepth sic in SourcesCited)
             {
-                AllLevelSources.Add(CanonicalSource.SourceId, new SourceIdWithDepth(CanonicalSource.SourceId, 0));
-
-                long[] CitingSourceIds = Context.ExecuteStoreQuery<long>("SELECT SourceId FROM CitationsReference WHERE CitesSourceId = {0}", CanonicalSource.SourceId).ToArray();
-                SourceIdCitedBy[CanonicalSource.SourceId] = CitingSourceIds.Select(sid => new SourceIdWithDepth(sid, 1)).ToArray();
-
-                //Write citation nodes
-                foreach (long CitingSourceId in CitingSourceIds)
+                if (sic.CitesSourceId.HasValue)
                 {
-                    if (!AllLevelSources.ContainsKey(CitingSourceId))
+                    if (!SourceIdCitedBy.ContainsKey(sic.CitesSourceId.Value))
                     {
-                        AllLevelSources.Add(CitingSourceId, new SourceIdWithDepth(CitingSourceId, 1));
+                        SourceIdCitedBy[sic.CitesSourceId.Value] = new List<SourceIdWithDepth>();
+                        SourceIdCitedBy[sic.CitesSourceId.Value].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
                     }
-                    SourceIdCitedBy[CitingSourceId] = Context.ExecuteStoreQuery<long>("SELECT SourceId FROM CitationsReference WHERE CitesSourceId = {0}", CitingSourceId).Select(sid => new SourceIdWithDepth(sid, 1)).ToArray();
-
-                    long[] ReferenceSourceIds = Context.ExecuteStoreQuery<long>("SELECT CitesSourceId FROM CitationsReference WHERE SourceId = {0}", CitingSourceId).ToArray();
-                    //Write reference nodes
-                    foreach (long ReferenceSourceId in ReferenceSourceIds)
+                    else
                     {
-                        SourceIdCitedBy[ReferenceSourceId] = Context.ExecuteStoreQuery<long>("SELECT SourceId FROM CitationsReference WHERE CitesSourceId = {0}", ReferenceSourceId).Select(sid => new SourceIdWithDepth(sid, 2)).ToArray();
+                        SourceIdCitedBy[sic.CitesSourceId.Value].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
+                    }
+                }
+                else
+                {
+                    if (!SourceIdCitedBy.ContainsKey(CanonicalSourceKey))
+                    {
+                        SourceIdCitedBy[CanonicalSourceKey] = new List<SourceIdWithDepth>();
+                        SourceIdCitedBy[CanonicalSourceKey].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
+                    }
+                    else
+                    {
+                        SourceIdCitedBy[CanonicalSourceKey].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
                     }
                 }
             }
@@ -196,7 +191,7 @@ namespace ATN.Data
             long[] AllKeys = SourceIdCitedBy.Keys.ToArray();
             foreach (long SourceId in AllKeys)
             {
-                List<SourceIdWithDepth> CitedBySourceIds = new List<SourceIdWithDepth>(SourceIdCitedBy[SourceId].Length);
+                List<SourceIdWithDepth> CitedBySourceIds = new List<SourceIdWithDepth>(SourceIdCitedBy[SourceId].Count);
                 foreach (SourceIdWithDepth CitedBySource in SourceIdCitedBy[SourceId])
                 {
                     if (SourceIdCitedBy.ContainsKey(CitedBySource.SourceId) && CitedBySource.SourceId != SourceId)
@@ -204,27 +199,28 @@ namespace ATN.Data
                         CitedBySourceIds.Add(CitedBySource);
                     }
                 }
-                SourceIdCitedBy[SourceId] = CitedBySourceIds.ToArray();
+                SourceIdCitedBy[SourceId] = CitedBySourceIds;
             }
-            foreach (SourceIdWithDepth[] CurrentLevelSources in SourceIdCitedBy.Values)
+            Dictionary<long, SourceIdWithDepth> AllLevelSourceIds = new Dictionary<long, SourceIdWithDepth>();
+            foreach (List<SourceIdWithDepth> CurrentLevelSources in SourceIdCitedBy.Values)
             {
                 foreach (SourceIdWithDepth CurrentSource in CurrentLevelSources)
                 {
-                    if(!AllLevelSources.ContainsKey(CurrentSource.SourceId))
+                    if(!AllLevelSourceIds.ContainsKey(CurrentSource.SourceId))
                     {
-                        AllLevelSources.Add(CurrentSource.SourceId, CurrentSource);
+                        AllLevelSourceIds.Add(CurrentSource.SourceId, CurrentSource);
                     }
                 }
             }
-            foreach (long Key in SourceIdCitedBy.Keys)
+            foreach (long SourceId in SourceIdCitedBy.Keys)
             {
-                if (!AllLevelSources.ContainsKey(Key))
+                if (!AllLevelSourceIds.ContainsKey(SourceId))
                 {
-                    AllLevelSources.Add(Key, new SourceIdWithDepth(Key, 2));
+                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 1));
                 }
             }
-            Dictionary<long, int> IFDict = SourceIdCitedBy.Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Length)).ToDictionary(kv => kv.Key, kv => kv.Value);
-            return AllLevelSources.Values.Select(v => new SourceIdWithDepth(v.SourceId, v.Depth, IFDict[v.SourceId])).OrderBy(src => src.Depth).ToArray();
+            Dictionary<long, int> IFDict = SourceIdCitedBy.Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            return AllLevelSourceIds.Values.Select(v => new SourceIdWithDepth(v.SourceId, v.Depth, IFDict[v.SourceId])).OrderBy(src => src.Depth).ToArray();
         }
 
         /// <summary>
