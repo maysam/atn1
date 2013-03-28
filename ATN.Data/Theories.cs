@@ -105,25 +105,87 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
 
+        static void AddSourceToGraph(Dictionary<long, List<long>> SourceIdCitedBy, Source Source, long[] Citations)
+        {
+            SourceIdCitedBy[Source.SourceId] = Citations.ToList();
+        }
+
         /// <summary>
         /// Retrieves all of the sources for a theory
         /// </summary>
         /// <param name="TheoryId">The id of the theory to retrieve sources for</param>
         /// <returns>List of Extended Sources</returns>
-        public List<ExtendedSource> GetAllSourcesForTheory(int TheoryId)
+        public SourceWithDepth[] GetAllSourcesForTheory(int TheoryId)
         {
-            List<ExtendedSource> sources = new List<ExtendedSource>();
-            Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
+            Dictionary<long, SourceWithDepth[]> SourceIdCitedBy = new Dictionary<long, SourceWithDepth[]>();
+
+            Theories t = new Theories(Context);
+            Sources Sources = new Sources(Context);
+            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(TheoryId);
+
+            //This works by building a graph of all possible nodes in the graph such
+            //that ImpactFactor scores can be properly computed. Once all nodes have
+            //been added to the graph, all citations that are not in the graph are
+            //removed before edge objects are created
+
+            List<SourceWithDepth> AllLevelSources = new List<SourceWithDepth>();
+
+            //Build raw list of all possible edges in the graph
             foreach (Source CanonicalSource in CanonicalSources)
             {
-                
-                ExtendedSource newSource = new ExtendedSource();
-                newSource.Source = CanonicalSource;
+                AllLevelSources.Add(new SourceWithDepth(CanonicalSource, 0));
 
+                var CitingSources = CanonicalSource.CitingSources;
+                SourceIdCitedBy[CanonicalSource.SourceId] = CitingSources.Select(src => new SourceWithDepth(src, 1)).ToArray();
+
+                //Write citation nodes
+                foreach (Source CitingSource in CitingSources)
+                {
+                    SourceIdCitedBy[CitingSource.SourceId] = CitingSource.CitingSources.Select(src => new SourceWithDepth(src, 1)).ToArray();
+
+                    //Write reference nodes
+                    foreach (Source ReferenceSource in CitingSource.References)
+                    {
+                        SourceIdCitedBy[ReferenceSource.SourceId] = ReferenceSource.CitingSources.Select(src => new SourceWithDepth(src, 2)).ToArray();
+                    }
+                }
             }
 
-            return sources;
+            long[] AllKeys = SourceIdCitedBy.Keys.ToArray();
+            foreach (long SourceId in AllKeys)
+            {
+                List<SourceWithDepth> CitedBySourceIds = new List<SourceWithDepth>(SourceIdCitedBy[SourceId].Length);
+                foreach (SourceWithDepth CitedBySource in SourceIdCitedBy[SourceId])
+                {
+                    if (SourceIdCitedBy.ContainsKey(CitedBySource.Source.SourceId) && CitedBySource.Source.SourceId != SourceId)
+                    {
+                        CitedBySourceIds.Add(CitedBySource);
+                    }
+                }
+                SourceIdCitedBy[SourceId] = CitedBySourceIds.ToArray();
+            }
+            
+            foreach (SourceWithDepth[] CurrentLevelSources in SourceIdCitedBy.Values)
+            {
+                foreach (SourceWithDepth CurrentSource in CurrentLevelSources)
+                {
+                    if (SourceIdCitedBy.ContainsKey(CurrentSource.Source.SourceId))
+                    {
+                        AllLevelSources.Add(CurrentSource);
+                    }
+                }
+            }
+
+            Dictionary<long, int> IFDict = SourceIdCitedBy.Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Length)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            for (int i = 0; i < AllLevelSources.Count; i++)
+            {
+                AllLevelSources[i].ImpactFactor = IFDict[AllLevelSources[i].Source.SourceId];
+            }
+
+            return AllLevelSources.ToArray();
         }
+
+
 
         /// <summary>
         /// Retrieves an array of Sources that reference the specified Source

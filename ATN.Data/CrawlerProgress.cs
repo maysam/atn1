@@ -29,12 +29,22 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Sets a Crawl as having been changed during the course of an analysis run.
+        /// Sets a Crawl as having been changed during the course of aa crawl run.
         /// </summary>
         /// <param name="Crawl">The Crawl to be set as having changed</param>
         public void SetCrawlerStateChanged(Crawl Crawl)
         {
             Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = true;
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Sets a Crawl as not having been changed since the last analysis run
+        /// </summary>
+        /// <param name="Crawl">The Crawl to be set as having not changed</param>
+        public void SetCrawlerStateUnchanged(Crawl Crawl)
+        {
+            Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = false;
             Context.SaveChanges();
         }
 
@@ -119,10 +129,6 @@ namespace ATN.Data
             if (State != CrawlerState.ScheduledCrawlRetrievingCitationsComplete && State != CrawlerState.RetrievingCitationsComplete)
             {
                 Crawler.LastEnumeratedSourceId = null;
-            }
-            if (State == CrawlerState.Complete)
-            {
-                Crawler.HasChanged = false;
             }
             Context.SaveChanges();
         }

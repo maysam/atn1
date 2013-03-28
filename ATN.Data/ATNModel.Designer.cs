@@ -4655,16 +4655,14 @@ namespace ATN.Data
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
         /// <param name="runId">Initial value of the RunId property.</param>
-        /// <param name="impactFactor">Initial value of the ImpactFactor property.</param>
         /// <param name="depth">Initial value of the Depth property.</param>
-        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId, global::System.Int32 impactFactor, global::System.Int16 depth)
+        public static TheoryMembership CreateTheoryMembership(global::System.Int64 theoryMembershipId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Int32 runId, global::System.Int16 depth)
         {
             TheoryMembership theoryMembership = new TheoryMembership();
             theoryMembership.TheoryMembershipId = theoryMembershipId;
             theoryMembership.TheoryId = theoryId;
             theoryMembership.SourceId = sourceId;
             theoryMembership.RunId = runId;
-            theoryMembership.ImpactFactor = impactFactor;
             theoryMembership.Depth = depth;
             return theoryMembership;
         }
@@ -4895,9 +4893,9 @@ namespace ATN.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public global::System.Int32 ImpactFactor
+        public Nullable<global::System.Int32> ImpactFactor
         {
             get
             {
@@ -4912,8 +4910,8 @@ namespace ATN.Data
                 OnImpactFactorChanged();
             }
         }
-        private global::System.Int32 _ImpactFactor;
-        partial void OnImpactFactorChanging(global::System.Int32 value);
+        private Nullable<global::System.Int32> _ImpactFactor;
+        partial void OnImpactFactorChanging(Nullable<global::System.Int32> value);
         partial void OnImpactFactorChanged();
     
         /// <summary>

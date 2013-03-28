@@ -81,5 +81,42 @@ namespace ATN.Data
             int NumberContributing = Context.MetaAnalysisMemberships.Where(mam => mam.TheoryMembershipSignificanceId == tms.TheoryMembershipSignificanceId).Count();
             return new CompleteTheoryMembership(tm, tms, NumberContributing);
         }
+        public void InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor)
+        {
+            //Add new analysis run
+            Run r = new Run();
+            r.DateStarted = DateTime.Now;
+            r.TheoryId = TheoryId;
+            Context.Runs.AddObject(r);
+            Context.SaveChanges();
+
+            Theories t = new Theories(Context);
+            SourceWithDepth[] AllLevelSources = t.GetAllSourcesForTheory(TheoryId);
+            foreach (SourceWithDepth Source in AllLevelSources)
+            {
+                TheoryMembershipSignificance tms = GetTheoryMembershipSignificanceForSource(Source.Source.SourceId, TheoryId);
+                if (tms == null)
+                {
+                    tms = new TheoryMembershipSignificance();
+                    tms.SourceId = Source.Source.SourceId;
+                    tms.TheoryId = TheoryId;
+                    tms.RAMarkedContributing = null;
+                    tms.IsMetaAnalysis = false;
+                    Context.TheoryMembershipSignificances.AddObject(tms);
+                    Context.SaveChanges();
+                }
+                TheoryMembership tm = new TheoryMembership();
+                tm.TheoryId = TheoryId;
+                tm.SourceId = Source.Source.SourceId;
+                tm.RunId = r.RunId;
+                tm.Depth = Source.Depth;
+                if (StoreImpactFactor)
+                {
+                    tm.ImpactFactor = Source.ImpactFactor;
+                }
+                Context.TheoryMemberships.AddObject(tm);
+            }
+            Context.SaveChanges();
+        }
     }
 }

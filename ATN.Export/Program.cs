@@ -11,81 +11,98 @@ namespace ATN.Export
 {
     public class Program
     {
+        static Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
+        static Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
+        static long CurrentSourceIndex = 0;
+
+        static Dictionary<long, List<long>> SourceIdCitedBy = new Dictionary<long, List<long>>();
+        static List<SourceEdge> Edges = new List<SourceEdge>();
+        static List<SourceNode> Nodes = new List<SourceNode>();
+
+        static long GetIndexForSource(long SourceId)
+        {
+            if (!SourceIdToIndex.ContainsKey(SourceId))
+            {
+                SourceIdToIndex[SourceId] = CurrentSourceIndex;
+                IndexToSourceId[CurrentSourceIndex] = SourceId;
+                CurrentSourceIndex++;
+                return CurrentSourceIndex - 1;
+            }
+            else
+            {
+                return SourceIdToIndex[SourceId];
+            }
+        }
+
+        static void AddSourceToGraph(Source Source, long[] Citations)
+        {
+            SourceIdCitedBy[Source.SourceId] = Citations.ToList();
+        }
         static void Main(string[] args)
         {
-            /*FileStream DestinationClassStream = File.Open("soybean-classification.txt", FileMode.Create);
-            MachineLearning.GenerateDecisionTree("soybean-train.arff","soybean-model.dat");
-            MachineLearning.ClassifyData("soybean-test.arff","soybean-model.dat",DestinationClassStream);*/
+            Theories t = new Theories();
+            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(7);
 
-            Theories Theories = new Theories();
-            Source[] CanonicalSources = Theories.GetCanonicalSourcesForTheory(7);
+            Sources Sources = new Sources();
 
-            Dictionary<long, SourceNode> Nodes = new Dictionary<long, SourceNode>();
-            List<SourceEdge> Edges = new List<SourceEdge>();
+            //This works by building a graph of all possible nodes in the graph such
+            //that ImpactFactor scores can be properly computed. Once all nodes have
+            //been added to the graph, all citations that are not in the graph are
+            //removed before edge objects are created
 
+            //Build raw list of all possible edges in the graph
             foreach (Source CanonicalSource in CanonicalSources)
             {
-                var CitingSources = CanonicalSource.CitingSources.ToArray();
+                var CitingSources = CanonicalSource.CitingSources;
 
-                //Write canonical nodes
-                if (!Nodes.ContainsKey(CanonicalSource.SourceId))
+                AddSourceToGraph(CanonicalSource, CitingSources.Select(src => src.SourceId).ToArray());
+
+                //Write citation nodes/edges
+                foreach (Source CitingSource in CitingSources)
                 {
-                    Nodes.Add(CanonicalSource.SourceId, new SourceNode(CanonicalSource.SourceId, CanonicalSource.ArticleTitle, CanonicalSource.CitingSources.Count));
-                }
+                    AddSourceToGraph(CitingSource, CitingSource.CitingSources.Select(src => src.SourceId).ToArray());
 
-                //Write citation nodes
-                for (int i = 0; i < CitingSources.Length; i++)
-                { 
-                    if (!Nodes.ContainsKey(CitingSources[i].SourceId))
+                    //Write reference nodes/edges
+                    foreach (Source ReferenceSource in CitingSource.References)
                     {
-                        Console.WriteLine("Writing node {0}/{1}", i + 1, CitingSources.Length);
-                        Nodes.Add(CitingSources[i].SourceId, new SourceNode(CitingSources[i].SourceId, CitingSources[i].ArticleTitle, CitingSources[i].CitingSources.Count));
-                    }
-                }
-
-                //Write reference nodes
-                for (int i = 0; i < CitingSources.Length; i++)
-                {
-                    Console.WriteLine("Writing references for node {0}/{1}", i + 1, CitingSources.Length);
-                    var References = CitingSources[i].References.ToArray();
-                    for (int j = 0; j < References.Length; j++)
-                    {
-                        if (!Nodes.ContainsKey(References[j].SourceId))
-                        {
-                            Nodes.Add(References[j].SourceId, new SourceNode(References[j].SourceId, References[j].ArticleTitle, References[j].CitingSources.Count));
-                        }
-                    }
-                }
-
-                //Write citation edges
-                foreach (var Citation in CitingSources)
-                {
-                    if (Citation.SourceId != CanonicalSource.SourceId)
-                    {
-                        Edges.Add(new SourceEdge(Citation.SourceId, CanonicalSource.SourceId));
-                    }
-                }
-
-                //Write reference edges
-                foreach (var Citation in CitingSources)
-                {
-                    foreach (var Reference in Citation.References)
-                    {
-                        if (Citation.SourceId != Reference.SourceId)
-                        {
-                            Edges.Add(new SourceEdge(Citation.SourceId, Reference.SourceId));
-                        }
+                        AddSourceToGraph(ReferenceSource, ReferenceSource.CitingSources.Select(src => src.SourceId).ToArray());
                     }
                 }
             }
-            //FileStream DestinationXMLStream = File.Open("Graph.xml", FileMode.Create);
-            //XGMMLExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationXMLStream);
 
+            //Prune raw list to remove citations which are not present
+            long[] AllKeys = SourceIdCitedBy.Keys.ToArray();
+            foreach (long SourceId in AllKeys)
+            {
+                List<long> CitedBySourceIds = new List<long>(SourceIdCitedBy[SourceId].Count);
+                foreach (long CitedBySourceId in SourceIdCitedBy[SourceId])
+                {
+                    if (SourceIdCitedBy.ContainsKey(CitedBySourceId) && CitedBySourceId != SourceId)
+                    {
+                        CitedBySourceIds.Add(CitedBySourceId);
+                    }
+                }
+                SourceIdCitedBy[SourceId] = CitedBySourceIds;
+            }
+
+            foreach (KeyValuePair<long, List<long>> SourceAndCitations in SourceIdCitedBy)
+            {
+                foreach (long Citation in SourceAndCitations.Value)
+                {
+                    GetIndexForSource(SourceAndCitations.Key);
+                    GetIndexForSource(Citation);
+                    Edges.Add(new SourceEdge(Citation, SourceAndCitations.Key));
+                }
+            }
+            Edges = Edges.OrderBy(e => e.StartSourceId).ThenBy(e => e.EndSourceId).ToList();
+
+            foreach (KeyValuePair<long, long> KV in IndexToSourceId)
+            {
+                Nodes.Add(new SourceNode(KV.Value, "Title", SourceIdCitedBy[KV.Value].Count));
+            }
             FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
-            PajekDotNetExporter.Export(Nodes.Values.ToArray(), Edges.ToArray(), DestinationNetStream);
+            PajekDotNetExporter.Export(Nodes.ToArray(), Edges.ToArray(), DestinationNetStream);
 
-            //FileStream DestinationARFFStream = File.Open("atn-train.arff", FileMode.Create);
-            //ARFFExporter.ExportTrain(Nodes.Values.ToArray(), 6, DestinationARFFStream);
         }
     }
 }

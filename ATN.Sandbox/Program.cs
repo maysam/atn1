@@ -8,7 +8,6 @@ using ATN.Crawler.MAS;
 using ATN.Data;
 using alglib = ATN.Analysis.AEF.alglib;
 using ATN.Export;
-using ATN.Sandbox;
 using System.IO;
 
 namespace ATN.Analysis
@@ -44,6 +43,7 @@ namespace ATN.Analysis
         static void Main(string[] args)
         {
             Theories t = new Theories();
+            SourceWithDepth[] a = t.GetAllSourcesForTheory(7);
             Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(7);
 
             Sources Sources = new Sources();
@@ -113,7 +113,6 @@ namespace ATN.Analysis
 
             // Use IF (of citation network) scores to determine # of row entries
             int[] OFArray = SourceIdCitedBy.OrderBy(kv => SourceIdToIndex[kv.Key]).Select(kv => TimesKeyCitesSomething[kv.Key]).ToArray();
-            int[] IFArray = SourceIdCitedBy.OrderBy(kv => SourceIdToIndex[kv.Key]).Select(kv => kv.Value.Count()).ToArray();
 
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);

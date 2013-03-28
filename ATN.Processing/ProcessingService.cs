@@ -27,14 +27,28 @@ namespace ATN.Processing
         {
             while (true)
             {
-                using (CrawlRunner co = new CrawlRunner())
+                using (CrawlRunner cr = new CrawlRunner())
                 {
                     try
                     {
-                        ExistingCrawlSpecifier[] ChangedCrawls = co.ProcessCurrentCrawls();
+                        ExistingCrawlSpecifier[] ChangedCrawls = cr.ProcessCurrentCrawls();
                         if (ChangedCrawls.Length > 0)
                         {
-                            //Do analysis on changed crawls
+                            AnalysisInterface ai = new AnalysisInterface();
+                            for(int i = 0; i < ChangedCrawls.Length; i++)
+                            {
+                                ai.InitiateTheoryAnalysis(ChangedCrawls[i].TheoryId, ChangedCrawls[i].ImpactFactor);
+                                if (ChangedCrawls[i].AEF)
+                                {
+                                    //Compute AEF
+                                    if (ChangedCrawls[i].TAR)
+                                    {
+                                        //Compute TAR
+                                    }
+                                }
+                                //Run ML
+                                cr.CompleteAnalysisOnCrawl(ChangedCrawls[i]);
+                            }
                         }
                     }
                     catch (Exception e)

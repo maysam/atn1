@@ -339,7 +339,7 @@
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RunId" Type="int" Nullable="false" />
           <Property Name="Depth" Type="smallint" Nullable="false" />
-          <Property Name="ImpactFactor" Type="int" Nullable="false" />
+          <Property Name="ImpactFactor" Type="int" />
           <Property Name="TheoryAttributionRatio" Type="float" />
           <Property Name="ArticleLevelEigenFactor" Type="float" />
           <Property Name="TheoryNamePresent" Type="bit" />
@@ -1174,7 +1174,7 @@
           <NavigationProperty Name="Theory" Relationship="ATNModel.Theory_TheoryMembership_FK1" FromRole="TheoryMembership" ToRole="Theory" />
           <Property Type="Double" Name="ArticleLevelEigenFactor" />
           <Property Type="Double" Name="TheoryAttributionRatio" />
-          <Property Type="Int32" Name="ImpactFactor" Nullable="false" />
+          <Property Type="Int32" Name="ImpactFactor" />
           <Property Type="Int16" Name="Depth" Nullable="false" />
         </EntityType>
         <Association Name="FK_Crawl_Theory">
