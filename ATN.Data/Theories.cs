@@ -80,11 +80,6 @@ namespace ATN.Data
             return Context.Theories.Single(t => t.TheoryId == TheoryId);
         }
 
-        public Source GetSource(long SourceId)
-        {
-            return Context.Sources.Single(s => s.SourceId == SourceId);
-        }
-
         /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>
@@ -105,16 +100,27 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
 
-        static void AddSourceToGraph(Dictionary<long, List<long>> SourceIdCitedBy, Source Source, long[] Citations)
+        /// <summary>
+        /// Retrieves all extended sources that are members of a particular theory
+        /// </summary>
+        /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
+        /// <returns>An array of extended sources which are members of the given theory</returns>
+        public ExtendedSource[] GetAllExtendedSourcesForTheory(int TheoryId)
         {
-            SourceIdCitedBy[Source.SourceId] = Citations.ToList();
+            SourceWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId);
+            ExtendedSource[] AllExtendedSources = new ExtendedSource[AllSources.Length];
+            for (int i = 0; i < AllSources.Length; i++)
+            {
+                AllExtendedSources[i] = Sources.GetExtendedSourceBySourceId(TheoryId, AllSources[i].Source.SourceId);
+            }
+            return AllExtendedSources;
         }
 
         /// <summary>
         /// Retrieves all of the sources for a theory
         /// </summary>
         /// <param name="TheoryId">The id of the theory to retrieve sources for</param>
-        /// <returns>List of Extended Sources</returns>
+        /// <returns>All Sources in the given theory</returns>
         public SourceWithDepth[] GetAllSourcesForTheory(int TheoryId)
         {
             Dictionary<long, SourceWithDepth[]> SourceIdCitedBy = new Dictionary<long, SourceWithDepth[]>();
@@ -126,11 +132,11 @@ namespace ATN.Data
             //This works by building a graph of all possible nodes in the graph such
             //that ImpactFactor scores can be properly computed. Once all nodes have
             //been added to the graph, all citations that are not in the graph are
-            //removed before edge objects are created
+            //removed
 
             List<SourceWithDepth> AllLevelSources = new List<SourceWithDepth>();
 
-            //Build raw list of all possible edges in the graph
+            //Build raw list of all possible nodes in the graph
             foreach (Source CanonicalSource in CanonicalSources)
             {
                 AllLevelSources.Add(new SourceWithDepth(CanonicalSource, 0));
@@ -185,8 +191,6 @@ namespace ATN.Data
             return AllLevelSources.ToArray();
         }
 
-
-
         /// <summary>
         /// Retrieves an array of Sources that reference the specified Source
         /// </summary>
@@ -225,7 +229,34 @@ namespace ATN.Data
         /// <param name="SourceId">The source having its metaAnalysis status evaluated</param>
         public void MarkSourceMetaAnalysis(int TheoryId, long SourceId)
         {
+            TheoryMembershipSignificance ContributionSignificance = Context.TheoryMembershipSignificances.SingleOrDefault(tms => tms.TheoryId == TheoryId && tms.SourceId == SourceId);
+            if (ContributionSignificance == null)
+            {
+                ContributionSignificance = new TheoryMembershipSignificance();
+                ContributionSignificance.TheoryId = TheoryId;
+                ContributionSignificance.SourceId = SourceId;
+                Context.TheoryMembershipSignificances.AddObject(ContributionSignificance);
+            }
 
+            ContributionSignificance.IsMetaAnalysis = true;
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Marks a given Source as contributing to a meta analysis indicated by the provided TheoryId and MetaAnalysisSourceId
+        /// </summary>
+        /// <param name="TheoryId">The Theory to mark contribution for</param>
+        /// <param name="MetaAnalysisSourceId">The SourceId of the meta analysis</param>
+        /// <param name="MemberSourceId">The SourceId of the member of the meta analysis</param>
+        /// <param name="Contributing">Whether the provided member Source contributes to the provided meta analysis</param>
+        public void MarkMetaAnalysisMember(int TheoryId, long MetaAnalysisSourceId, long MemberSourceId, bool? Contributing)
+        {
+            TheoryMembershipSignificance ContributionSignificance = Context.TheoryMembershipSignificances.SingleOrDefault(tms => tms.TheoryId == TheoryId && tms.SourceId == MetaAnalysisSourceId && tms.IsMetaAnalysis);
+
+            MetaAnalysisMembership mam = new MetaAnalysisMembership();
+            mam.RAMarkedContributing = Contributing;
+            mam.SourceId = MemberSourceId;
+            mam.TheoryMembershipSignificanceId = ContributionSignificance.TheoryMembershipSignificanceId     
         }
 
         /// <summary>
