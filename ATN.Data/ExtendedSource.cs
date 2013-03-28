@@ -13,7 +13,7 @@ namespace ATN.Data
         public bool metaAnalysis { get; set; }
         public int? numContributing { get; set; }
         public bool? isContributing { get; set; }
-        public double aefScore { get; set; }
+        public double? aefScore { get; set; }
         public int depth { get; set; }
 
         /// <summary>

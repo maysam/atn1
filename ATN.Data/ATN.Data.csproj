@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="Authors.cs" />
     <Compile Include="CompleteSource.cs" />
+    <Compile Include="CompleteTheoryMembership.cs" />
     <Compile Include="CrawlerProgress.cs" />
     <Compile Include="CrawlSpecifier.cs" />
     <Compile Include="DatabaseInterface.cs" />

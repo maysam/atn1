@@ -125,16 +125,19 @@ namespace ATN.Data
             return cs;
         }
 
-        public ExtendedSource GetExtendedSourceBySourceId(long sourceId)
+        public ExtendedSource GetExtendedSourceBySourceId(int theoryId, long sourceId)
         {
             CompleteSource RetrievedSource = GetCompleteSourceBySourceId(sourceId);
             ExtendedSource es = new ExtendedSource(RetrievedSource);
 
-            //metaAnalysis 
-            //numContributing 
-            //isContributing 
-            //aefScore 
-            //depth 
+            AnalysisInterface ai = new AnalysisInterface(Context);
+            CompleteTheoryMembership ctm = ai.GetTheoryMembershipContributionsForSource(theoryId, sourceId);
+
+            es.aefScore = ctm.TheoryMembership.ArticleLevelEigenFactor;
+            es.isContributing = ctm.TheoryMembershipSignificance.RAMarkedContributing;
+            es.metaAnalysis = ctm.TheoryMembershipSignificance.IsMetaAnalysis;
+            es.numContributing = ctm.NumberContributing;
+            es.depth = ctm.TheoryMembership.Depth;
             return es;
         }
 
