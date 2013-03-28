@@ -113,6 +113,14 @@ namespace ATN.Data
         public List<ExtendedSource> GetAllSourcesForTheory(int TheoryId)
         {
             List<ExtendedSource> sources = new List<ExtendedSource>();
+            Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
+            foreach (Source CanonicalSource in CanonicalSources)
+            {
+                
+                ExtendedSource newSource = new ExtendedSource();
+                newSource.Source = CanonicalSource;
+
+            }
 
             return sources;
         }
@@ -147,7 +155,17 @@ namespace ATN.Data
 
             return sources;
         }
-        
+
+        /// <summary>
+        /// Marks the given source as being a metaAnalysis paper
+        /// </summary>
+        /// <param name="TheoryId">The theory the source corresponds to</param>
+        /// <param name="SourceId">The source having its metaAnalysis status evaluated</param>
+        public void MarkSourceMetaAnalysis(int TheoryId, long SourceId)
+        {
+
+        }
+
         /// <summary>
         /// Marks the contribution of a theory as determined manually
         /// </summary>

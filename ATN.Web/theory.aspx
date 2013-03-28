@@ -48,6 +48,7 @@
                     <asp:Label ID="lblContributing" runat="server" />
                     <asp:RadioButtonList ID="rblContributing" runat="server" RepeatDirection="Vertical" >
                         <asp:ListItem Text="Yes" Value="Yes"/>
+                        <asp:ListItem Text="No" Value="No" />
                         <asp:ListItem Text="Unknown" Value="Unknown"/>
                     </asp:RadioButtonList>
                 </ItemTemplate>

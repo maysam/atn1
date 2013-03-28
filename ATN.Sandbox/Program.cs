@@ -8,7 +8,8 @@ using ATN.Crawler.MAS;
 using ATN.Data;
 using alglib = ATN.Analysis.AEF.alglib;
 using ATN.Export;
-//using ATN.Sandbox;
+using ATN.Sandbox;
+using System.IO;
 
 namespace ATN.Analysis
 {
@@ -86,24 +87,36 @@ namespace ATN.Analysis
                 }
                 SourceIdCitedBy[SourceId] = CitedBySourceIds;
             }
-
             foreach (KeyValuePair<long, List<long>> SourceAndCitations in SourceIdCitedBy)
             {
                 foreach(long Citation in SourceAndCitations.Value)
                 {
-                    Edges.Add(new SourceEdge(GetIndexForSource(Citation), GetIndexForSource(SourceAndCitations.Key)));
+                    long EndIndex = GetIndexForSource(SourceAndCitations.Key);
+                    long StartIndex = GetIndexForSource(Citation);
+                    Edges.Add(new SourceEdge(StartIndex, EndIndex));
                 }
             }
-            Edges = Edges.OrderBy(e => e.EndSourceId).ThenBy(e => e.StartSourceId).ToList();
+            Dictionary<long, int> TimesKeyCitesSomething = new Dictionary<long, int>();
+            foreach (long Key in SourceIdCitedBy.Keys)
+            {
+                int CitationCount = 0;
+                foreach (List<long> Value in SourceIdCitedBy.Values)
+                {
+                    CitationCount += Value.Count(val => val == Key);
+                }
+                TimesKeyCitesSomething[Key] = CitationCount;
+            }
+            Edges = Edges.OrderBy(e => e.StartSourceId).ThenBy(e => e.EndSourceId).ToList();
 
             int MatrixOrder = SourceIdToIndex.Keys.Count();
             int NumberOfEdges = Edges.Count();
 
             // Use IF (of citation network) scores to determine # of row entries
+            int[] OFArray = SourceIdCitedBy.OrderBy(kv => SourceIdToIndex[kv.Key]).Select(kv => TimesKeyCitesSomething[kv.Key]).ToArray();
             int[] IFArray = SourceIdCitedBy.OrderBy(kv => SourceIdToIndex[kv.Key]).Select(kv => kv.Value.Count()).ToArray();
 
             alglib.sparsematrix s;
-            alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, IFArray, out s);
+            alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);
             
             // Manual placement
             //alglib.sparseset(s, 0, 1, 1.0);
@@ -116,7 +129,7 @@ namespace ATN.Analysis
             /* Write E to sparse matrix. Must go left to right (will have to order in pull from db) */
             for (int i = 0; i < NumberOfEdges; i++)
             {
-                alglib.sparseset(s, (int)(Edges[i].EndSourceId), (int)(Edges[i].StartSourceId), 1.0);
+                alglib.sparseset(s, (int)(Edges[i].StartSourceId), (int)(Edges[i].EndSourceId), 1.0);
             }
 
 
@@ -143,22 +156,33 @@ namespace ATN.Analysis
            /* Sum both the in and out degree of the matrix, placing this in vector p */
            double[] p = new double[MatrixOrder];
            double[] RowSum = new double[MatrixOrder];
-           double RowContrib;
-           double ColContrib;
-           double pSum = 0;
+           //double RowContrib;
+           //double ColContrib;
 
-           for (int i = 0; i < MatrixOrder; i++)
+           int T0 = 0;
+           int T1 = 0;
+           int I, J;
+           double V;
+           while (alglib.sparseenumerate(s, ref T0, ref T1, out I, out J, out V))
            {
-               for (int j = 0; j < MatrixOrder; j++)
-               {
-                   // Note: rewrite w/ sparse enumerate?
-                   RowContrib = alglib.sparseget(s, i, j);
-                   ColContrib = alglib.sparseget(s, j, i);
-                   RowSum[i] += RowContrib;
-                   p[i] += (RowContrib + ColContrib);
-               }
-               pSum += p[i];
+               p[I] += V;
+               p[J] += V;
+               RowSum[I] += V;
            }
+
+           double pSum = p.Sum();
+           //for (int i = 0; i < MatrixOrder; i++)
+           //{
+           //    for (int j = 0; j < MatrixOrder; j++)
+           //    {
+           //        // Note: rewrite w/ sparse enumerate?
+           //        RowContrib = alglib.sparseget(s, i, j);
+           //        ColContrib = alglib.sparseget(s, j, i);
+           //        RowSum[i] += RowContrib;
+           //        p[i] += (RowContrib + ColContrib);
+           //    }
+           //    pSum += p[i];
+           //}
            
            /* print out p */
            //Console.Write("-- Out/In degree vector -- \n p = [ ");
@@ -184,10 +208,10 @@ namespace ATN.Analysis
            //Console.Write("]^T \n");
 
            /* Indices for enumeration */
-           int T0 = 0;
-           int T1 = 0;
-           int I, J;
-           double V;
+           //int T0 = 0;
+           //int T1 = 0;
+           //int I, J;
+           //double V;
            while (alglib.sparseenumerate(s, ref T0, ref T1, out I, out J, out V))
                alglib.sparserewriteexisting(s, I, J, V/RowSum[I]);
 
@@ -221,7 +245,17 @@ namespace ATN.Analysis
            Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
                       
             /* Free s */
-           alglib.sparsefree(out s); 
+           alglib.sparsefree(out s);
+
+           //FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
+           //StreamWriter sw = new StreamWriter(DestinationNetStream);
+           //sw.WriteLine(" V   \tAEF              IF \n");
+           //foreach (KeyValuePair<long, long> KV in IndexToSourceId)
+           //{
+           //    sw.Write(string.Format("\"{0}\"\t{1:F10} \t          {2}\n", KV.Value, AEFScore[KV.Key], IFArray[KV.Key]));
+           //}
+           //sw.Close();
+
            Console.ReadKey();
 
         
