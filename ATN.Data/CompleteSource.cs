@@ -19,5 +19,15 @@ namespace ATN.Data
         public Editor[] Editors { get; set; }
         public Subject[] Subjects { get; set; }
         public Journal Journal { get; set; }
+        public CompleteSource()
+        {
+
+        }
+        public CompleteSource(Source Source, Author[] Authors, Journal Journal)
+        {
+            this.Source = Source;
+            this.Authors = Authors;
+            this.Journal = Journal;
+        }
     }
 }

@@ -91,14 +91,14 @@ namespace ATN.Data
             Context.SaveChanges();
 
             Theories t = new Theories(Context);
-            SourceWithDepth[] AllLevelSources = t.GetAllSourcesForTheory(TheoryId);
-            foreach (SourceWithDepth Source in AllLevelSources)
+            SourceIdWithDepth[] AllLevelSources = t.GetAllSourcesForTheory(TheoryId);
+            foreach (SourceIdWithDepth Source in AllLevelSources)
             {
-                TheoryMembershipSignificance tms = GetTheoryMembershipSignificanceForSource(Source.Source.SourceId, TheoryId);
+                TheoryMembershipSignificance tms = GetTheoryMembershipSignificanceForSource(Source.SourceId, TheoryId);
                 if (tms == null)
                 {
                     tms = new TheoryMembershipSignificance();
-                    tms.SourceId = Source.Source.SourceId;
+                    tms.SourceId = Source.SourceId;
                     tms.TheoryId = TheoryId;
                     tms.RAMarkedContributing = null;
                     tms.IsMetaAnalysis = false;
@@ -107,7 +107,7 @@ namespace ATN.Data
                 }
                 TheoryMembership tm = new TheoryMembership();
                 tm.TheoryId = TheoryId;
-                tm.SourceId = Source.Source.SourceId;
+                tm.SourceId = Source.SourceId;
                 tm.RunId = r.RunId;
                 tm.Depth = Source.Depth;
                 if (StoreImpactFactor)

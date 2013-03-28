@@ -98,6 +98,7 @@
     <Compile Include="CrawlerProgress.cs" />
     <Compile Include="CrawlSpecifier.cs" />
     <Compile Include="DatabaseInterface.cs" />
+    <Compile Include="ExportSource.cs" />
     <Compile Include="ExtendedSource.cs" />
     <Compile Include="Journals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

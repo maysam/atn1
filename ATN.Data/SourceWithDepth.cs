@@ -6,15 +6,21 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
-    public class SourceWithDepth
+    public class SourceIdWithDepth
     {
-        public Source Source { get; set; }
+        public long SourceId { get; set; }
         public short Depth { get; set; }
         public int ImpactFactor { get; set; }
-        public SourceWithDepth(Source Source, short Depth)
+        public SourceIdWithDepth(long SourceId, short Depth)
         {
-            this.Source = Source;
+            this.SourceId = SourceId;
             this.Depth = Depth;
+        }
+        public SourceIdWithDepth(long SourceId, short Depth, int ImpactFactor)
+        {
+            this.SourceId = SourceId;
+            this.Depth = Depth;
+            this.ImpactFactor = ImpactFactor;
         }
     }
 }

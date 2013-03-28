@@ -43,7 +43,7 @@ namespace ATN.Analysis
         static void Main(string[] args)
         {
             Theories t = new Theories();
-            SourceWithDepth[] a = t.GetAllSourcesForTheory(7);
+            SourceIdWithDepth[] a = t.GetAllSourcesForTheory(7);
             Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(7);
 
             Sources Sources = new Sources();
