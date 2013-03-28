@@ -142,7 +142,7 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The id of the theory to retrieve sources for</param>
         /// <returns>All Sources in the given theory</returns>
-        public SourceIdWithDepth[] GetAllSourcesForTheory(int TheoryId)
+        public Dictionary<long, List<SourceIdWithDepth>> GetSourceTreeForTheory(int TheoryId)
         {
             Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = new Dictionary<long, List<SourceIdWithDepth>>();
 
@@ -155,11 +155,9 @@ namespace ATN.Data
                 INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
                 INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
                 INSERT INTO #SourceIdTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
-                SELECT * FROM #SourceIdTable
+                SELECT * FROM #SourceIdTable ORDER BY Depth ASC
                 DROP TABLE #SourceIdTable"
             ).ToArray();
-
-            const int CanonicalSourceKey = -1;
             foreach (SourceIdCitedByWithDepth sic in SourcesCited)
             {
                 if (sic.CitesSourceId.HasValue)
@@ -167,46 +165,57 @@ namespace ATN.Data
                     if (!SourceIdCitedBy.ContainsKey(sic.CitesSourceId.Value))
                     {
                         SourceIdCitedBy[sic.CitesSourceId.Value] = new List<SourceIdWithDepth>();
-                        SourceIdCitedBy[sic.CitesSourceId.Value].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
                     }
-                    else
+                    if (sic.CitesSourceId.Value != sic.SourceId)
                     {
-                        SourceIdCitedBy[sic.CitesSourceId.Value].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
+                        if (!SourceIdCitedBy[sic.CitesSourceId.Value].Contains(new SourceIdWithDepth(sic.SourceId, sic.Depth), new SourceIdWithDepthComparer()))
+                        {
+                            SourceIdCitedBy[sic.CitesSourceId.Value].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
+                        }
                     }
                 }
-                else
-                {
-                    if (!SourceIdCitedBy.ContainsKey(CanonicalSourceKey))
-                    {
-                        SourceIdCitedBy[CanonicalSourceKey] = new List<SourceIdWithDepth>();
-                        SourceIdCitedBy[CanonicalSourceKey].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
-                    }
-                    else
-                    {
-                        SourceIdCitedBy[CanonicalSourceKey].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
-                    }
-                }
+            }
+            return SourceIdCitedBy;
+        }
+        class SourceIdWithDepthComparer : IEqualityComparer<SourceIdWithDepth>
+        {
+            // Products are equal if their names and product numbers are equal. 
+            public bool Equals(SourceIdWithDepth x, SourceIdWithDepth y)
+            {
+
+                //Check whether the compared objects reference the same data. 
+                if (Object.ReferenceEquals(x, y)) return true;
+
+                //Check whether any of the compared objects is null. 
+                if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+                    return false;
+
+                //Check whether the products' properties are equal. 
+                return x.SourceId == y.SourceId;
             }
 
-            long[] AllKeys = SourceIdCitedBy.Keys.ToArray();
-            foreach (long SourceId in AllKeys)
+            // If Equals() returns true for a pair of objects  
+            // then GetHashCode() must return the same value for these objects. 
+
+            public int GetHashCode(SourceIdWithDepth Source)
             {
-                List<SourceIdWithDepth> CitedBySourceIds = new List<SourceIdWithDepth>(SourceIdCitedBy[SourceId].Count);
-                foreach (SourceIdWithDepth CitedBySource in SourceIdCitedBy[SourceId])
-                {
-                    if (SourceIdCitedBy.ContainsKey(CitedBySource.SourceId) && CitedBySource.SourceId != SourceId)
-                    {
-                        CitedBySourceIds.Add(CitedBySource);
-                    }
-                }
-                SourceIdCitedBy[SourceId] = CitedBySourceIds;
+                //Check whether the object is null 
+                if (Object.ReferenceEquals(Source, null)) return 0;
+
+                //Calculate the hash code for the product. 
+                return Source.SourceId.GetHashCode();
             }
+
+        }
+        public SourceIdWithDepth[] GetAllSourcesForTheory(int TheoryId)
+        {
+            Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = GetSourceTreeForTheory(TheoryId);
             Dictionary<long, SourceIdWithDepth> AllLevelSourceIds = new Dictionary<long, SourceIdWithDepth>();
             foreach (List<SourceIdWithDepth> CurrentLevelSources in SourceIdCitedBy.Values)
             {
                 foreach (SourceIdWithDepth CurrentSource in CurrentLevelSources)
                 {
-                    if(!AllLevelSourceIds.ContainsKey(CurrentSource.SourceId))
+                    if (!AllLevelSourceIds.ContainsKey(CurrentSource.SourceId))
                     {
                         AllLevelSourceIds.Add(CurrentSource.SourceId, CurrentSource);
                     }
