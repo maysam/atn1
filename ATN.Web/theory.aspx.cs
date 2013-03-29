@@ -31,7 +31,7 @@ namespace ATN.Web
                 //show the papers contributing to the theory
                 //ExtendedSource allSources = 
                 
-                sources = sourceRetriever.GetAllSourcesForTheory(theoryId);
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId);
 
                 //don't show footer
                 grdFirstLevelSources.ShowFooter = false;
