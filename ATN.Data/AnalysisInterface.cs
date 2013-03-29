@@ -76,7 +76,7 @@ namespace ATN.Data
         }
         public CompleteTheoryMembership GetTheoryMembershipContributionsForSource(int TheoryId, long SourceId)
         {
-            TheoryMembership tm = Context.TheoryMemberships.Where(t => t.TheoryId == TheoryId && t.SourceId == SourceId).OrderBy(t => t.RunId).FirstOrDefault();
+            TheoryMembership tm = Context.TheoryMemberships.Where(t => t.TheoryId == TheoryId && t.SourceId == SourceId).OrderByDescending(t => t.RunId).FirstOrDefault();
             TheoryMembershipSignificance tms = Context.TheoryMembershipSignificances.Single(t => t.SourceId == SourceId && t.TheoryId == TheoryId);
             int NumberContributing = Context.MetaAnalysisMemberships.Where(mam => mam.TheoryMembershipSignificanceId == tms.TheoryMembershipSignificanceId).Count();
             return new CompleteTheoryMembership(tm, tms, NumberContributing);

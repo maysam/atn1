@@ -188,9 +188,6 @@ namespace ATN.Data
                 {
                     //The canonical IDs are included such that any recepient of the tree
                     //can be aware of which papers are canonical and which are not
-                    //This is useful in situations where expensive computation to determine
-                    //the canonical IDs is not useful; such as when exporting a theory for
-                    //use by research assistants
                     if (!SourceIdCitedBy.ContainsKey(CanonicalSourceKey))
                     {
                         SourceIdCitedBy[CanonicalSourceKey] = new List<SourceIdWithDepth>();
