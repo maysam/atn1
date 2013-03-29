@@ -136,10 +136,10 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
-        public ExtendedSource[] GetAllExtendedSourcesForTheory(int TheoryId)
+        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId)
         {
             SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId);
-            ExtendedSource[] AllExtendedSources = new ExtendedSource[AllSources.Length];
+            List<ExtendedSource> AllExtendedSources = new List<ExtendedSource>();
             for (int i = 0; i < AllSources.Length; i++)
             {
                 AllExtendedSources[i] = _sources.GetExtendedSourceBySourceId(TheoryId, AllSources[i].SourceId);
