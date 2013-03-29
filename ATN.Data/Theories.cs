@@ -11,10 +11,14 @@ namespace ATN.Data
     /// </summary>
     public class Theories : DatabaseInterface
     {
-        Sources Sources;
+        Sources _sources;
+        /// <summary>
+        /// This is the key used by the GetSourceTreeForTheory method to contain the canonical sources.
+        /// </summary>
+        public const long CanonicalSourceKey = -1;
         public Theories(ATNEntities Entities = null) : base(Entities)
         {
-            Sources = new Sources(Entities);
+            _sources = new Sources(Entities);
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace ATN.Data
             List<Source> CanonicalSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                CanonicalSources.Add(Sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
             }
             return CanonicalSources.ToArray();
         }
@@ -92,7 +96,7 @@ namespace ATN.Data
             List<Source> FirstLevelSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                Source CanonicalSource = Sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
                 foreach (Source CitingSource in CanonicalSource.CitingSources)
                 {
                     FirstLevelSources.Add(CitingSource);
@@ -138,7 +142,7 @@ namespace ATN.Data
             ExtendedSource[] AllExtendedSources = new ExtendedSource[AllSources.Length];
             for (int i = 0; i < AllSources.Length; i++)
             {
-                AllExtendedSources[i] = Sources.GetExtendedSourceBySourceId(TheoryId, AllSources[i].SourceId);
+                AllExtendedSources[i] = _sources.GetExtendedSourceBySourceId(TheoryId, AllSources[i].SourceId);
             }
             return AllExtendedSources;
         }
@@ -152,10 +156,7 @@ namespace ATN.Data
         {
             Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = new Dictionary<long, List<SourceIdWithDepth>>();
 
-            Theories t = new Theories(Context);
-            Sources Sources = new Sources(Context);
-
-            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(TheoryId);
+            Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
 
             //This retrieves a large table worth of sources, citations, and citation depth
             //It is important that the table is sorted by Depth ascending such that any source
@@ -173,7 +174,6 @@ namespace ATN.Data
             ).ToArray();
 
             //This transforms the raw list of citations into a rudimentary tree
-            const long CanonicalSourceKey = -1;
             foreach (SourceIdCitedByWithDepth sic in SourcesCited)
             {
                 if (sic.CitesSourceId.HasValue)
@@ -260,12 +260,12 @@ namespace ATN.Data
             {
                 //SourceId == -1 are the canonical sources, which would have already
                 //been handled in the previous loop
-                if (SourceId != -1 && !AllLevelSourceIds.ContainsKey(SourceId))
+                if (SourceId != CanonicalSourceKey && !AllLevelSourceIds.ContainsKey(SourceId))
                 {
-                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 0));
+                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 1));
                 }
             }
-            Dictionary<long, int> IFDict = SourceIdCitedBy.Where(s => s.Key != -1).Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            Dictionary<long, int> IFDict = SourceIdCitedBy.Where(s => s.Key != CanonicalSourceKey).Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
             return AllLevelSourceIds.Values.Select(v => new SourceIdWithDepth(v.SourceId, v.Depth, IFDict.ContainsKey(v.SourceId) ? IFDict[v.SourceId] : 0)).OrderBy(src => src.Depth).ToArray();
         }
 
