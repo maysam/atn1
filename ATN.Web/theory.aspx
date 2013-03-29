@@ -3,7 +3,7 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Label ID="lblNetworkName" runat="server" /></h2>
     <br />
-    <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" >
+    <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true">
         <Columns>
             <asp:TemplateField>
                 <HeaderTemplate>
@@ -115,6 +115,8 @@
     </asp:GridView>
 
     <br />
-    <asp:Button ID="btnSubmit" runat="server" Text="Submit" OnClientClick="btnSubmit_OnClientClick" />
+    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" OnClientClick="btnPrevious_OnClientClick" />
+    <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClientClick="btnSubmit_OnClientClick" />
+    <asp:Button ID="btnNext" runat="server" Text="Next Page" OnClientClick="btnNext_OnClientClick" />
 
 </asp:Content>
