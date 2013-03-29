@@ -11,10 +11,14 @@ namespace ATN.Data
     /// </summary>
     public class Theories : DatabaseInterface
     {
-        Sources Sources;
+        Sources _sources;
+        /// <summary>
+        /// This is the key used by the GetSourceTreeForTheory method to contain the canonical sources.
+        /// </summary>
+        public const long CanonicalSourceKey = -1;
         public Theories(ATNEntities Entities = null) : base(Entities)
         {
-            Sources = new Sources(Entities);
+            _sources = new Sources(Entities);
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace ATN.Data
             List<Source> CanonicalSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                CanonicalSources.Add(Sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
             }
             return CanonicalSources.ToArray();
         }
@@ -92,7 +96,7 @@ namespace ATN.Data
             List<Source> FirstLevelSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                Source CanonicalSource = Sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
                 foreach (Source CitingSource in CanonicalSource.CitingSources)
                 {
                     FirstLevelSources.Add(CitingSource);
@@ -132,15 +136,27 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
-        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId)
+        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId,  out int LastPageIndex, int PageSize = 200, int PageIndex = 0)
         {
             SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId);
-            List<ExtendedSource> AllExtendedSources = new List<ExtendedSource>();
-            for (int i = 0; i < AllSources.Length; i++)
+            LastPageIndex = AllSources.Length / PageSize - 1;
+            AllSources = AllSources.Skip(PageSize * PageIndex).Take(PageSize).ToArray();
+
+            StringBuilder QueryBuilder = new StringBuilder();
+
+            //SQL Server does not receive arrays very easily from a client
+            //Consequently, this approach creates a temporary table, loads
+            //the maximum allowable number of values per insert query (1000)
+            //and then joins against it to select out all of the necessary
+            //data for exportation
+            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
+            for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
-                AllExtendedSources.Add(Sources.GetExtendedSourceBySourceId(TheoryId, AllSources[i].SourceId));
+                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
             }
-            return AllExtendedSources;
+            QueryBuilder.AppendLine(string.Format("SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, st.Depth as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.SourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId = st.SourceId ORDER BY Depth ASC", TheoryId));
+            QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
+            return Context.ExecuteStoreQuery<ExtendedSource>(QueryBuilder.ToString()).ToList();
         }
 
         /// <summary>
@@ -152,10 +168,7 @@ namespace ATN.Data
         {
             Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = new Dictionary<long, List<SourceIdWithDepth>>();
 
-            Theories t = new Theories(Context);
-            Sources Sources = new Sources(Context);
-
-            Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(TheoryId);
+            Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
 
             //This retrieves a large table worth of sources, citations, and citation depth
             //It is important that the table is sorted by Depth ascending such that any source
@@ -173,7 +186,6 @@ namespace ATN.Data
             ).ToArray();
 
             //This transforms the raw list of citations into a rudimentary tree
-            const long CanonicalSourceKey = -1;
             foreach (SourceIdCitedByWithDepth sic in SourcesCited)
             {
                 if (sic.CitesSourceId.HasValue)
@@ -260,12 +272,12 @@ namespace ATN.Data
             {
                 //SourceId == -1 are the canonical sources, which would have already
                 //been handled in the previous loop
-                if (SourceId != -1 && !AllLevelSourceIds.ContainsKey(SourceId))
+                if (SourceId != CanonicalSourceKey && !AllLevelSourceIds.ContainsKey(SourceId))
                 {
-                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 0));
+                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 1));
                 }
             }
-            Dictionary<long, int> IFDict = SourceIdCitedBy.Where(s => s.Key != -1).Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            Dictionary<long, int> IFDict = SourceIdCitedBy.Where(s => s.Key != CanonicalSourceKey).Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
             return AllLevelSourceIds.Values.Select(v => new SourceIdWithDepth(v.SourceId, v.Depth, IFDict.ContainsKey(v.SourceId) ? IFDict[v.SourceId] : 0)).OrderBy(src => src.Depth).ToArray();
         }
 

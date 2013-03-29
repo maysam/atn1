@@ -11,42 +11,16 @@ namespace ATN.Export
 {
     public class Program
     {
-        static Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
-        static Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
-        static long CurrentSourceIndex = 0;
-
-        static Dictionary<long, List<long>> SourceIdCitedBy = new Dictionary<long, List<long>>();
-        static List<SourceEdge> Edges = new List<SourceEdge>();
-        static List<SourceNode> Nodes = new List<SourceNode>();
-
-        static long GetIndexForSource(long SourceId)
-        {
-            if (!SourceIdToIndex.ContainsKey(SourceId))
-            {
-                SourceIdToIndex[SourceId] = CurrentSourceIndex;
-                IndexToSourceId[CurrentSourceIndex] = SourceId;
-                CurrentSourceIndex++;
-                return CurrentSourceIndex - 1;
-            }
-            else
-            {
-                return SourceIdToIndex[SourceId];
-            }
-        }
-
-        static void AddSourceToGraph(Source Source, long[] Citations)
-        {
-            SourceIdCitedBy[Source.SourceId] = Citations.ToList();
-        }
         static void Main(string[] args)
         {
             Theories t = new Theories();
-            ExportSource[] CanonicalSources = t.GetExportSourcesForTheory(2);
+            int LastPageIndex = 0;
+            ExtendedSource[] CanonicalSources = t.GetAllExtendedSourcesForTheory(2, out LastPageIndex).ToArray();
 
-            FileStream DestinationNetStream = File.Open("TAM.csv", FileMode.Create);
+            FileStream DestinationNetStream = File.Open("SmallTheory.csv", FileMode.Create);
             StreamWriter sw = new StreamWriter(DestinationNetStream, Encoding.Unicode);
             sw.WriteLine("Source ID\tMAS ID\tTitle\tYear\tAuthors\tJournal\tContributing (Yes/No)\tIs Meta Analysis (Yes/No)\tMeta Analysis Members (MAS IDs)");
-            foreach (ExportSource cs in CanonicalSources)
+            foreach (ExtendedSource cs in CanonicalSources)
             {
                 sw.Write(cs.SourceId + "\t");
                 sw.Write(cs.MasID + "\t");

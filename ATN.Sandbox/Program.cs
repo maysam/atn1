@@ -9,6 +9,7 @@ using ATN.Data;
 using alglib = ATN.Analysis.AEF.alglib;
 using ATN.Export;
 using System.IO;
+using System.Diagnostics;
 
 namespace ATN.Analysis
 {
@@ -50,7 +51,10 @@ namespace ATN.Analysis
         static void Main(string[] args)
         {
             Theories t = new Theories();
-            SourceIdCitedBy = t.GetSourceTreeForTheory(7);
+
+            Stopwatch GraphBuild = new Stopwatch();
+            GraphBuild.Start();
+            SourceIdCitedBy = t.GetSourceTreeForTheory(2);
 
             //Translate the theory tree into a list of edges
             foreach (KeyValuePair<long, List<SourceIdWithDepth>> SourceAndCitations in SourceIdCitedBy)
@@ -89,9 +93,14 @@ namespace ATN.Analysis
             //Compute the out factor for each source in the tree
             int[] OFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
 
+            GraphBuild.Stop();
+
             //Compute the ImpactFactor for each source in the tree
             //int[] IFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => !SourceIdCitedBy.ContainsKey(k) ? 0 : SourceIdCitedBy[k].Count).ToArray();
 
+            Stopwatch FullComputation = new Stopwatch();
+            FullComputation.Start();
+                
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);
             
@@ -103,12 +112,14 @@ namespace ATN.Analysis
             //alglib.sparseset(s, 3, 1, 1.0);
             //alglib.sparseset(s, 3, 2, 1.0);
 
+            Stopwatch EdgeSet = new Stopwatch();
+            EdgeSet.Start();
             /* Write E to sparse matrix. Must go left to right (will have to order in pull from db) */
             for (int i = 0; i < NumberOfEdges; i++)
             {
                 alglib.sparseset(s, (int)(Edges[i].StartSourceId), (int)(Edges[i].EndSourceId), 1.0);
             }
-
+            EdgeSet.Stop();
 
             /* Print Sparse Matrix */
             // For the test, we should have adj matrix of the form
@@ -218,12 +229,12 @@ namespace ATN.Analysis
            for (int i = 0; i < MatrixOrder; i++)
                AEFScore[i] /= AEFsum;
 
+           FullComputation.Stop();
            Console.Write("-- AEF (post-normalization) --\n");
            Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
                       
             /* Free s */
            alglib.sparsefree(out s);
-
            //FileStream DestinationNetStream = File.Open("TheoryId2Export.txt", FileMode.Create);
            //StreamWriter sw = new StreamWriter(DestinationNetStream);
            //sw.WriteLine(" V   \tAEF              IF \n");
