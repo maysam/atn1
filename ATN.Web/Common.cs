@@ -50,6 +50,11 @@ namespace ATN.Web
             
         }
 
+        public struct Data
+        {
+            public const int PageSize = 200;
+        }
+
         /// <summary>
         /// Sorts the specified list.
         /// </summary>

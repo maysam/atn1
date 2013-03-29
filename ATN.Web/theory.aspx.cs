@@ -16,6 +16,7 @@ namespace ATN.Web
         int metaAnalysis;
         //The page number
         int pageNumber;
+        int lastPageIndex;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -35,7 +36,7 @@ namespace ATN.Web
                 //show the papers contributing to the theory
                 //ExtendedSource allSources = 
                 
-                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId);
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, pageNumber, Common.Data.PageSize);
 
                 //don't show footer
                 grdFirstLevelSources.ShowFooter = false;
@@ -66,7 +67,7 @@ namespace ATN.Web
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + pageNumber--;
             }
             //last page
-            if (sources.Count < 200)
+            if (sources.Count < Common.Data.PageSize)
             {
                 btnNext.Visible = false;
             }
@@ -107,15 +108,15 @@ namespace ATN.Web
                 {
                     #region non-metaAnalysis grid
                     LinkButton lnkTitle = e.Row.Cells[1].Controls[1] as LinkButton;
-                    lnkTitle.Text = source.Source.ArticleTitle;
+                    lnkTitle.Text = source.Title;
                     lnkTitle.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
                         Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
-                        Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + source.Source.SourceId.ToString();
+                        Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + source.SourceId.ToString();
                     Label lblTitle = e.Row.Cells[1].Controls[2] as Label;
                     lblTitle.Visible = false;
 
                     Label lblSourceId = e.Row.Cells[2].Controls[1] as Label;
-                    lblSourceId.Text = source.Source.SourceId.ToString();
+                    lblSourceId.Text = source.SourceId.ToString();
                     
                     //if metaAnalysis then checked
                     CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
@@ -132,7 +133,7 @@ namespace ATN.Web
                     rblContributing.Visible = false;
 
                     Label lblYear = e.Row.Cells[5].Controls[1] as Label;
-                    lblYear.Text = source.Source.Year.ToString();
+                    lblYear.Text = source.Year.ToString();
 
                     Label lblEigenfactor = e.Row.Cells[6].Controls[1] as Label;
                     lblEigenfactor.Text = source.aefScore.ToString();
@@ -140,16 +141,13 @@ namespace ATN.Web
                     Label lblDepth = e.Row.Cells[7].Controls[1] as Label;
                     lblDepth.Text = source.depth.ToString();
 
-                    string authorString = "";
-                    foreach (Author author in source.Authors)
-                    {
-                        authorString += author.FullName + ", ";
-                    }
+                    char[] charsToTrim = { ',' };
+                    string authorString = source.Authors.TrimEnd(charsToTrim);
                     Label lblAuthors = e.Row.Cells[8].Controls[1] as Label;
                     lblAuthors.Text = authorString;
 
                     Label lblJournal = e.Row.Cells[9].Controls[1] as Label;
-                    lblJournal.Text = source.Journal.JournalName;
+                    lblJournal.Text = source.Journal;
                     #endregion
                 }
                 else
@@ -159,14 +157,15 @@ namespace ATN.Web
                     LinkButton lnkTitle = e.Row.Cells[1].Controls[1] as LinkButton;
                     lnkTitle.Visible = false;
                     Label lblTitle = e.Row.Cells[1].Controls[2] as Label;
-                    lblTitle.Text = source.Source.ArticleTitle;
+                    lblTitle.Text = source.Title;
 
                     Label lblSourceId = e.Row.Cells[2].Controls[1] as Label;
-                    lblSourceId.Text = source.Source.SourceId.ToString();
+                    lblSourceId.Text = source.SourceId.ToString();
 
-                    //show number of papers contributing to this papers meta analysis
+                    //only show the buton list if in meta analysis view
                     Label lblContributing = e.Row.Cells[4].Controls[1] as Label;
-                    //lblContributing.Text
+                    lblContributing.Visible = false;
+                    
                     RadioButtonList rblContributing = e.Row.Cells[4].Controls[2] as RadioButtonList;
                     //check if contributing
                     if (source.isContributing == true)
@@ -183,7 +182,7 @@ namespace ATN.Web
                     }
 
                     Label lblYear = e.Row.Cells[5].Controls[1] as Label;
-                    lblYear.Text = source.Source.Year.ToString();
+                    lblYear.Text = source.Year.ToString();
 
                     Label lblEigenfactor = e.Row.Cells[6].Controls[1] as Label;
                     lblEigenfactor.Text = source.aefScore.ToString();
@@ -191,16 +190,13 @@ namespace ATN.Web
                     Label lblDepth = e.Row.Cells[7].Controls[1] as Label;
                     lblDepth.Text = source.depth.ToString();
 
-                    string authorString = "";
-                    foreach (Author author in source.Authors)
-                    {
-                        authorString += author.FullName + ", ";
-                    }
+                    char[] charsToTrim = { ',' };
+                    string authorString = source.Authors.TrimEnd(charsToTrim);
                     Label lblAuthors = e.Row.Cells[8].Controls[1] as Label;
                     lblAuthors.Text = authorString;
 
                     Label lblJournal = e.Row.Cells[9].Controls[1] as Label;
-                    lblJournal.Text = source.Journal.JournalName; 
+                    lblJournal.Text = source.Journal; 
                     #endregion
                 }
             }
@@ -249,7 +245,7 @@ namespace ATN.Web
                     if (chkMetaAnalysis.Checked == true)
                     {
                         //save to database
-                        dataSaver.MarkSourceMetaAnalysis(theoryId, rowSource.Source.SourceId);
+                        dataSaver.MarkSourceMetaAnalysis(theoryId, rowSource.SourceId);
                     }
                 }
             }
@@ -276,7 +272,7 @@ namespace ATN.Web
                         //unmarked by RA
                     }
                     
-                    dataSaver.MarkSourceTheoryContribution(theoryId, rowSource.Source.SourceId, contributing);
+                    dataSaver.MarkSourceTheoryContribution(theoryId, rowSource.SourceId, contributing);
                 }
             }
         }

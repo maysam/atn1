@@ -136,10 +136,9 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
-        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId,  out int LastPageIndex, int PageSize = 200, int PageIndex = 0)
+        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex = 0, int PageSize = 200)
         {
             SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId);
-            LastPageIndex = AllSources.Length / PageSize - 1;
             AllSources = AllSources.Skip(PageSize * PageIndex).Take(PageSize).ToArray();
 
             StringBuilder QueryBuilder = new StringBuilder();
