@@ -14,12 +14,13 @@ namespace ATN.Export
         static void Main(string[] args)
         {
             Theories t = new Theories();
-            ExportSource[] CanonicalSources = t.GetExportSourcesForTheory(7);
+            int LastPageIndex = 0;
+            ExtendedSource[] CanonicalSources = t.GetAllExtendedSourcesForTheory(2, out LastPageIndex).ToArray();
 
             FileStream DestinationNetStream = File.Open("SmallTheory.csv", FileMode.Create);
             StreamWriter sw = new StreamWriter(DestinationNetStream, Encoding.Unicode);
             sw.WriteLine("Source ID\tMAS ID\tTitle\tYear\tAuthors\tJournal\tContributing (Yes/No)\tIs Meta Analysis (Yes/No)\tMeta Analysis Members (MAS IDs)");
-            foreach (ExportSource cs in CanonicalSources)
+            foreach (ExtendedSource cs in CanonicalSources)
             {
                 sw.Write(cs.SourceId + "\t");
                 sw.Write(cs.MasID + "\t");

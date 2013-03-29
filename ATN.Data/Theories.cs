@@ -136,15 +136,27 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
-        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId)
+        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId,  out int LastPageIndex, int PageSize = 200, int PageIndex = 0)
         {
             SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId);
-            List<ExtendedSource> AllExtendedSources = new List<ExtendedSource>();
-            for (int i = 0; i < AllSources.Length; i++)
+            LastPageIndex = AllSources.Length / PageSize - 1;
+            AllSources = AllSources.Skip(PageSize * PageIndex).Take(PageSize).ToArray();
+
+            StringBuilder QueryBuilder = new StringBuilder();
+
+            //SQL Server does not receive arrays very easily from a client
+            //Consequently, this approach creates a temporary table, loads
+            //the maximum allowable number of values per insert query (1000)
+            //and then joins against it to select out all of the necessary
+            //data for exportation
+            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
+            for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
-                AllExtendedSources[i] = _sources.GetExtendedSourceBySourceId(TheoryId, AllSources[i].SourceId);
+                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
             }
-            return AllExtendedSources;
+            QueryBuilder.AppendLine(string.Format("SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, st.Depth as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.SourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId = st.SourceId ORDER BY Depth ASC", TheoryId));
+            QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
+            return Context.ExecuteStoreQuery<ExtendedSource>(QueryBuilder.ToString()).ToList();
         }
 
         /// <summary>

@@ -125,7 +125,7 @@ namespace ATN.Data
             return cs;
         }
 
-        public ExtendedSource GetExtendedSourceBySourceId(int theoryId, long sourceId)
+        /*public ExtendedSource GetExtendedSourceBySourceId(int theoryId, long sourceId)
         {
             CompleteSource RetrievedSource = GetCompleteSourceBySourceId(sourceId);
             ExtendedSource es = new ExtendedSource(RetrievedSource);
@@ -139,7 +139,7 @@ namespace ATN.Data
             es.numContributing = ctm.NumberContributing;
             es.depth = ctm.TheoryMembership.Depth;
             return es;
-        }
+        }*/
 
         /// <summary>
         /// Adds a detached CompleteSource object
