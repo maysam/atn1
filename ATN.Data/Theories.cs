@@ -305,11 +305,15 @@ namespace ATN.Data
         /// </summary>
         /// <param name="SourceId">The id of the source to find references for</param>
         /// <returns>A list of extended Sources that cite the given source</returns>
-        public List<ExtendedSource> GetReferencesForSourceId(long SourceId)
+        public List<ExtendedSource> GetExtendedSourceReferencesForSource(int TheoryId, long SourceId)
         {
-            List<ExtendedSource> sources = new List<ExtendedSource>();
-
-            return sources;
+            return Context.ExecuteStoreQuery<ExtendedSource>(
+                @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint);
+                INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, c.CitesSourceId FROM CitationsReference c WHERE c.SourceId = {0}
+                SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, CAST(2 as smallint) as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.CitesSourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {1} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.CitesSourceId ASC
+                DROP TABLE #SourceIdTable",
+                TheoryId, SourceId
+            ).ToList();
         }
 
         /// <summary>

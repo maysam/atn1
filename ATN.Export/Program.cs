@@ -15,7 +15,7 @@ namespace ATN.Export
         {
             Theories t = new Theories();
             int LastPageIndex = 0;
-            ExtendedSource[] CanonicalSources = t.GetAllExtendedSourcesForTheory(2, out LastPageIndex).ToArray();
+            ExtendedSource[] CanonicalSources = t.GetExtendedSourceReferencesForSource(2, 52).ToArray();
 
             FileStream DestinationNetStream = File.Open("SmallTheory.csv", FileMode.Create);
             StreamWriter sw = new StreamWriter(DestinationNetStream, Encoding.Unicode);
