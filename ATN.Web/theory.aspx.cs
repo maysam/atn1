@@ -12,8 +12,10 @@ namespace ATN.Web
     {
         //the theory to evaluate
         int theoryId;
-        //the source id of the metaAnalysis
+        //the source id of the metaAnalysis or 0 if it is not a meta analysis
         int metaAnalysis;
+        //The page number
+        int pageNumber;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -21,6 +23,8 @@ namespace ATN.Web
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 1;
             metaAnalysis = (Request.QueryString[Common.QueryStrings.MetaAnalysis] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.MetaAnalysis]) : 0;
+            pageNumber = (Request.QueryString[Common.QueryStrings.PageNumber] != null) ?
+                Convert.ToInt32(Request.QueryString[Common.QueryStrings.PageNumber]) : 0;
 
             Theories sourceRetriever = new Theories();
             Theory theoryRetriever = new Theory();
@@ -49,6 +53,31 @@ namespace ATN.Web
                 grdFirstLevelSources.ShowFooter = false;
             }
 
+            //first page
+            if (pageNumber == 0)
+            {
+                btnPrevious.Visible = false;
+            }
+            else
+            {
+                btnPrevious.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysis +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + pageNumber--;
+            }
+            //last page
+            if (sources.Count < 200)
+            {
+                btnNext.Visible = false;
+            }
+            else
+            {
+                btnNext.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysis +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + pageNumber++;
+            }
+
             grdFirstLevelSources.DataSource = sources;
             grdFirstLevelSources.DataBind();
 
@@ -60,6 +89,15 @@ namespace ATN.Web
             if (e.Row.RowType == DataControlRowType.Header)
             {
                 //column 3 needs to specify if what is going to be seen
+                Label lblContributingHeader = e.Row.Cells[3].Controls[1] as Label;
+                if(metaAnalysis != 0)
+                {
+                    lblContributingHeader.Text = "Number Contributing";
+                }
+                else
+                {
+                    lblContributingHeader.Text = "Contributing?";
+                }
             }
             else if (e.Row.RowType == DataControlRowType.DataRow)
             {
@@ -168,9 +206,20 @@ namespace ATN.Web
             }
             else
             {
-
+                //footer
             }
         }
+
+        protected void btnNext_OnClientClick(object sender, EventArgs e)
+        {
+            save_results();
+        }
+
+        protected void btnNext_OnClientClick(object sender, EventArgs e)
+        {
+            save_results();
+        }
+
         protected void btnSubmit_OnClientClick(object sender, EventArgs e)
         {
             //save changes

@@ -18,6 +18,7 @@ namespace ATN.Web
             public const string LastRun = "LastRun";
             public const string MetaAnalysis = "MetaAnalysis";
             public const string Network = "Network";
+            public const string PageNumber = "PageNumber";
             public const string SecondLevel = "SecondLevel";
             public const string SortCol = "SortCol";
             public const string SortOrder = "SortOrder";
