@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
+    /// <summary>
+    /// Used for an interim flat-file export for research assistants to tag meta analyses offline
+    /// </summary>
     public class ExportSource
     {
         public long SourceId { get; set; }

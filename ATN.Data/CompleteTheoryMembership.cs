@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
+    /// <summary>
+    /// Used to represent the complete state of a source's latest contribution to a theory
+    /// </summary>
     public class CompleteTheoryMembership
     {
         public TheoryMembership TheoryMembership { get; set; }

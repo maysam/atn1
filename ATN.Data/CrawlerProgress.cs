@@ -30,6 +30,9 @@ namespace ATN.Data
 
         /// <summary>
         /// Sets a Crawl as having been changed during the course of aa crawl run.
+        /// This is used in instances where a crawl may be interupted, such that
+        /// at the completion of the crawl the processing service knows to kick off
+        /// analysis.
         /// </summary>
         /// <param name="Crawl">The Crawl to be set as having changed</param>
         public void SetCrawlerStateChanged(Crawl Crawl)

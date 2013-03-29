@@ -110,6 +110,12 @@ namespace ATN.Data
         {
             SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId).OrderBy(sid => sid.Depth).ToArray();
             StringBuilder QueryBuilder = new StringBuilder();
+
+            //SQL Server does not receive arrays very easily from a client
+            //Consequently, this approach creates a temporary table, loads
+            //the maximum allowable number of values per insert query (1000)
+            //and then joins against it to select out all of the necessary
+            //data for exportation
             QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
             for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
@@ -154,6 +160,9 @@ namespace ATN.Data
             //This retrieves a large table worth of sources, citations, and citation depth
             //It is important that the table is sorted by Depth ascending such that any source
             //which is both a first level and second level source is counted as first level
+            //It starts by adding canonical sources into a temporary table, then for each
+            //canonical source inserting 1st level sources, and for each 1st level source
+            //inserting 2nd level sources
             SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
                 @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");

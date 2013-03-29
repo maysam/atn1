@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
+    /// <summary>
+    /// Used in representing a list of sources, their citation depth, and their ImpactFactor
+    /// </summary>
     public class SourceIdWithDepth
     {
         public long SourceId { get; set; }
