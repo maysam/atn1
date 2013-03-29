@@ -110,7 +110,7 @@ namespace ATN.Data
         {
             SourceIdWithDepth[] AllSources = GetAllSourcesForTheory(TheoryId).OrderBy(sid => sid.Depth).ToArray();
             StringBuilder QueryBuilder = new StringBuilder();
-            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint PRIMARY KEY, Depth smallint);");
+            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
             for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
                 QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
@@ -138,18 +138,22 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Retrieves all of the sources for a theory
+        /// Retreives a list of source ids, along with the sources they cite and the citation depth
         /// </summary>
         /// <param name="TheoryId">The id of the theory to retrieve sources for</param>
-        /// <returns>All Sources in the given theory</returns>
+        /// <returns>A dictionary of sources, where the key is the cited source and the list of values are all sources that cite the key along with the citation depth</returns>
         public Dictionary<long, List<SourceIdWithDepth>> GetSourceTreeForTheory(int TheoryId)
         {
             Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = new Dictionary<long, List<SourceIdWithDepth>>();
 
             Theories t = new Theories(Context);
             Sources Sources = new Sources(Context);
+
             Source[] CanonicalSources = t.GetCanonicalSourcesForTheory(TheoryId);
 
+            //This retrieves a large table worth of sources, citations, and citation depth
+            //It is important that the table is sorted by Depth ascending such that any source
+            //which is both a first level and second level source is counted as first level
             SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
                 @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
@@ -158,6 +162,9 @@ namespace ATN.Data
                 SELECT * FROM #SourceIdTable ORDER BY Depth ASC
                 DROP TABLE #SourceIdTable"
             ).ToArray();
+
+            //This transforms the raw list of citations into a rudimentary tree
+            const long CanonicalSourceKey = -1;
             foreach (SourceIdCitedByWithDepth sic in SourcesCited)
             {
                 if (sic.CitesSourceId.HasValue)
@@ -168,11 +175,27 @@ namespace ATN.Data
                     }
                     if (sic.CitesSourceId.Value != sic.SourceId)
                     {
+                        //This is necessary to avoid instances where a source may be considered 1st level to the canonical source
+                        //but may also be considered 2nd level to a separate 1st level source. As the passed table is sorted by
+                        //depth the first added source is always the correct depth
                         if (!SourceIdCitedBy[sic.CitesSourceId.Value].Contains(new SourceIdWithDepth(sic.SourceId, sic.Depth), new SourceIdWithDepthComparer()))
                         {
                             SourceIdCitedBy[sic.CitesSourceId.Value].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
                         }
                     }
+                }
+                else
+                {
+                    //The canonical IDs are included such that any recepient of the tree
+                    //can be aware of which papers are canonical and which are not
+                    //This is useful in situations where expensive computation to determine
+                    //the canonical IDs is not useful; such as when exporting a theory for
+                    //use by research assistants
+                    if (!SourceIdCitedBy.ContainsKey(CanonicalSourceKey))
+                    {
+                        SourceIdCitedBy[CanonicalSourceKey] = new List<SourceIdWithDepth>();
+                    }
+                    SourceIdCitedBy[CanonicalSourceKey].Add(new SourceIdWithDepth(sic.SourceId, sic.Depth));
                 }
             }
             return SourceIdCitedBy;
@@ -211,9 +234,11 @@ namespace ATN.Data
         {
             Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = GetSourceTreeForTheory(TheoryId);
             Dictionary<long, SourceIdWithDepth> AllLevelSourceIds = new Dictionary<long, SourceIdWithDepth>();
-            foreach (List<SourceIdWithDepth> CurrentLevelSources in SourceIdCitedBy.Values)
+
+            //This enumerates through every value and adds it to the list of sources
+            foreach (KeyValuePair<long, List<SourceIdWithDepth>> CurrentLevelSources in SourceIdCitedBy)
             {
-                foreach (SourceIdWithDepth CurrentSource in CurrentLevelSources)
+                foreach (SourceIdWithDepth CurrentSource in CurrentLevelSources.Value)
                 {
                     if (!AllLevelSourceIds.ContainsKey(CurrentSource.SourceId))
                     {
@@ -221,15 +246,21 @@ namespace ATN.Data
                     }
                 }
             }
+
+            //There may exist sources which do not receive any citations; by definition
+            //these types of sources have to be 1st level; as 0th level always has citations
+            //and 2nd level sources will always be cited by something
             foreach (long SourceId in SourceIdCitedBy.Keys)
             {
-                if (!AllLevelSourceIds.ContainsKey(SourceId))
+                //SourceId == -1 are the canonical sources, which would have already
+                //been handled in the previous loop
+                if (SourceId != -1 && !AllLevelSourceIds.ContainsKey(SourceId))
                 {
-                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 1));
+                    AllLevelSourceIds.Add(SourceId, new SourceIdWithDepth(SourceId, 0));
                 }
             }
-            Dictionary<long, int> IFDict = SourceIdCitedBy.Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
-            return AllLevelSourceIds.Values.Select(v => new SourceIdWithDepth(v.SourceId, v.Depth, IFDict[v.SourceId])).OrderBy(src => src.Depth).ToArray();
+            Dictionary<long, int> IFDict = SourceIdCitedBy.Where(s => s.Key != -1).Select(kv => new KeyValuePair<long, int>(kv.Key, kv.Value.Count)).ToDictionary(kv => kv.Key, kv => kv.Value);
+            return AllLevelSourceIds.Values.Select(v => new SourceIdWithDepth(v.SourceId, v.Depth, IFDict.ContainsKey(v.SourceId) ? IFDict[v.SourceId] : 0)).OrderBy(src => src.Depth).ToArray();
         }
 
         /// <summary>

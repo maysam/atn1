@@ -14,13 +14,24 @@ namespace ATN.Analysis
 {
     class Program
     {
+        //For storing the translation between Source ID and Index
+        //in order to accommodate alglib's storage constraints
         static Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
         static Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
         static long CurrentSourceIndex = 0;
 
-        static Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy = new Dictionary<long, List<SourceIdWithDepth>>();
+        //For storage of the theory source tree
+        static Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy;
+
+        //For storing the list of edges that will be passed to alglib
         static List<SourceEdge> Edges = new List<SourceEdge>();
 
+        /// <summary>
+        /// Retrieves the index for a particular source, and adds the Source and index
+        /// to the translation dictionaries if it has not been seen before
+        /// </summary>
+        /// <param name="SourceId">The SourceId to retrieve an index for</param>
+        /// <returns>The index corresponding to the passed SourceId</returns>
         static long GetIndexForSource(long SourceId)
         {
             if (!SourceIdToIndex.ContainsKey(SourceId))
@@ -41,20 +52,30 @@ namespace ATN.Analysis
             Theories t = new Theories();
             SourceIdCitedBy = t.GetSourceTreeForTheory(7);
 
+            //Translate the theory tree into a list of edges
             foreach (KeyValuePair<long, List<SourceIdWithDepth>> SourceAndCitations in SourceIdCitedBy)
             {
                 foreach (SourceIdWithDepth Citation in SourceAndCitations.Value)
                 {
-                    long EndIndex = GetIndexForSource(SourceAndCitations.Key);
-                    long StartIndex = GetIndexForSource(Citation.SourceId);
-                    Edges.Add(new SourceEdge(StartIndex, EndIndex));
+                    //This check is to ignore the canonical IDs
+                    if (SourceAndCitations.Key != -1)
+                    {
+                        long EndIndex = GetIndexForSource(SourceAndCitations.Key);
+                        long StartIndex = GetIndexForSource(Citation.SourceId);
+                        Edges.Add(new SourceEdge(StartIndex, EndIndex));
+                    }
                 }
             }
+
+            //Compute how many times each source cites other sources
+            //This is neccessary for alglib's sparse matrix storage
             Dictionary<long, int> TimesKeyCitesSomething = new Dictionary<long, int>();
             foreach (long Key in SourceIdToIndex.Keys)
             {
                 int CitationCount = 0;
-                foreach (List<SourceIdWithDepth> Value in SourceIdCitedBy.Values)
+                //The Skip(1) is to skip over the SourceIdCitedBy[-1] entry;
+                //as these are canonical IDs which should not be counted
+                foreach (List<SourceIdWithDepth> Value in SourceIdCitedBy.Values.Skip(1))
                 {
                     CitationCount += Value.Count(val => val.SourceId == Key);
                 }
@@ -65,9 +86,11 @@ namespace ATN.Analysis
             int MatrixOrder = SourceIdToIndex.Keys.Count();
             int NumberOfEdges = Edges.Count();
 
-            // Use IF (of citation network) scores to determine # of row entries
-            int[] OFArray = SourceIdToIndex.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
-            int[] IFArray = SourceIdToIndex.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => !SourceIdCitedBy.ContainsKey(k) ? 0 : SourceIdCitedBy[k].Count).ToArray();
+            //Compute the out factor for each source in the tree
+            int[] OFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
+
+            //Compute the ImpactFactor for each source in the tree
+            //int[] IFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => !SourceIdCitedBy.ContainsKey(k) ? 0 : SourceIdCitedBy[k].Count).ToArray();
 
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);
@@ -201,7 +224,7 @@ namespace ATN.Analysis
             /* Free s */
            alglib.sparsefree(out s);
 
-           //FileStream DestinationNetStream = File.Open("Graph.net", FileMode.Create);
+           //FileStream DestinationNetStream = File.Open("TheoryId2Export.txt", FileMode.Create);
            //StreamWriter sw = new StreamWriter(DestinationNetStream);
            //sw.WriteLine(" V   \tAEF              IF \n");
            //foreach (KeyValuePair<long, long> KV in IndexToSourceId)

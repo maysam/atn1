@@ -44,32 +44,39 @@ namespace ATN.Export
             ExportSource[] CanonicalSources = t.GetExportSourcesForTheory(2);
 
             FileStream DestinationNetStream = File.Open("TAM.csv", FileMode.Create);
-            StreamWriter sw = new StreamWriter(DestinationNetStream);
-            sw.WriteLine("Source ID,MAS ID,Title,Year,Authors,Journal,Contributing (Yes/No),Is Meta Analysis (Yes/No),Meta Analysis Members (MAS IDs)");
+            StreamWriter sw = new StreamWriter(DestinationNetStream, Encoding.Unicode);
+            sw.WriteLine("Source ID\tMAS ID\tTitle\tYear\tAuthors\tJournal\tContributing (Yes/No)\tIs Meta Analysis (Yes/No)\tMeta Analysis Members (MAS IDs)");
             foreach (ExportSource cs in CanonicalSources)
             {
-                sw.Write(cs.SourceId + ",");
-                sw.Write(cs.MasID + ",");
-                sw.Write(string.Format("\"{0}\"", cs.Title.Replace("\"", "\"\"")) + ",");
-                sw.Write(cs.Year + ",");
-                if (cs.Authors != null)
+                sw.Write(cs.SourceId + "\t");
+                sw.Write(cs.MasID + "\t");
+                sw.Write(string.Format("\"{0}\"", cs.Title.Replace("\"", "\"\"")) + "\t");
+                if (cs.Year != 0)
                 {
-                    sw.Write(string.Format("\"{0}\"", cs.Authors.Remove(cs.Authors.LastIndexOf(","), 1).Replace("\"", "\"\"")) + ",");
+                    sw.Write(cs.Year + "\t");
                 }
                 else
                 {
-                    sw.Write("None Available,");
+                    sw.Write("None Available\t");
+                }
+                if (cs.Authors != null)
+                {
+                    sw.Write(string.Format("\"{0}\"", cs.Authors.Remove(cs.Authors.LastIndexOf(","), 1).Replace("\"", "\"\"")) + "\t");
+                }
+                else
+                {
+                    sw.Write("None Available\t");
                 }
                 if (cs.Journal != null)
                 {
-                    sw.Write(string.Format("\"{0}\"", cs.Journal.Replace("\"", "\"\"")) + ",");
+                    sw.Write(string.Format("\"{0}\"", cs.Journal.Replace("\"", "\"\"")) + "\t");
                 }
                 else
                 {
-                    sw.Write("None,");
+                    sw.Write("None\t");
                 }
-                sw.Write(" ,");
-                sw.Write(" , ");
+                sw.Write(" \t");
+                sw.Write(" \t ");
                 sw.Write(Environment.NewLine);
             }
             sw.Close();
