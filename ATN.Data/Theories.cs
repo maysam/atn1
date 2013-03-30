@@ -302,7 +302,8 @@ namespace ATN.Data
         /// <summary>
         /// Gets the references cited in a certain source. This is used to find sources within a meta-analysis.
         /// </summary>
-        /// <param name="SourceId">The id of the source to find references for</param>
+        /// <param name="TheoryId">The theory to retrieve extended source references for</param>
+        /// <param name="SourceId">The id of the source to find extended source references for</param>
         /// <returns>A list of extended Sources that cite the given source</returns>
         public List<ExtendedSource> GetExtendedSourceReferencesForSource(int TheoryId, long SourceId)
         {
