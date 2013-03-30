@@ -1,5 +1,5 @@
 ﻿//#define VERBOSE
-//#define TIMING
+#define TIMING
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace ATN.Analysis
                 t = new Theories();
             #endif
 
-            SourceIdCitedBy = t.GetSourceTreeForTheory(7);
+            SourceIdCitedBy = t.GetSourceTreeForTheory(TheoryId);
 
             //Translate the theory tree into a list of edges
             foreach (KeyValuePair<long, List<SourceIdWithDepth>> SourceAndCitations in SourceIdCitedBy)
@@ -76,7 +76,7 @@ namespace ATN.Analysis
                 foreach (SourceIdWithDepth Citation in SourceAndCitations.Value)
                 {
                     //This check is to ignore the canonical IDs
-                    if (SourceAndCitations.Key != -1)
+                    if (SourceAndCitations.Key != Theories.CanonicalSourceKey)
                     {
                         long EndIndex = GetIndexForSource(SourceAndCitations.Key);
                         long StartIndex = GetIndexForSource(Citation.SourceId);
@@ -88,12 +88,11 @@ namespace ATN.Analysis
             //Compute how many times each source cites other sources
             //This is neccessary for alglib's sparse matrix storage
             Dictionary<long, int> TimesKeyCitesSomething = new Dictionary<long, int>();
+            List<SourceIdWithDepth>[] Values = SourceIdCitedBy.Skip(1).Select(kv => kv.Value).ToArray();
             foreach (long Key in SourceIdToIndex.Keys)
             {
                 int CitationCount = 0;
-                //The Skip(1) is to skip over the SourceIdCitedBy[-1] entry;
-                //as these are canonical IDs which should not be counted
-                foreach (List<SourceIdWithDepth> Value in SourceIdCitedBy.Values.Skip(1))
+                foreach (List<SourceIdWithDepth> Value in Values)
                 {
                     CitationCount += Value.Count(val => val.SourceId == Key);
                 }
@@ -133,7 +132,7 @@ namespace ATN.Analysis
                 stopWatch.Start();
             #endif
 
-            int[] OFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
+            int[] OFArray = SourceIdToIndex.Keys.Where(k => k != Theories.CanonicalSourceKey).OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
             // Read into CRS formatted sparse matrix. Info must be read into the sparse matrix left to right, top to bottom
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);
@@ -240,16 +239,11 @@ namespace ATN.Analysis
 
             #if TIMING
               stopWatch.Stop();
-              FullstopWatch.Stop();
               TimeSpan AEFComputation = stopWatch.Elapsed;
               string ParsedAEFComputation = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
               AEFComputation.Hours, AEFComputation.Minutes, AEFComputation.Seconds, AEFComputation.Milliseconds / 10);
               Console.WriteLine(ParsedAEFComputation + " (AEF computation)");
-
-              TimeSpan FullRunTiming = FullstopWatch.Elapsed;
-              string ParsedFullRunTiming = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-              FullRunTiming.Hours, FullRunTiming.Minutes, FullRunTiming.Seconds, FullRunTiming.Milliseconds / 10);
-              Console.WriteLine(ParsedFullRunTiming + " (full run)");
+              stopWatch.Restart();
             #endif
 
             //out AEF 
@@ -263,10 +257,27 @@ namespace ATN.Analysis
 
             //Set AEF values
             Dictionary<long, double> SourceIDToAEF = new Dictionary<long, double>(SourceIdToIndex.Count);
+            _analysis.InitializeAEF(TheoryId, RunId);
             for (int i = 0; i < AEFScore.Length; i++)
             {
-                _analysis.UpdateAEFScore(TheoryId, IndexToSourceId[i], RunId, AEFScore[i]);
+                SourceIDToAEF.Add(IndexToSourceId[i], AEFScore[i]);
             }
+            _analysis.UpdateAEFScore(TheoryId, RunId, SourceIDToAEF);
+
+            #if TIMING
+                stopWatch.Stop();
+                TimeSpan Storage = stopWatch.Elapsed;
+                string ParsedStorage = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                Storage.Hours, Storage.Minutes, Storage.Seconds, Storage.Milliseconds / 10);
+                Console.WriteLine(ParsedStorage + " (AEF storage)");
+
+                FullstopWatch.Stop();
+                TimeSpan FullRunTiming = FullstopWatch.Elapsed;
+                string ParsedFullRunTiming = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                FullRunTiming.Hours, FullRunTiming.Minutes, FullRunTiming.Seconds, FullRunTiming.Milliseconds / 10);
+                Console.WriteLine(ParsedFullRunTiming + " (full run)");
+                stopWatch.Restart();
+            #endif
         } // end main
     }
 }

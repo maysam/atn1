@@ -82,10 +82,23 @@ namespace ATN.Data
             return new CompleteTheoryMembership(tm, tms, NumberContributing);
         }
 
-        public void UpdateAEFScore(int TheoryId, long SourceId, int RunId, double AEFScore)
+        public void InitializeAEF(int TheoryId, int RunId)
         {
-            Context.TheoryMemberships.Single(tm => tm.TheoryId == TheoryId && tm.SourceId == SourceId && tm.RunId == RunId).ArticleLevelEigenFactor = AEFScore;
-            Context.SaveChanges();
+            Context.ExecuteStoreCommand("UPDATE TheoryMembership SET ArticleLevelEigenfactor = 0 WHERE TheoryId = {0} AND RunID = {1}", TheoryId, RunId);
+        }
+        public void UpdateAEFScore(int TheoryId, int RunId, Dictionary<long, double> SourceIDAEFScores)
+        {
+            SourceIDAEFScores = SourceIDAEFScores.Where(kv => kv.Value != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
+            StringBuilder QueryBuilder = new StringBuilder();
+            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, AEF float);");
+            for (int i = 0; i < SourceIDAEFScores.Count / 1000 + 1; i++)
+            {
+                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", SourceIDAEFScores.Skip(i * 1000).Take(1000).Select(s => "(" + s.Key + "," + s.Value + ")").ToArray()) + ";");
+            }
+            QueryBuilder.AppendLine(string.Format("UPDATE TheoryMembership SET ArticleLevelEigenfactor = 0 WHERE TheoryId = {0} AND RunID = {1}", TheoryId, RunId));
+            QueryBuilder.AppendLine(string.Format("UPDATE tm SET tm.ArticleLevelEigenfactor = st.AEF FROM TheoryMembership AS tm INNER JOIN #SourceIdTable AS st ON tm.SourceId = st.SourceId WHERE tm.TheoryId = {0} AND tm.RunId = {1}", TheoryId, RunId));
+            QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
+            Context.ExecuteStoreCommand(QueryBuilder.ToString());
         }
 
         public int InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor)
@@ -112,6 +125,11 @@ namespace ATN.Data
                     Context.TheoryMembershipSignificances.AddObject(tms);
                     Context.SaveChanges();
                 }
+            }
+            Context.SaveChanges();
+
+            foreach (SourceIdWithDepth Source in AllLevelSources)
+            {
                 TheoryMembership tm = new TheoryMembership();
                 tm.TheoryId = TheoryId;
                 tm.SourceId = Source.SourceId;
@@ -124,7 +142,6 @@ namespace ATN.Data
                 Context.TheoryMemberships.AddObject(tm);
             }
             Context.SaveChanges();
-
             return r.RunId;
         }
     }
