@@ -18,6 +18,7 @@ namespace ATN.Web
             public const string LastRun = "LastRun";
             public const string MetaAnalysis = "MetaAnalysis";
             public const string Network = "Network";
+            public const string PageNumber = "PageNumber";
             public const string SecondLevel = "SecondLevel";
             public const string SortCol = "SortCol";
             public const string SortOrder = "SortOrder";
@@ -47,6 +48,11 @@ namespace ATN.Web
             public const string Networks = "networks.aspx";
             public const string Theory = "theory.aspx";
             
+        }
+
+        public struct Data
+        {
+            public const int PageSize = 200;
         }
 
         /// <summary>

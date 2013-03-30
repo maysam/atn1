@@ -255,7 +255,14 @@ namespace ATN.Data
 
         public DateTime GetLastCrawlDate(int theoryId)
         {
-            return Context.Crawls.Single(t => t.TheoryId == theoryId).DateCrawled;
+            try
+            {
+                return Context.Crawls.Single(t => t.TheoryId == theoryId).DateCrawled;
+            }
+            catch (Exception e)
+            {
+                return DateTime.Now;
+            }
         }
     }
 }

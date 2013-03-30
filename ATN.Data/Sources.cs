@@ -62,13 +62,7 @@ namespace ATN.Data
         /// <returns>A unique Source corresponding to the given data source and data-source specific identifier</returns>
         public Source GetSourceByDataSourceSpecificId(CrawlerDataSource DataSource, string DataSourceSpecificId)
         {
-            switch (DataSource)
-            {
-                case CrawlerDataSource.MicrosoftAcademicSearch:
-                    return Context.Sources.Where(s => s.DataSourceId == (int)CrawlerDataSource.MicrosoftAcademicSearch && s.DataSourceSpecificId == DataSourceSpecificId).SingleOrDefault();
-                default:
-                    throw new NotImplementedException();
-            }
+            return Context.Sources.Where(s => s.DataSourceId == (int)DataSource && s.DataSourceSpecificId == DataSourceSpecificId).SingleOrDefault();
         }
 
         public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificIds)
@@ -125,7 +119,7 @@ namespace ATN.Data
             return cs;
         }
 
-        public ExtendedSource GetExtendedSourceBySourceId(int theoryId, long sourceId)
+        /*public ExtendedSource GetExtendedSourceBySourceId(int theoryId, long sourceId)
         {
             CompleteSource RetrievedSource = GetCompleteSourceBySourceId(sourceId);
             ExtendedSource es = new ExtendedSource(RetrievedSource);
@@ -139,7 +133,7 @@ namespace ATN.Data
             es.numContributing = ctm.NumberContributing;
             es.depth = ctm.TheoryMembership.Depth;
             return es;
-        }
+        }*/
 
         /// <summary>
         /// Adds a detached CompleteSource object
