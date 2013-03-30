@@ -1,7 +1,10 @@
-﻿using System;
+﻿//#define VERBOSE
+#define TIMING
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using ATN.Crawler;
 using ATN.Crawler.MAS;
@@ -14,6 +17,7 @@ namespace ATN.Analysis
 {
     class Program
     {
+
         //For storing the translation between Source ID and Index
         //in order to accommodate alglib's storage constraints
         static Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
@@ -49,7 +53,18 @@ namespace ATN.Analysis
 
         static void Main(string[] args)
         {
-            Theories t = new Theories();
+            Theories t;
+            #if TIMING
+                Console.WriteLine("TIMING ON \n hour:min:sec:ms format");
+                Stopwatch stopWatch = new Stopwatch();
+                Stopwatch FullstopWatch = new Stopwatch();
+                FullstopWatch.Start();
+                stopWatch.Start();
+                t = new Theories(new ATNEntities("name=ATNTest"));
+            #else
+                t = new Theories();
+            #endif
+
             SourceIdCitedBy = t.GetSourceTreeForTheory(7);
 
             //Translate the theory tree into a list of edges
@@ -82,64 +97,81 @@ namespace ATN.Analysis
                 TimesKeyCitesSomething[Key] = CitationCount;
             }
             Edges = Edges.OrderBy(e => e.StartSourceId).ThenBy(e => e.EndSourceId).ToList();
+            
+            #if TIMING
+                stopWatch.Stop();
+                TimeSpan ReadFromDB = stopWatch.Elapsed;
+                // Format and display timing
+                string ParsedReadFromDB = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                    ReadFromDB.Hours, ReadFromDB.Minutes, ReadFromDB.Seconds,
+                    ReadFromDB.Milliseconds / 10);
+                Console.WriteLine(ParsedReadFromDB + " (read from DB)");
+            #endif
 
-            int MatrixOrder = SourceIdToIndex.Keys.Count();
+            /* ----- COMPUTATION OF AEF ----- */
+            //Vars
+            int T0 = 0;
+            int T1 = 0;
+            int I, J;
+            double V;
+            double v;
+            int MatrixOrder = SourceIdToIndex.Keys.Count(); 
             int NumberOfEdges = Edges.Count();
+            double[] p = new double[MatrixOrder];
+            double[] RowSum = new double[MatrixOrder];
 
-            //Compute the out factor for each source in the tree
+            /*  ----- READING IN FOR COMPUTATION ----- */
+            // Compute the out degree of each node for CRS storage. OFarray provides the number of entries in each row 
+            
+            #if TIMING
+                stopWatch.Restart();
+                stopWatch.Start();
+            #endif
+
             int[] OFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
-
-            //Compute the ImpactFactor for each source in the tree
-            //int[] IFArray = SourceIdToIndex.Keys.Where(k => k != -1).OrderBy(k => SourceIdToIndex[k]).Select(k => !SourceIdCitedBy.ContainsKey(k) ? 0 : SourceIdCitedBy[k].Count).ToArray();
-
+            // Read into CRS formatted sparse matrix. Info must be read into the sparse matrix left to right, top to bottom
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);
-            
-            // Manual placement
-            //alglib.sparseset(s, 0, 1, 1.0);
-            //alglib.sparseset(s, 0, 3, 1.0);
-            //alglib.sparseset(s, 1, 2, 1.0);
-            //alglib.sparseset(s, 3, 0, 1.0);
-            //alglib.sparseset(s, 3, 1, 1.0);
-            //alglib.sparseset(s, 3, 2, 1.0);
-
-            /* Write E to sparse matrix. Must go left to right (will have to order in pull from db) */
             for (int i = 0; i < NumberOfEdges; i++)
-            {
                 alglib.sparseset(s, (int)(Edges[i].StartSourceId), (int)(Edges[i].EndSourceId), 1.0);
-            }
+
+            #if TIMING
+            stopWatch.Stop();
+            TimeSpan ReadToCRS = stopWatch.Elapsed;
+            // Format and display timing
+            string ParsedReadToCRS = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ReadToCRS.Hours, ReadToCRS.Minutes, ReadToCRS.Seconds,
+                ReadToCRS.Milliseconds / 10);
+            Console.WriteLine(ParsedReadToCRS + " (read to CRS)");
+            #endif
+
+            // out
+            #if VERBOSE
+                Console.Write("-- Citation network in CRS format --\n");
+                for (int i = 0; i < MatrixOrder; i++)
+                {
+                    Console.Write("[ ");
+                    for (int j = 0; j < MatrixOrder; j++)
+                    {
+                        v = alglib.sparseget(s, i, j);
+                        Console.Write("{0:F2} ", v);
+                    }
+                    Console.Write("]\n");
+                }
+                Console.Write("\n");
+            #endif
+            /*  ----- END OF READING IN FOR COMPUTATION ----- */
 
 
-            /* Print Sparse Matrix */
-            // For the test, we should have adj matrix of the form
-            //   [0 1 0 1]
-            //   [0 0 1 0]
-            //   [0 0 0 0]
-            //   [1 1 1 0]
-            double v;
-            //Console.Write("-- Sparse matrix read results --\n");
-            //for (int i = 0; i < MatrixOrder; i++)
-            //{
-            //    Console.Write("[ ");
-            //    for (int j = 0; j < MatrixOrder; j++)
-            //    {
-            //        v = alglib.sparseget(s, i, j);
-            //        Console.Write("{0:F2} ", v);
-            //   }
-            //    Console.Write("]\n");
-            //}
-            //Console.Write("\n");
-
-           /* Sum both the in and out degree of the matrix, placing this in vector p */
-           double[] p = new double[MatrixOrder];
-           double[] RowSum = new double[MatrixOrder];
-           //double RowContrib;
-           //double ColContrib;
-
-           int T0 = 0;
-           int T1 = 0;
-           int I, J;
-           double V;
+           /* ----- COMPUTE P ----- */
+           // Create p vector by summing the in and our degree of each node by enumerating over non-zero elements
+           // RowSum is used to make s stochastic
+            
+           #if TIMING
+                stopWatch.Restart();
+                stopWatch.Start();
+           #endif
+           
            while (alglib.sparseenumerate(s, ref T0, ref T1, out I, out J, out V))
            {
                p[I] += V;
@@ -147,7 +179,7 @@ namespace ATN.Analysis
                RowSum[I] += V;
            }
 
-           double pSum = p.Sum();
+           /* OLD IMPLEMENTATION */
            //for (int i = 0; i < MatrixOrder; i++)
            //{
            //    for (int j = 0; j < MatrixOrder; j++)
@@ -160,105 +192,103 @@ namespace ATN.Analysis
            //    }
            //    pSum += p[i];
            //}
-           
-           /* print out p */
-           //Console.Write("-- Out/In degree vector -- \n p = [ ");
-           //for (int i = 0; i < MatrixOrder; i++)
-           //    Console.Write("{0:F2} ", p[i]);
-           //Console.Write("]^T \n");
 
-           /* Normalize p */
+           //out (pre normalized p)
+            #if VERBOSE
+               Console.Write("-- Out/In degree vector -- \n p = [ ");
+               for (int i = 0; i < MatrixOrder; i++)
+                   Console.Write("{0:F2} ", p[i]);
+               Console.Write("]^T \n");
+            #endif
+
+           //p normalization
+           double pSum = p.Sum();
            for (int i = 0; i < MatrixOrder; i++)
                p[i] /= pSum;
 
+           //out p post normalization
+            #if VERBOSE
+               Console.Write("-- Normalized p -- \n p_norm = [ ");
+               for (int i = 0; i < MatrixOrder; i++)
+                   Console.Write("{0:F4} ", p[i]);
+               Console.Write("]^T \n");
+               Console.Write("\n");
+            #endif
 
-           /* PRINTS */
-           //Console.Write("-- Normalized p -- \n p_norm = [ ");
-           //for (int i = 0; i < MatrixOrder; i++)
-           //    Console.Write("{0:F4} ", p[i]);
-           //Console.Write("]^T \n");
-           //Console.Write("\n");
 
-           //Console.Write("-- Row Sum-- \n RowSum = [ ");
-           //for (int i = 0; i < MatrixOrder; i++)
-           //    Console.Write("{0:F4} ", RowSum[i]);
-           //Console.Write("]^T \n");
-
-           /* Indices for enumeration */
-           //int T0 = 0;
-           //int T1 = 0;
-           //int I, J;
-           //double V;
+           /* ----- MAKE s STOCHASTIC ----- */
            while (alglib.sparseenumerate(s, ref T0, ref T1, out I, out J, out V))
                alglib.sparserewriteexisting(s, I, J, V/RowSum[I]);
 
-            /* Print Stochastic matrix */
-           //Console.Write("-- Stochastic matrix Z --\n");
-           for (int i = 0; i < MatrixOrder; i++)
-           {
-               //Console.Write("[ ");
-               for (int j = 0; j < MatrixOrder; j++)
+           //out stochastic s
+           #if VERBOSE
+               Console.Write("-- Stochastic matrix Z --\n");
+               for (int i = 0; i < MatrixOrder; i++)
                {
-                   v = alglib.sparseget(s, i, j);
-                 //  Console.Write("{0:F2} ", v);
+                   //Console.Write("[ ");
+                   for (int j = 0; j < MatrixOrder; j++)
+                   {
+                       v = alglib.sparseget(s, i, j);
+                       Console.Write("{0:F2} ", v);
+                   }
+                   Console.Write("]\n");
                }
-               //Console.Write("]\n");
-           }
-           //Console.Write("\n");
+               Console.Write("\n");
+           #endif
 
-           //Console.Write("-- AEF (pre-normalization) p^T*Z --\n");
+           /* ----- SCORE COMPUTATION ----- */
+
+           // Take one step on the graph (compute p^T*Z)
            double[] AEFScore = new double[0];
            alglib.sparsemtv(s, p, ref AEFScore);
-           //Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
-           Console.Write("\n");
 
-           /* Normalize AEF scores */
+           // Normalize for AEF approximation
            double AEFsum = AEFScore.Sum();
-           /* Normalize p */
            for (int i = 0; i < MatrixOrder; i++)
                AEFScore[i] /= AEFsum;
 
-           Console.Write("-- AEF (post-normalization) --\n");
-           Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
-                      
+           #if TIMING
+              stopWatch.Stop();
+              FullstopWatch.Stop();
+              TimeSpan AEFComputation = stopWatch.Elapsed;
+              string ParsedAEFComputation = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+              AEFComputation.Hours, AEFComputation.Minutes, AEFComputation.Seconds, AEFComputation.Milliseconds / 10);
+              Console.WriteLine(ParsedAEFComputation + " (AEF computation)");
+
+              TimeSpan FullRunTiming = FullstopWatch.Elapsed;
+              string ParsedFullRunTiming = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+              FullRunTiming.Hours, FullRunTiming.Minutes, FullRunTiming.Seconds, FullRunTiming.Milliseconds / 10);
+              Console.WriteLine(ParsedFullRunTiming + " (full run)");
+           #endif
+           
+           //out AEF 
+           #if VERBOSE
+               Console.Write("-- AEF (post-normalization) --\n");
+               Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
+           #endif
+
+            // out AEF to file
+           //if (toFile == 1)
+           //{
+           //    FileStream DestinationNetStream = File.Open("TheoryId2Export.txt", FileMode.Create);
+           //    StreamWriter sw = new StreamWriter(DestinationNetStream);
+           //    sw.WriteLine(" V   \tAEF              IF \n");
+           //    foreach (KeyValuePair<long, long> KV in IndexToSourceId)
+           //    {
+           //        sw.Write(string.Format("\"{0}\"\t{1:F10} \t          {2}\n", KV.Value, AEFScore[KV.Key], IFArray[KV.Key]));
+           //    }
+           //    sw.Close();
+           //}
+
+           #if TIMING
+
+               
+           #endif
             /* Free s */
            alglib.sparsefree(out s);
-
-           //FileStream DestinationNetStream = File.Open("TheoryId2Export.txt", FileMode.Create);
-           //StreamWriter sw = new StreamWriter(DestinationNetStream);
-           //sw.WriteLine(" V   \tAEF              IF \n");
-           //foreach (KeyValuePair<long, long> KV in IndexToSourceId)
-           //{
-           //    sw.Write(string.Format("\"{0}\"\t{1:F10} \t          {2}\n", KV.Value, AEFScore[KV.Key], IFArray[KV.Key]));
-           //}
-           //sw.Close();
-
            Console.ReadKey();
 
         
         } // end main
-
-
-        public static void multEX()
-        {
-            /* MATRIX MULT EXAMPLE */
-            double[,] a = new double[,] {
-            {1,2,3},
-            {4,5,6}
-            };
-            double[,] b = new double[,] {
-            {7,8,9,10},
-            {11,12,13,14},
-            {15,16,17,18}
-            };
-
-            int m = a.GetLength(0);
-            int n = b.GetLength(1);
-            int k = a.GetLength(1);
-            double[,] c = new double[m, n];
-            alglib.rmatrixgemm(m, n, k, 1, a, 0, 0, 0, b, 0, 0, 0, 0, ref c, 0, 0);
-            //c = {{74, 80, 86, 92}, {173, 188, 203, 218}}
-
-        } // end mult
     }
 }
