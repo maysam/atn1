@@ -84,20 +84,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AEF\alglibinternal.cs" />
-    <Compile Include="AEF\alglibmisc.cs" />
-    <Compile Include="AEF\ap.cs" />
-    <Compile Include="AEF\dataanalysis.cs" />
-    <Compile Include="AEF\diffequations.cs" />
-    <Compile Include="AEF\fasttransforms.cs" />
-    <Compile Include="AEF\integration.cs" />
-    <Compile Include="AEF\interpolation.cs" />
-    <Compile Include="AEF\linalg.cs" />
-    <Compile Include="AEF\optimization.cs" />
-    <Compile Include="AEF\solvers.cs" />
-    <Compile Include="AEF\specialfunctions.cs" />
-    <Compile Include="AEF\statistics.cs" />
-    <Compile Include="AEF\TupleList.cs" />
+    <Compile Include="AEF.cs" />
+    <Compile Include="Support\alglibinternal.cs" />
+    <Compile Include="Support\alglibmisc.cs" />
+    <Compile Include="Support\ap.cs" />
+    <Compile Include="Support\dataanalysis.cs" />
+    <Compile Include="Support\diffequations.cs" />
+    <Compile Include="Support\fasttransforms.cs" />
+    <Compile Include="Support\integration.cs" />
+    <Compile Include="Support\interpolation.cs" />
+    <Compile Include="Support\linalg.cs" />
+    <Compile Include="Support\optimization.cs" />
+    <Compile Include="Support\solvers.cs" />
+    <Compile Include="Support\specialfunctions.cs" />
+    <Compile Include="Support\statistics.cs" />
+    <Compile Include="Support\TupleList.cs" />
     <Compile Include="Analysis.cs" />
     <Compile Include="Features.cs" />
     <Compile Include="MachineLearning.cs" />
@@ -107,6 +108,10 @@
     <ProjectReference Include="..\ATN.Data\ATN.Data.csproj">
       <Project>{d656a9ed-9157-42b1-a870-ab260ecbeed2}</Project>
       <Name>ATN.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATN.Export\ATN.Export.csproj">
+      <Project>{7c83a4df-3cc8-4934-8034-c032bdf03136}</Project>
+      <Name>ATN.Export</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

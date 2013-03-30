@@ -19,7 +19,7 @@ http://www.fsf.org/licensing/licenses
 *************************************************************************/
 using System;
 
-namespace ATN.Analysis.AEF
+namespace ATN.Analysis.Support
 {
     public partial class alglib
     {

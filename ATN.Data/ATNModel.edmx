@@ -1711,7 +1711,7 @@
           <edmx:ConnectorPoint PointX="4.5" PointY="18.5639694350586" />
         </edmx:AssociationConnector>
         <edmx:EntityTypeShape EntityType="ATNModel.Run" Width="1.5" PointX="8" PointY="18.625" />
-        <edmx:EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.375" />
+        <edmx:EntityTypeShape EntityType="ATNModel.Theory" Width="1.5" PointX="5.75" PointY="5.25" />
         <edmx:EntityTypeShape EntityType="ATNModel.TheoryMembership" Width="2" PointX="10.5" PointY="11.75" />
         <edmx:AssociationConnector Association="ATNModel.FK_Crawl_Theory" />
         <edmx:AssociationConnector Association="ATNModel.FK_TheoryMembership_Run" />

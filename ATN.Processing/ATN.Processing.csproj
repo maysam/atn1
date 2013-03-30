@@ -126,6 +126,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ATN.Analysis\ATN.Analysis.csproj">
+      <Project>{01ef8a02-13fa-4012-8427-6bff1fc54f6d}</Project>
+      <Name>ATN.Analysis</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ATN.Crawler\ATN.Crawler.csproj">
       <Project>{31619954-f7b0-47f7-b9a1-21f722f1de51}</Project>
       <Name>ATN.Crawler</Name>

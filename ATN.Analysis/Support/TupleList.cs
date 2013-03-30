@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATN.Analysis.AEF
+namespace ATN.Analysis.Support
 {
     public class TupleList<T1, T2> : List<Tuple<T1, T2>>
     {

@@ -81,7 +81,14 @@ namespace ATN.Data
             int NumberContributing = Context.MetaAnalysisMemberships.Where(mam => mam.TheoryMembershipSignificanceId == tms.TheoryMembershipSignificanceId).Count();
             return new CompleteTheoryMembership(tm, tms, NumberContributing);
         }
-        public void InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor)
+
+        public void UpdateAEFScore(int TheoryId, long SourceId, int RunId, double AEFScore)
+        {
+            Context.TheoryMemberships.Single(tm => tm.TheoryId == TheoryId && tm.SourceId == SourceId && tm.RunId == RunId).ArticleLevelEigenFactor = AEFScore;
+            Context.SaveChanges();
+        }
+
+        public int InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor)
         {
             //Add new analysis run
             Run r = new Run();
@@ -117,6 +124,8 @@ namespace ATN.Data
                 Context.TheoryMemberships.AddObject(tm);
             }
             Context.SaveChanges();
+
+            return r.RunId;
         }
     }
 }

@@ -20,7 +20,7 @@ http://www.fsf.org/licensing/licenses
 #pragma warning disable 219
 using System;
 
-namespace ATN.Analysis.AEF
+namespace ATN.Analysis.Support
 {
     public partial class alglib
     {

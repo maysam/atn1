@@ -8,6 +8,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ATN.Analysis;
 using ATN.Crawler;
 using ATN.Data;
 
@@ -37,10 +38,11 @@ namespace ATN.Processing
                             AnalysisInterface ai = new AnalysisInterface();
                             for(int i = 0; i < ChangedCrawls.Length; i++)
                             {
-                                ai.InitiateTheoryAnalysis(ChangedCrawls[i].TheoryId, ChangedCrawls[i].ImpactFactor);
+                                int RunId = ai.InitiateTheoryAnalysis(ChangedCrawls[i].TheoryId, ChangedCrawls[i].ImpactFactor);
                                 if (ChangedCrawls[i].AEF)
                                 {
-                                    //Compute AEF
+                                    AEF AEF = new AEF();
+                                    AEF.ComputeAndStoreAEF(ChangedCrawls[i].TheoryId, RunId);
                                     if (ChangedCrawls[i].TAR)
                                     {
                                         //Compute TAR
