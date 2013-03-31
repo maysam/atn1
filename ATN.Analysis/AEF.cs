@@ -28,7 +28,7 @@ namespace ATN.Analysis
         static long CurrentSourceIndex = 0;
 
         //For storage of the theory source tree
-        static Dictionary<long, List<SourceIdWithDepth>> SourceIdCitedBy;
+        static Dictionary<long, SourceWithReferences> SourceIdCitedBy;
 
         //For storing the list of edges that will be passed to alglib
         static List<SourceEdge> Edges = new List<SourceEdge>();
@@ -71,33 +71,19 @@ namespace ATN.Analysis
             SourceIdCitedBy = t.GetSourceTreeForTheory(TheoryId);
 
             //Translate the theory tree into a list of edges
-            foreach (KeyValuePair<long, List<SourceIdWithDepth>> SourceAndCitations in SourceIdCitedBy)
+            foreach (KeyValuePair<long, SourceWithReferences> SourceAndCitations in SourceIdCitedBy)
             {
-                foreach (SourceIdWithDepth Citation in SourceAndCitations.Value)
+                foreach (long Citation in SourceAndCitations.Value.References)
                 {
-                    //This check is to ignore the canonical IDs
-                    if (SourceAndCitations.Key != Theories.CanonicalSourceKey)
-                    {
-                        long EndIndex = GetIndexForSource(SourceAndCitations.Key);
-                        long StartIndex = GetIndexForSource(Citation.SourceId);
-                        Edges.Add(new SourceEdge(StartIndex, EndIndex));
-                    }
+                    long EndIndex = GetIndexForSource(Citation);
+                    long StartIndex = GetIndexForSource(SourceAndCitations.Key);
+                    Edges.Add(new SourceEdge(StartIndex, EndIndex));
                 }
             }
 
             //Compute how many times each source cites other sources
             //This is neccessary for alglib's sparse matrix storage
-            Dictionary<long, int> TimesKeyCitesSomething = new Dictionary<long, int>();
-            List<SourceIdWithDepth>[] Values = SourceIdCitedBy.Skip(1).Select(kv => kv.Value).ToArray();
-            foreach (long Key in SourceIdToIndex.Keys)
-            {
-                int CitationCount = 0;
-                foreach (List<SourceIdWithDepth> Value in Values)
-                {
-                    CitationCount += Value.Count(val => val.SourceId == Key);
-                }
-                TimesKeyCitesSomething[Key] = CitationCount;
-            }
+            Dictionary<long, int> TimesKeyCitesSomething = SourceIdCitedBy.ToDictionary(kv => kv.Key, kv => kv.Value.OutFactor);
             Edges = Edges.OrderBy(e => e.StartSourceId).ThenBy(e => e.EndSourceId).ToList();
 
             #if TIMING
@@ -132,7 +118,7 @@ namespace ATN.Analysis
                 stopWatch.Start();
             #endif
 
-            int[] OFArray = SourceIdToIndex.Keys.Where(k => k != Theories.CanonicalSourceKey).OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
+            int[] OFArray = SourceIdToIndex.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
             // Read into CRS formatted sparse matrix. Info must be read into the sparse matrix left to right, top to bottom
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);

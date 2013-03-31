@@ -111,8 +111,8 @@ namespace ATN.Data
             Context.SaveChanges();
 
             Theories t = new Theories(Context);
-            SourceIdWithDepth[] AllLevelSources = t.GetAllSourcesForTheory(TheoryId);
-            foreach (SourceIdWithDepth Source in AllLevelSources)
+            SourceWithReferences[] AllLevelSources = t.GetAllSourcesForTheory(TheoryId);
+            foreach (SourceWithReferences Source in AllLevelSources)
             {
                 TheoryMembershipSignificance tms = GetTheoryMembershipSignificanceForSource(Source.SourceId, TheoryId);
                 if (tms == null)
@@ -128,7 +128,7 @@ namespace ATN.Data
             }
             Context.SaveChanges();
 
-            foreach (SourceIdWithDepth Source in AllLevelSources)
+            foreach (SourceWithReferences Source in AllLevelSources)
             {
                 TheoryMembership tm = new TheoryMembership();
                 tm.TheoryId = TheoryId;
