@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalysisInterface.cs" />
+    <Compile Include="AsDataReader.cs" />
     <Compile Include="ATNModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

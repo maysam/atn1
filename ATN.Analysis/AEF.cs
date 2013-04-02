@@ -16,9 +16,9 @@ namespace ATN.Analysis
     public class AEF
     {
         AnalysisInterface _analysis;
-        public AEF()
+        public AEF(ATNEntities Entities = null)
         {
-            _analysis = new AnalysisInterface();
+            _analysis = new AnalysisInterface(Entities);
         }
 
         //For storing the translation between Source ID and Index

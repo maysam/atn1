@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.EntityClient;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+
+using Microsoft.Samples.EntityDataReader;
 
 namespace ATN.Data
 {
@@ -137,36 +141,16 @@ namespace ATN.Data
             Theories t = new Theories(Context);
             var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
             SourceWithReferences[] SourcesNeedingTheoryMembershipSignificances = AllLevelSources.Where(als => !ExistingTheoryMembershiSignificance.Contains(als.SourceId)).ToArray();
-            if (SourcesNeedingTheoryMembershipSignificances.Length > 0)
-            {
-                StringBuilder TheoryMembershipSignificanceQueryBuilder = new StringBuilder();
-                for (int i = 0; i < SourcesNeedingTheoryMembershipSignificances.Length / 1000 + 1; i++)
-                {
-                    //This is to prevent any number of needed rows throwing an error when it is
-                    //perfectly divisible by 1000, as the resulting query would be of the form
-                    //INSERT ... VALUES; with no included values
-                    if (SourcesNeedingTheoryMembershipSignificances.Length - 1000 * i > 0)
-                    {
-                        TheoryMembershipSignificanceQueryBuilder.AppendLine("INSERT INTO TheoryMembershipSignificance (TheoryId, SourceId, RAMarkedContributing, IsMetaAnalysis) VALUES " + String.Join(",", SourcesNeedingTheoryMembershipSignificances.Skip(i * 1000).Take(1000).Select(s => "(" + TheoryId + "," + s.SourceId + ",NULL,0)").ToArray()));
-                    }
-                }
-                Context.CommandTimeout = 120;
-                Context.ExecuteStoreCommand(TheoryMembershipSignificanceQueryBuilder.ToString());
-            }
+            
+            SqlBulkCopy TheoryMembershipSignificanceCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString);
+            TheoryMembershipSignificanceCopier.DestinationTableName = "TheoryMembershipSignificance";
+            TheoryMembershipSignificanceCopier.BulkCopyTimeout = 240;
+            TheoryMembershipSignificanceCopier.WriteToServer(SourcesNeedingTheoryMembershipSignificances.Select(sntm => new TheoryMembershipSignificanceBinder(TheoryId, sntm.SourceId, null, false)).AsDataReader());
 
-            StringBuilder QueryBuilder = new StringBuilder();
-            for (int i = 0; i < AllLevelSources.Length / 1000 + 1; i++)
-            {
-                //This is to prevent any number of needed rows throwing an error when it is
-                //perfectly divisible by 1000, as the resulting query would be of the form
-                //INSERT ... VALUES; with no included values
-                if (AllLevelSources.Length - 1000 * i > 0)
-                {
-                    QueryBuilder.AppendLine("INSERT INTO TheoryMembership (TheoryId, SourceId, RunId, Depth, ImpactFactor) VALUES " + String.Join(",", AllLevelSources.Skip(i * 1000).Take(1000).Select(s => "(" + TheoryId + "," + s.SourceId + "," + r.RunId + "," + s.Depth + "," + (StoreImpactFactor ? s.ImpactFactor.ToString() : "NULL") + ")").ToArray()) + ";");
-                }
-            }
-            Context.CommandTimeout = 120;
-            Context.ExecuteStoreCommand(QueryBuilder.ToString());
+            SqlBulkCopy TheoryMembershipCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString);
+            TheoryMembershipCopier.DestinationTableName = "TheoryMembership";
+            TheoryMembershipCopier.BulkCopyTimeout = 240;
+            TheoryMembershipCopier.WriteToServer(AllLevelSources.Select(sntm => new TheoryInitialiationBinder(TheoryId, sntm.SourceId, r.RunId, sntm.Depth, sntm.ImpactFactor)).AsDataReader());
 
             sw.Stop();
             Trace.WriteLine(string.Format("Theory initialization: {0}", sw.Elapsed));

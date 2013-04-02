@@ -24,7 +24,7 @@ namespace ATN.Data
         public List<long> References { get; set; }
         public SourceWithReferences(long SourceId, int ImpactFactor, short Depth)
         {
-            this.References = new List<long>();
+            this.References = new List<long>(50);
             this.SourceId = SourceId;
             this.ImpactFactor = ImpactFactor;
             this.Depth = Depth;

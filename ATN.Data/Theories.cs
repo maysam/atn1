@@ -170,9 +170,6 @@ namespace ATN.Data
         /// <returns>A dictionary of sources, where the key is the cited source and the list of values are all sources that cite the key along with the citation depth</returns>
         public Dictionary<long, SourceWithReferences> GetSourceTreeForTheory(int TheoryId)
         {
-            //Could optimize this by setting the initial count to the distinct count of sources returned from the store query
-            Dictionary<long, SourceWithReferences> SourceIdCitedBy = new Dictionary<long, SourceWithReferences>();
-
             Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
 
             //This retrieves a large table worth of sources, citations, and citation depth
@@ -192,6 +189,9 @@ namespace ATN.Data
                 SELECT st1.SourceId, CitesSourceId, CAST(Depth as smallint), (SELECT Count(st2.SourceId) FROM #SourceIdTable st2 WHERE st2.CitesSourceId = st1.SourceId) as ImpactFactor FROM #SourceIdTable st1 UNION SELECT DISTINCT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(Depth - 1 as smallint) as Depth, (SELECT Count(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL ORDER BY Depth ASC
                 DROP TABLE #SourceIdTable"
             ).ToArray();
+
+            //Could optimize this by setting the initial count to the distinct count of sources returned from the store query
+            Dictionary<long, SourceWithReferences> SourceIdCitedBy = new Dictionary<long, SourceWithReferences>(SourcesCited.Select(s => s.SourceId).Distinct().Count());
 
             //This transforms the raw list of citations into a rudimentary tree
             foreach (SourceIdCitedByWithDepth sic in SourcesCited)
