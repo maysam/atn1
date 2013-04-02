@@ -245,7 +245,7 @@ namespace ATN.Analysis
             {
                 SourceIDToAEF.Add(IndexToSourceId[i], AEFScore[i]);
             }
-            _analysis.UpdateAEFScore(TheoryId, RunId, SourceIDToAEF);
+            _analysis.UpdateAEFScores(TheoryId, RunId, SourceIDToAEF);
 
             #if TIMING
                 stopWatch.Stop();

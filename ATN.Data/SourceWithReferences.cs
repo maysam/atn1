@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
+    /// <summary>
+    /// Represents a source, it's impact for a given theory, it's depth, and its references
+    /// </summary>
     public class SourceWithReferences
     {
         public long SourceId { get; set; }

@@ -181,6 +181,9 @@ namespace ATN.Data
             //It starts by adding canonical sources into a temporary table, then for each
             //canonical source inserting 1st level sources, and for each 1st level source
             //inserting 2nd level sources
+            //Finally, the select concludes by retrieving all sources and depths; and proceeds
+            //to select all of the papers which are cited by another source but do not cite
+            //anything themselves
             SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
                 @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
@@ -214,6 +217,11 @@ namespace ATN.Data
             return SourceIdCitedBy;
         }
         
+        /// <summary>
+        /// Retrieve all sources for a particular theory
+        /// </summary>
+        /// <param name="TheoryId">The theory from which to retrieve sources</param>
+        /// <returns>All sources for the given theory</returns>
         public SourceWithReferences[] GetAllSourcesForTheory(int TheoryId)
         {
             return GetSourceTreeForTheory(TheoryId).Values.ToArray();
@@ -231,19 +239,19 @@ namespace ATN.Data
         /// <summary>
         /// Retrieves an array of Sources that the specified Source references.
         /// </summary>
-        /// <param name="SourceId"></param>
-        /// <returns></returns>
+        /// <param name="SourceId">SourceId to retrieve references for</param>
+        /// <returns>A collection of sources which the given source cites</returns>
         public Source[] GetReferencesForSource(long SourceId)
         {
             return Context.Sources.Single(s => s.SourceId == SourceId).References.ToArray();
         }
 
         /// <summary>
-        /// Gets the references cited in a certain source. This is used to find sources within a meta-analysis.
+        /// Gets the references for a particular source in a given theory. This is used to find sources within a meta-analysis.
         /// </summary>
         /// <param name="TheoryId">The theory to retrieve extended source references for</param>
         /// <param name="SourceId">The id of the source to find extended source references for</param>
-        /// <returns>A list of extended Sources that cite the given source</returns>
+        /// <returns>A list of extended Sources that the given source references</returns>
         public List<ExtendedSource> GetExtendedSourceReferencesForSource(int TheoryId, long SourceId)
         {
             return Context.ExecuteStoreQuery<ExtendedSource>(

@@ -75,6 +75,13 @@ namespace ATN.Data
                 Context.Sources, y => y.SourceId, x => x.SourceId, (u, s) => s
                 ).ToArray();
         }
+
+        /// <summary>
+        /// Returns a complete representation of theory membership contributing for a given theory and member source
+        /// </summary>
+        /// <param name="TheoryId">The theory from which to retrieve a source's contributing</param>
+        /// <param name="SourceId">The source to retrieve contribution</param>
+        /// <returns>A complete representation of a source's contribution to a given theory</returns>
         public CompleteTheoryMembership GetTheoryMembershipContributionsForSource(int TheoryId, long SourceId)
         {
             TheoryMembership tm = Context.TheoryMemberships.Where(t => t.TheoryId == TheoryId && t.SourceId == SourceId).OrderByDescending(t => t.RunId).FirstOrDefault();
@@ -83,7 +90,13 @@ namespace ATN.Data
             return new CompleteTheoryMembership(tm, tms, NumberContributing);
         }
 
-        public void UpdateAEFScore(int TheoryId, int RunId, Dictionary<long, double> SourceIDAEFScores)
+        /// <summary>
+        /// Update all of the AEF scores for a particular theory's analysis
+        /// </summary>
+        /// <param name="TheoryId">The theory to update AEF scores for</param>
+        /// <param name="RunId">The analysis run to update AEF scores for</param>
+        /// <param name="SourceIDAEFScores">A mapping between all of the theory's member sources and their AEF score</param>
+        public void UpdateAEFScores(int TheoryId, int RunId, Dictionary<long, double> SourceIDAEFScores)
         {
             SourceIDAEFScores = SourceIDAEFScores.Where(kv => kv.Value != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
             StringBuilder QueryBuilder = new StringBuilder();
@@ -102,6 +115,13 @@ namespace ATN.Data
             Context.ExecuteStoreCommand(QueryBuilder.ToString());
         }
 
+        /// <summary>
+        /// Creates all of the neccessary database records to being performing theory anaysis
+        /// </summary>
+        /// <param name="TheoryId">The theory to initiate analysis of</param>
+        /// <param name="StoreImpactFactor">Whether to store the ImpactFactor of the theory's member sources</param>
+        /// <param name="AllLevelSources">All sources which are members of the theory</param>
+        /// <returns>The RunId of the analysis run being initiated</returns>
         public int InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor, SourceWithReferences[] AllLevelSources)
         {
             Stopwatch sw = new Stopwatch();
