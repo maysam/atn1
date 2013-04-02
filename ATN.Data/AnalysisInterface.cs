@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -82,27 +83,30 @@ namespace ATN.Data
             return new CompleteTheoryMembership(tm, tms, NumberContributing);
         }
 
-        public void InitializeAEF(int TheoryId, int RunId)
-        {
-            Context.ExecuteStoreCommand("UPDATE TheoryMembership SET ArticleLevelEigenfactor = 0 WHERE TheoryId = {0} AND RunID = {1}", TheoryId, RunId);
-        }
         public void UpdateAEFScore(int TheoryId, int RunId, Dictionary<long, double> SourceIDAEFScores)
         {
             SourceIDAEFScores = SourceIDAEFScores.Where(kv => kv.Value != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
             StringBuilder QueryBuilder = new StringBuilder();
-            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, AEF float);");
+            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint PRIMARY KEY, AEF float);");
             for (int i = 0; i < SourceIDAEFScores.Count / 1000 + 1; i++)
             {
-                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", SourceIDAEFScores.Skip(i * 1000).Take(1000).Select(s => "(" + s.Key + "," + s.Value + ")").ToArray()) + ";");
+                if (SourceIDAEFScores.Count - 1000 * i > 0)
+                {
+                    QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", SourceIDAEFScores.Skip(i * 1000).Take(1000).Select(s => "(" + s.Key + "," + s.Value + ")").ToArray()) + ";");
+                }
             }
             QueryBuilder.AppendLine(string.Format("UPDATE TheoryMembership SET ArticleLevelEigenfactor = 0 WHERE TheoryId = {0} AND RunID = {1}", TheoryId, RunId));
             QueryBuilder.AppendLine(string.Format("UPDATE tm SET tm.ArticleLevelEigenfactor = st.AEF FROM TheoryMembership AS tm INNER JOIN #SourceIdTable AS st ON tm.SourceId = st.SourceId WHERE tm.TheoryId = {0} AND tm.RunId = {1}", TheoryId, RunId));
             QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
+            Context.CommandTimeout = 240;
             Context.ExecuteStoreCommand(QueryBuilder.ToString());
         }
 
-        public int InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor)
+        public int InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor, SourceWithReferences[] AllLevelSources)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             //Add new analysis run
             Run r = new Run();
             r.DateStarted = DateTime.Now;
@@ -111,37 +115,41 @@ namespace ATN.Data
             Context.SaveChanges();
 
             Theories t = new Theories(Context);
-            SourceWithReferences[] AllLevelSources = t.GetAllSourcesForTheory(TheoryId);
-            foreach (SourceWithReferences Source in AllLevelSources)
+            var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
+            SourceWithReferences[] SourcesNeedingTheoryMembershipSignificances = AllLevelSources.Where(als => !ExistingTheoryMembershiSignificance.Contains(als.SourceId)).ToArray();
+            if (SourcesNeedingTheoryMembershipSignificances.Length > 0)
             {
-                TheoryMembershipSignificance tms = GetTheoryMembershipSignificanceForSource(Source.SourceId, TheoryId);
-                if (tms == null)
+                StringBuilder TheoryMembershipSignificanceQueryBuilder = new StringBuilder();
+                for (int i = 0; i < SourcesNeedingTheoryMembershipSignificances.Length / 1000 + 1; i++)
                 {
-                    tms = new TheoryMembershipSignificance();
-                    tms.SourceId = Source.SourceId;
-                    tms.TheoryId = TheoryId;
-                    tms.RAMarkedContributing = null;
-                    tms.IsMetaAnalysis = false;
-                    Context.TheoryMembershipSignificances.AddObject(tms);
-                    Context.SaveChanges();
+                    //This is to prevent any number of needed rows throwing an error when it is
+                    //perfectly divisible by 1000, as the resulting query would be of the form
+                    //INSERT ... VALUES; with no included values
+                    if (SourcesNeedingTheoryMembershipSignificances.Length - 1000 * i > 0)
+                    {
+                        TheoryMembershipSignificanceQueryBuilder.AppendLine("INSERT INTO TheoryMembershipSignificance (TheoryId, SourceId, RAMarkedContributing, IsMetaAnalysis) VALUES " + String.Join(",", SourcesNeedingTheoryMembershipSignificances.Skip(i * 1000).Take(1000).Select(s => "(" + TheoryId + "," + s.SourceId + ",NULL,0)").ToArray()));
+                    }
                 }
+                Context.CommandTimeout = 120;
+                Context.ExecuteStoreCommand(TheoryMembershipSignificanceQueryBuilder.ToString());
             }
-            Context.SaveChanges();
 
-            foreach (SourceWithReferences Source in AllLevelSources)
+            StringBuilder QueryBuilder = new StringBuilder();
+            for (int i = 0; i < AllLevelSources.Length / 1000 + 1; i++)
             {
-                TheoryMembership tm = new TheoryMembership();
-                tm.TheoryId = TheoryId;
-                tm.SourceId = Source.SourceId;
-                tm.RunId = r.RunId;
-                tm.Depth = Source.Depth;
-                if (StoreImpactFactor)
+                //This is to prevent any number of needed rows throwing an error when it is
+                //perfectly divisible by 1000, as the resulting query would be of the form
+                //INSERT ... VALUES; with no included values
+                if (AllLevelSources.Length - 1000 * i > 0)
                 {
-                    tm.ImpactFactor = Source.ImpactFactor;
+                    QueryBuilder.AppendLine("INSERT INTO TheoryMembership (TheoryId, SourceId, RunId, Depth, ImpactFactor) VALUES " + String.Join(",", AllLevelSources.Skip(i * 1000).Take(1000).Select(s => "(" + TheoryId + "," + s.SourceId + "," + r.RunId + "," + s.Depth + "," + (StoreImpactFactor ? s.ImpactFactor.ToString() : "NULL") + ")").ToArray()) + ";");
                 }
-                Context.TheoryMemberships.AddObject(tm);
             }
-            Context.SaveChanges();
+            Context.CommandTimeout = 120;
+            Context.ExecuteStoreCommand(QueryBuilder.ToString());
+
+            sw.Stop();
+            Trace.WriteLine(string.Format("Theory initialization: {0}", sw.Elapsed));
             return r.RunId;
         }
     }

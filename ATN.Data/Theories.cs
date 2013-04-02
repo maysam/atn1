@@ -123,7 +123,10 @@ namespace ATN.Data
             QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
             for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
-                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
+                if (AllSources.Length - 1000 * i > 0)
+                {
+                    QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
+                }
             }
             QueryBuilder.AppendLine("SELECT s.SourceId as SourceId, DataSourceSpecificId as MasId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal FROM Source s JOIN #SourceIdTable st ON st.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.Depth ASC;");
             QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
@@ -150,7 +153,10 @@ namespace ATN.Data
             QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
             for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
-                QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
+                if (AllSources.Length - 1000 * i > 0)
+                {
+                    QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
+                }
             }
             QueryBuilder.AppendLine(string.Format("SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, st.Depth as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.SourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId = st.SourceId ORDER BY Depth ASC", TheoryId));
             QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");

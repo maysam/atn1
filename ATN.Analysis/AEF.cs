@@ -54,21 +54,19 @@ namespace ATN.Analysis
             }
         }
 
-        public void ComputeAndStoreAEF(int TheoryId, int RunId)
+        public void ComputeAndStoreAEF(int TheoryId, int RunId, Dictionary<long, SourceWithReferences> SourceIdCitedBy)
         {
             Theories t;
             #if TIMING
-                Console.WriteLine("TIMING ON \n hour:min:sec:ms format");
+                Trace.WriteLine("TIMING ON \n hour:min:sec:ms format");
                 Stopwatch stopWatch = new Stopwatch();
                 Stopwatch FullstopWatch = new Stopwatch();
                 FullstopWatch.Start();
                 stopWatch.Start();
-                t = new Theories(new ATNEntities("name=ATNTest"));
+                t = new Theories();
             #else
                 t = new Theories();
             #endif
-
-            SourceIdCitedBy = t.GetSourceTreeForTheory(TheoryId);
 
             //Translate the theory tree into a list of edges
             foreach (KeyValuePair<long, SourceWithReferences> SourceAndCitations in SourceIdCitedBy)
@@ -93,7 +91,7 @@ namespace ATN.Analysis
                 string ParsedReadFromDB = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                     ReadFromDB.Hours, ReadFromDB.Minutes, ReadFromDB.Seconds,
                     ReadFromDB.Milliseconds / 10);
-                Console.WriteLine(ParsedReadFromDB + " (read from DB)");
+                Trace.WriteLine(ParsedReadFromDB + " (read from DB)");
             #endif
 
             /* ----- COMPUTATION OF AEF ----- */
@@ -132,7 +130,7 @@ namespace ATN.Analysis
                 string ParsedReadToCRS = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                     ReadToCRS.Hours, ReadToCRS.Minutes, ReadToCRS.Seconds,
                     ReadToCRS.Milliseconds / 10);
-                Console.WriteLine(ParsedReadToCRS + " (read to CRS)");
+                Trace.WriteLine(ParsedReadToCRS + " (read to CRS)");
             #endif
 
             // out
@@ -228,14 +226,14 @@ namespace ATN.Analysis
               TimeSpan AEFComputation = stopWatch.Elapsed;
               string ParsedAEFComputation = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
               AEFComputation.Hours, AEFComputation.Minutes, AEFComputation.Seconds, AEFComputation.Milliseconds / 10);
-              Console.WriteLine(ParsedAEFComputation + " (AEF computation)");
+              Trace.WriteLine(ParsedAEFComputation + " (AEF computation)");
               stopWatch.Restart();
             #endif
 
             //out AEF 
             #if VERBOSE
                Console.Write("-- AEF (post-normalization) --\n");
-               Console.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
+               Trace.WriteLine("{0}", alglib.ap.format(AEFScore, 4));
             #endif
 
             /* Free s */
@@ -243,7 +241,6 @@ namespace ATN.Analysis
 
             //Set AEF values
             Dictionary<long, double> SourceIDToAEF = new Dictionary<long, double>(SourceIdToIndex.Count);
-            _analysis.InitializeAEF(TheoryId, RunId);
             for (int i = 0; i < AEFScore.Length; i++)
             {
                 SourceIDToAEF.Add(IndexToSourceId[i], AEFScore[i]);
@@ -255,13 +252,13 @@ namespace ATN.Analysis
                 TimeSpan Storage = stopWatch.Elapsed;
                 string ParsedStorage = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                 Storage.Hours, Storage.Minutes, Storage.Seconds, Storage.Milliseconds / 10);
-                Console.WriteLine(ParsedStorage + " (AEF storage)");
+                Trace.WriteLine(ParsedStorage + " (AEF storage)");
 
                 FullstopWatch.Stop();
                 TimeSpan FullRunTiming = FullstopWatch.Elapsed;
                 string ParsedFullRunTiming = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                 FullRunTiming.Hours, FullRunTiming.Minutes, FullRunTiming.Seconds, FullRunTiming.Milliseconds / 10);
-                Console.WriteLine(ParsedFullRunTiming + " (full run)");
+                Trace.WriteLine(ParsedFullRunTiming + " (full run)");
                 stopWatch.Restart();
             #endif
         } // end main
