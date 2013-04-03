@@ -48,15 +48,6 @@ namespace ATN.Crawler
         }
 
         /// <summary>
-        /// Performs final actions after an analysis run has completed
-        /// </summary>
-        /// <param name="Crawl">The Crawl which to complete</param>
-        public void CompleteAnalysisOnCrawl(ExistingCrawlSpecifier Crawl)
-        {
-            _progress.SetCrawlerStateUnchanged(Crawl.Crawl);
-        }
-
-        /// <summary>
         /// Enumerates all crawls, finishing incomplete ones and recrawling stale ones
         /// </summary>
         public ExistingCrawlSpecifier[] ProcessCurrentCrawls()

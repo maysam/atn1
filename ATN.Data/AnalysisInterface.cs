@@ -95,42 +95,14 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Update all of the AEF scores for a particular theory's analysis
-        /// </summary>
-        /// <param name="TheoryId">The theory to update AEF scores for</param>
-        /// <param name="RunId">The analysis run to update AEF scores for</param>
-        /// <param name="SourceIDAEFScores">A mapping between all of the theory's member sources and their AEF score</param>
-        public void UpdateAEFScores(int TheoryId, int RunId, Dictionary<long, double> SourceIDAEFScores)
-        {
-            SourceIDAEFScores = SourceIDAEFScores.Where(kv => kv.Value != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
-            StringBuilder QueryBuilder = new StringBuilder();
-            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint PRIMARY KEY, AEF float);");
-            for (int i = 0; i < SourceIDAEFScores.Count / 1000 + 1; i++)
-            {
-                if (SourceIDAEFScores.Count - 1000 * i > 0)
-                {
-                    QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", SourceIDAEFScores.Skip(i * 1000).Take(1000).Select(s => "(" + s.Key + "," + s.Value + ")").ToArray()) + ";");
-                }
-            }
-            QueryBuilder.AppendLine(string.Format("UPDATE TheoryMembership SET ArticleLevelEigenfactor = 0 WHERE TheoryId = {0} AND RunID = {1}", TheoryId, RunId));
-            QueryBuilder.AppendLine(string.Format("UPDATE tm SET tm.ArticleLevelEigenfactor = st.AEF FROM TheoryMembership AS tm INNER JOIN #SourceIdTable AS st ON tm.SourceId = st.SourceId WHERE tm.TheoryId = {0} AND tm.RunId = {1}", TheoryId, RunId));
-            QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
-            Context.CommandTimeout = 240;
-            Context.ExecuteStoreCommand(QueryBuilder.ToString());
-        }
-
-        /// <summary>
         /// Creates all of the neccessary database records to being performing theory anaysis
         /// </summary>
         /// <param name="TheoryId">The theory to initiate analysis of</param>
         /// <param name="StoreImpactFactor">Whether to store the ImpactFactor of the theory's member sources</param>
         /// <param name="AllLevelSources">All sources which are members of the theory</param>
         /// <returns>The RunId of the analysis run being initiated</returns>
-        public int InitiateTheoryAnalysis(int TheoryId, bool StoreImpactFactor, SourceWithReferences[] AllLevelSources)
+        public int InitializeTheoryAnalysis(int TheoryId, SourceWithReferences[] AllLevelSources)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             //Add new analysis run
             Run r = new Run();
             r.DateStarted = DateTime.Now;
@@ -141,20 +113,40 @@ namespace ATN.Data
             Theories t = new Theories(Context);
             var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
             SourceWithReferences[] SourcesNeedingTheoryMembershipSignificances = AllLevelSources.Where(als => !ExistingTheoryMembershiSignificance.Contains(als.SourceId)).ToArray();
-            
-            SqlBulkCopy TheoryMembershipSignificanceCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString);
-            TheoryMembershipSignificanceCopier.DestinationTableName = "TheoryMembershipSignificance";
-            TheoryMembershipSignificanceCopier.BulkCopyTimeout = 240;
-            TheoryMembershipSignificanceCopier.WriteToServer(SourcesNeedingTheoryMembershipSignificances.Select(sntm => new TheoryMembershipSignificanceBinder(TheoryId, sntm.SourceId, null, false)).AsDataReader());
 
-            SqlBulkCopy TheoryMembershipCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString);
-            TheoryMembershipCopier.DestinationTableName = "TheoryMembership";
-            TheoryMembershipCopier.BulkCopyTimeout = 240;
-            TheoryMembershipCopier.WriteToServer(AllLevelSources.Select(sntm => new TheoryInitialiationBinder(TheoryId, sntm.SourceId, r.RunId, sntm.Depth, sntm.ImpactFactor)).AsDataReader());
-
-            sw.Stop();
-            Trace.WriteLine(string.Format("Theory initialization: {0}", sw.Elapsed));
+            if (SourcesNeedingTheoryMembershipSignificances.Length > 0)
+            {
+                SqlBulkCopy TheoryMembershipSignificanceCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString, SqlBulkCopyOptions.KeepIdentity);
+                TheoryMembershipSignificanceCopier.DestinationTableName = "TheoryMembershipSignificance";
+                TheoryMembershipSignificanceCopier.ColumnMappings.Add(0, 1);
+                TheoryMembershipSignificanceCopier.ColumnMappings.Add(1, 2);
+                TheoryMembershipSignificanceCopier.ColumnMappings.Add(2, 3);
+                TheoryMembershipSignificanceCopier.ColumnMappings.Add(3, 4);
+                TheoryMembershipSignificanceCopier.WriteToServer(SourcesNeedingTheoryMembershipSignificances.Select(sntm => new TheoryMembershipSignificanceBinder(TheoryId, sntm.SourceId, null, false)).AsDataReader());
+            }
+            else
+            {
+                Trace.WriteLine("No theorie members need initialization", "Informational");
+            }
             return r.RunId;
+        }
+
+        public void StoreAnalysisResults(int TheoryId, int RunId, SourceWithReferences[] AnalysisEntriesToCommit)
+        {
+            SqlBulkCopy TheoryMembershipCommitter = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString);
+            TheoryMembershipCommitter.DestinationTableName = "TheoryMembership";
+
+            TheoryMembershipCommitter.ColumnMappings.Add(0, 1);
+            TheoryMembershipCommitter.ColumnMappings.Add(1, 2);
+            TheoryMembershipCommitter.ColumnMappings.Add(2, 3);
+            TheoryMembershipCommitter.ColumnMappings.Add(3, 4);
+            TheoryMembershipCommitter.ColumnMappings.Add(4, 5);
+            TheoryMembershipCommitter.ColumnMappings.Add(5, 6);
+            TheoryMembershipCommitter.ColumnMappings.Add(6, 7);
+            TheoryMembershipCommitter.ColumnMappings.Add(7, 8);
+            TheoryMembershipCommitter.ColumnMappings.Add(8, 9);
+
+            TheoryMembershipCommitter.WriteToServer(AnalysisEntriesToCommit.Select(s => new TheoryMembershipBinder(TheoryId, s.SourceId, RunId, s.Depth, s.ImpactFactor, s.TheoryAttributionRatio, s.ArticleLevelEigenFactor, s.TheoryNamePresent, s.PredictionProbability, s.IsContributingPrediction)).AsDataReader());
         }
     }
 }

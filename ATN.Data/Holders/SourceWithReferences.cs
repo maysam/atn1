@@ -11,8 +11,9 @@ namespace ATN.Data
     /// </summary>
     public class SourceWithReferences
     {
+        public int TheoryId {get; set;}
         public long SourceId { get; set; }
-        public int ImpactFactor { get; set; }
+        public int? ImpactFactor { get; set; }
         public int OutFactor
         {
             get
@@ -21,6 +22,11 @@ namespace ATN.Data
             }
         }
         public short Depth { get; set; }
+        public double? TheoryAttributionRatio { get; set; }
+        public double? ArticleLevelEigenFactor { get; set; }
+        public bool? TheoryNamePresent { get; set; }
+        public double? PredictionProbability { get; set; }
+        public bool? IsContributingPrediction { get; set; }
         public List<long> References { get; set; }
         public SourceWithReferences(long SourceId, int ImpactFactor, short Depth)
         {

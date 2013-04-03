@@ -223,6 +223,11 @@ namespace ATN.Data
             Context.SaveChanges();
         }
 
+        public Crawl GetCrawlById(int CrawlId)
+        {
+            return Context.Crawls.Single(c => c.CrawlId == CrawlId);
+        }
+
         /// <summary>
         /// Retrieves a list of pending CrawlQueue items for the given CrawlId
         /// </summary>

@@ -128,7 +128,7 @@ namespace ATN.Data
                     QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
                 }
             }
-            QueryBuilder.AppendLine("SELECT s.SourceId as SourceId, DataSourceSpecificId as MasId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal FROM Source s JOIN #SourceIdTable st ON st.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.Depth ASC;");
+            QueryBuilder.AppendLine("SELECT s.SourceId as SourceId, DataSourceSpecificId as MasId, ArticleTitle as Title, [Year], (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal FROM Source s JOIN #SourceIdTable st ON st.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.Depth ASC;");
             QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
             ExportSource[] ExportSources = Context.ExecuteStoreQuery<ExportSource>(QueryBuilder.ToString()).ToArray();
             return ExportSources;
@@ -158,7 +158,7 @@ namespace ATN.Data
                     QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
                 }
             }
-            QueryBuilder.AppendLine(string.Format("SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, st.Depth as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.SourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId = st.SourceId ORDER BY Depth ASC", TheoryId));
+            QueryBuilder.AppendLine(string.Format("SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, st.Depth as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.SourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId = st.SourceId ORDER BY Depth ASC", TheoryId));
             QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
             return Context.ExecuteStoreQuery<ExtendedSource>(QueryBuilder.ToString()).ToList();
         }
@@ -178,7 +178,7 @@ namespace ATN.Data
             //It starts by adding canonical sources into a temporary table, then for each
             //canonical source inserting 1st level sources, and for each 1st level source
             //inserting 2nd level sources
-            //Finally, the select concludes by retrieving all sources and depths; and proceeds
+            //Finally, the select concludes by retrieving all sources and depths; and proceed
             //to select all of the papers which are cited by another source but do not cite
             //anything themselves
             SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
@@ -257,7 +257,7 @@ namespace ATN.Data
             return Context.ExecuteStoreQuery<ExtendedSource>(
                 @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint);
                 INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, c.CitesSourceId FROM CitationsReference c WHERE c.SourceId = {0}
-                SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.FullName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, CAST(2 as smallint) as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.CitesSourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {1} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.CitesSourceId ASC
+                SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, CAST(2 as smallint) as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.CitesSourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {1} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.CitesSourceId ASC
                 DROP TABLE #SourceIdTable",
                 TheoryId, SourceId
             ).ToList();
