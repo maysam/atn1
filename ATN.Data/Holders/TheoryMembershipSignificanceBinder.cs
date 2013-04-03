@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
+    /// <summary>
+    /// Used as a data binder for the analysis interface in initiating the theory membership table
+    /// </summary>
     public class TheoryMembershipSignificanceBinder
     {
         public int TheoryId { get; set; }

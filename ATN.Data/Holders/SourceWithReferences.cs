@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ATN.Data
 {
     /// <summary>
-    /// Represents a source, it's impact for a given theory, it's depth, and its references
+    /// Represents a source, its references, and its theory contribution
     /// </summary>
     public class SourceWithReferences
     {

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATN.Data
 {
+    /// <summary>
+    /// Used for committing analysis runs to the database
+    /// </summary>
     public class TheoryMembershipBinder
     {
         public int TheoryId { get; set; }
