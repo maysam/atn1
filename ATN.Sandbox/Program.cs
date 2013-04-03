@@ -16,9 +16,7 @@ namespace ATN.Analysis
     {
         public static void Main(string[] args)
         {
-            AnalysisRunner ar = new AnalysisRunner();
-            ar.AnalyzeTheory(2);
-            int x = 0;
+
         }
     }
 }
