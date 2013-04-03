@@ -33,12 +33,13 @@ namespace ATN.Processing
                     try
                     {
                         ExistingCrawlSpecifier[] ChangedCrawls = cr.ProcessCurrentCrawls();
+
                         if (ChangedCrawls.Length > 0)
                         {
-                            AnalysisInterface ai = new AnalysisInterface();
+                            AnalysisRunner ar = new AnalysisRunner();
                             for(int i = 0; i < ChangedCrawls.Length; i++)
                             {
-
+                                ar.AnalyzeTheory(ChangedCrawls[i].Crawl, ChangedCrawls[i].TheoryId);
                             }
                         }
                     }

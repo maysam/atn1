@@ -111,8 +111,19 @@ namespace ATN.Data
             Context.SaveChanges();
 
             Theories t = new Theories(Context);
-            var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
-            SourceWithReferences[] SourcesNeedingTheoryMembershipSignificances = AllLevelSources.Where(als => !ExistingTheoryMembershiSignificance.Contains(als.SourceId)).ToArray();
+
+            long[] SourceIdsWithTms = Context.ExecuteStoreQuery<long>(
+                @"CREATE TABLE #InitiateTheoryTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
+                CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #InitiateTheoryTable(SourceId, CitesSourceId)
+                INSERT INTO #InitiateTheoryTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", AllLevelSources.TakeWhile(als => als.Depth == 0).Select(cs => cs.SourceId).ToArray()) + @");
+                INSERT INTO #InitiateTheoryTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #InitiateTheoryTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
+                INSERT INTO #InitiateTheoryTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #InitiateTheoryTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
+                SELECT DISTINCT st1.SourceId FROM #InitiateTheoryTable st1 WHERE st1.SourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {0}) UNION SELECT DISTINCT CitesSourceId FROM #InitiateTheoryTable st2 WHERE st2.CitesSourceId IS NOT NULL AND st2.CitesSourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {0});
+                DROP INDEX Index_SourceIdTable_SourceId ON #InitiateTheoryTable;
+                DROP TABLE #InitiateTheoryTable;",
+                TheoryId).ToArray();
+            //var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
+            SourceWithReferences[] SourcesNeedingTheoryMembershipSignificances = SourceIdsWithTms.Distinct().Join(AllLevelSources, sitms => sitms, als => als.SourceId, (sitms, als) => als).ToArray();
 
             if (SourcesNeedingTheoryMembershipSignificances.Length > 0)
             {
@@ -126,7 +137,7 @@ namespace ATN.Data
             }
             else
             {
-                Trace.WriteLine("No theorie members need initialization", "Informational");
+                Trace.WriteLine("No theory members need initialization", "Informational");
             }
             return r.RunId;
         }

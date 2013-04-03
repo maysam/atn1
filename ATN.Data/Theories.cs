@@ -172,6 +172,11 @@ namespace ATN.Data
         {
             Source[] CanonicalSources = GetCanonicalSourcesForTheory(TheoryId);
 
+            if (CanonicalSources.Length == 0)
+            {
+                return new Dictionary<long, SourceWithReferences>();
+            }
+
             //This retrieves a large table worth of sources, citations, and citation depth
             //It is important that the table is sorted by Depth ascending such that any source
             //which is both a first level and second level source is counted as first level
@@ -183,10 +188,12 @@ namespace ATN.Data
             //anything themselves
             SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
                 @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
+                CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #SourceIdTable(SourceId, CitesSourceId)
                 INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
                 INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
                 INSERT INTO #SourceIdTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
-                SELECT st1.SourceId, CitesSourceId, CAST(Depth as smallint), (SELECT Count(st2.SourceId) FROM #SourceIdTable st2 WHERE st2.CitesSourceId = st1.SourceId) as ImpactFactor FROM #SourceIdTable st1 UNION SELECT DISTINCT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(Depth - 1 as smallint) as Depth, (SELECT Count(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL ORDER BY Depth ASC
+                SELECT st1.SourceId, st1.CitesSourceId, CAST(st1.Depth as smallint) as Depth, COUNT(st2.SourceId) as ImpactFactor FROM #SourceIdTable st1 JOIN #SourceIdTable st2 ON st2.CitesSourceId = st1.SourceId GROUP BY st1.SourceId, st1.CitesSourceId, st1.Depth UNION
+                SELECT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(st3.Depth - 1 as smallint) as Depth, (SELECT COUNT(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL ORDER BY Depth ASC;
                 DROP TABLE #SourceIdTable"
             ).ToArray();
 

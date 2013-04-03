@@ -51,6 +51,13 @@ namespace ATN.Data
             Context.SaveChanges();
         }
 
+
+        public Crawl[] GetCrawlsWithoutAnalysisRuns(Crawl[] Except)
+        {
+            int[] CrawlIdsWithoutAnalysisRuns = Context.ExecuteStoreQuery<int>("SELECT CrawlId FROM Crawl c WHERE c.TheoryId NOT IN (SELECT DISTINCT TheoryId FROM TheoryMembership)").ToArray();
+            return CrawlIdsWithoutAnalysisRuns.Join(Context.Crawls, cid => cid, c => c.CrawlId, (cid, c) => c).Except(Except).ToArray();
+        }
+
         /// <summary>
         /// Removes CrawlQueue items for the given CrawlId. Used when a crawl is interrupted to avoid enqueueing duplicate entries.
         /// </summary>

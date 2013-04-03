@@ -16,18 +16,19 @@ namespace ATN.Analysis
     {
         private Theories _theories;
         private AnalysisInterface _analysis;
-
+        private CrawlerProgress _progress;
         public AnalysisRunner(ATNEntities Entities = null)
         {
             _theories = new Theories(Entities);
             _analysis = new AnalysisInterface(Entities);
+            _progress = new CrawlerProgress(Entities);
         }
 
         /// <summary>
         /// Run theory analysis and store it in the target database
         /// </summary>
         /// <param name="TheoryId"></param>
-        public void AnalyzeTheory(int TheoryId)
+        public void AnalyzeTheory(Crawl Crawl, int TheoryId)
         {
             Stopwatch TotalTimer = new Stopwatch();
             Stopwatch Timer = new Stopwatch();
@@ -37,7 +38,12 @@ namespace ATN.Analysis
             Trace.WriteLine("Creating theory tree", "Informational");
             Theory TheoryToAnalyze = _theories.GetTheory(TheoryId);
             Dictionary<long, SourceWithReferences> SourceTree = _theories.GetSourceTreeForTheory(TheoryId);
-            Trace.WriteLine(string.Format("Theory tree created in {0}", Timer.Elapsed), "Informational");
+            if (SourceTree.Count == 0)
+            {
+                return;
+            }
+
+            Trace.WriteLine(string.Format("Tree for theory {0} created in {1}", TheoryId, Timer.Elapsed), "Informational");
             Timer.Restart();
 
             //Create any missing TheoryMembershipSignificance rows
@@ -86,6 +92,7 @@ namespace ATN.Analysis
             TotalTimer.Stop();
             Trace.WriteLine(string.Format("Analysis run completed in {0}", TotalTimer.Elapsed));
 
+            _progress.SetCrawlerStateUnchanged(Crawl);
         }
     }
 }
