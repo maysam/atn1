@@ -15,10 +15,10 @@
                
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:Label ID="lbMasId1" runat="server" Text="MS Academic Search ID 1"></asp:Label>
+                        <asp:Label ID="lbMasId1" runat="server" Text="MS Academic Search ID(s)"></asp:Label>
                     </HeaderTemplate>
                     <ItemTemplate>
-                        <asp:TextBox ID="txtMasId" runat="server" ></asp:TextBox>
+                        <asp:TextBox ID="txtMasId1" runat="server" ></asp:TextBox>
                     </ItemTemplate>
 
                    
@@ -31,28 +31,25 @@
                         <asp:Label ID="lbMasId2" runat="server" Text="MS Academic Search ID 2"></asp:Label>
                     </HeaderTemplate>
                     <ItemTemplate>
-                        <asp:TextBox ID="txtMasId" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="txtMasId2" runat="server"></asp:TextBox>
                     </ItemTemplate>
                   
                 </asp:TemplateField>
 
-
-              
+                
                 
             </Columns>
        
              </asp:GridView>
    
-
-
-    <asp:Button ID="Button1" runat="server" OnCommand="AddNewDataSourceId" Text="Add More MSAS IDs " />
                  
                   
     <asp:Button ID="btnNewSource" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid"/>
         <br />
         <br />
-        <asp:CheckBox ID="recrawl" runat="server" Text="Re-Crawl:" OnCheckedChanged="recrawl_CheckedChanged" />
-        <asp:DropDownList ID="crawlperiod" runat="server" Height="37px">
+        <asp:Label ID="recrawl" runat="server" Text="Recrawl:" style="font-weight: 700; font-size: medium"></asp:Label>
+        &nbsp;&nbsp;
+        <asp:DropDownList ID="crawlperiod" runat="server" Height="35px" Width="77px">
             <asp:ListItem Value="1">Daily</asp:ListItem>
             <asp:ListItem Value="7">Weekly</asp:ListItem>
             <asp:ListItem Value="14">Bi-weekly</asp:ListItem>
@@ -62,6 +59,23 @@
         </asp:DropDownList>
         <br />
         <br />
-        <asp:Button ID="btnSubmit" runat="server"  OnCommand="btnSubmit_LaunchCrawler" Text="Start Crawler" OnClick="btnSubmit_Click" />
+        <span class="auto-style1"><strong>Analysis Engine Options:</strong></span><br />
+         <asp:CheckBox ID="AEF" runat="server" TextAlign="Left" Text="AEF" OnCheckedChanged="AEF_CheckedChanged"/>
+         <asp:CheckBox ID="ImpactFactor" runat="server" Text="Impact Factor" OnCheckedChanged="ImpactFactor_CheckedChanged" />       
+         <asp:CheckBox ID="TAR" runat="server" Text="TAR" Enabled="False"  />
+         <asp:CheckBox ID="DataMining" runat="server" Text="Data Mining" />
+         <asp:CheckBox ID="Clustring" runat="server" Text="Clustring"/>
         <br />
+     
+
+    <asp:Button ID="btnSubmit1" runat="server"  OnCommand="btnSubmit_LaunchCrawler" Text="Start Crawler" />
+        <br />
+        </asp:Content>
+<asp:Content ID="Content1" runat="server" contentplaceholderid="HeadContent">
+    <style type="text/css">
+        .auto-style1 {
+            font-size: medium;
+        }
+    </style>
 </asp:Content>
+
