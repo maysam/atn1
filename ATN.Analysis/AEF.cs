@@ -62,11 +62,18 @@ namespace ATN.Analysis
             //Translate the theory tree into a list of edges
             foreach (KeyValuePair<long, SourceWithReferences> SourceAndCitations in SourceTree)
             {
-                foreach (long Citation in SourceAndCitations.Value.References)
+                if (SourceAndCitations.Value.References.Count == 0)
                 {
-                    long EndIndex = GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, Citation);
-                    long StartIndex = GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, SourceAndCitations.Key);
-                    Edges.Add(new SourceEdge(StartIndex, EndIndex));
+                    GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, SourceAndCitations.Key);
+                }
+                else
+                {
+                    foreach (long Citation in SourceAndCitations.Value.References)
+                    {
+                        long EndIndex = GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, Citation);
+                        long StartIndex = GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, SourceAndCitations.Key);
+                        Edges.Add(new SourceEdge(StartIndex, EndIndex));
+                    }
                 }
             }
 
@@ -94,7 +101,7 @@ namespace ATN.Analysis
             #if VERBOSE
                 double v;
             #endif
-            int MatrixOrder = SourceIdToIndex.Keys.Count();
+            int MatrixOrder = SourceTree.Keys.Count();
             int NumberOfEdges = Edges.Count();
             double[] p = new double[MatrixOrder];
             double[] RowSum = new double[MatrixOrder];
@@ -107,7 +114,7 @@ namespace ATN.Analysis
                 stopWatch.Start();
             #endif
 
-            int[] OFArray = SourceIdToIndex.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
+            int[] OFArray = SourceTree.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
             // Read into CRS formatted sparse matrix. Info must be read into the sparse matrix left to right, top to bottom
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);

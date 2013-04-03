@@ -16,7 +16,10 @@ namespace ATN.Analysis
     {
         public static void Main(string[] args)
         {
-
+            AnalysisRunner ar = new AnalysisRunner();
+            CrawlerProgress cp = new CrawlerProgress();
+            ar.AnalyzeTheory(cp.GetCrawlById(3), 2);
+            int x = 0;
         }
     }
 }
