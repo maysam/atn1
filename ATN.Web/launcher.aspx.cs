@@ -26,12 +26,12 @@ namespace ATN.Web
             DataRow dr = null;
             
             dt.Columns.Add(new DataColumn("MsAcademicSearchId1", typeof(string)));
-            dt.Columns.Add(new DataColumn("MsAcademicSearchId2", typeof(string)));
+           // dt.Columns.Add(new DataColumn("MsAcademicSearchId2", typeof(string)));
            
             dr = dt.NewRow();
             
             dr["MsAcademicSearchId1"] = string.Empty;
-            dr["MsAcademicSearchId2"] = string.Empty;
+            //dr["MsAcademicSearchId2"] = string.Empty;
            
             dt.Rows.Add(dr);
 
@@ -82,11 +82,11 @@ namespace ATN.Web
 
                             //extract the TextBox values
                             TextBox box1 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[0].FindControl("txtMasId1");
-                            TextBox box2 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[1].FindControl("txtMasId2");
+                           // TextBox box2 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[1].FindControl("txtMasId2");
 
                            drCurrentRow = dtCurrentTable.NewRow();
                             drCurrentRow["MsAcademicSearchId1"] = box1.Text;
-                            drCurrentRow["MsAcademicSearchId2"] = box2.Text;
+                           // drCurrentRow["MsAcademicSearchId2"] = box2.Text;
                        // }   
                         rowIndex++;
                     }
@@ -124,10 +124,10 @@ namespace ATN.Web
                         //   DataSourceGrid.Rows[rowIndex].Cells[j].Text = dt.Rows[i][j].ToString();
                         // }
                         TextBox box1 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[0].FindControl("txtMasId1");
-                        TextBox box2 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[1].FindControl("txtMasId2");
+                       // TextBox box2 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[1].FindControl("txtMasId2");
 
                         box1.Text = dt.Rows[i]["MsAcademicSearchId1"].ToString();
-                        box2.Text = dt.Rows[i]["MsAcademicSearchId2"].ToString();
+                       // box2.Text = dt.Rows[i]["MsAcademicSearchId2"].ToString();
 
                         //string box = DataSourceGrid.Rows[rowIndex].Cells[j].Text;
 
@@ -235,9 +235,9 @@ namespace ATN.Web
             }
             //CanonicalDataSource MASIds = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds);
             //CanonicalDataSource MASIds2 = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds2);
-            
-            
-            NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName,TheoryComment, AEF.Checked, ImpactFactor.Checked, TAR.Checked, DataMining.Checked, Clustring.Checked  ,AllSourcesArray);
+
+
+            NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName, TheoryComment, AEF.Checked, ImpactFactor.Checked, TAR.Checked, DataMining.Checked, Clustring.Checked, AllSourcesArray);
             
             
             //start a new crawl
@@ -268,6 +268,7 @@ namespace ATN.Web
             {
                 TAR.Enabled = true;
                 TAR.Text = "TAR";
+                TAR.ForeColor = System.Drawing.Color.Black;
                 TAR.DataBind();
             }
             else
@@ -275,6 +276,7 @@ namespace ATN.Web
                 TAR.Checked = false;
                 TAR.Enabled = false;
                 TAR.Text = "TAR- Can't be computed";
+                TAR.ForeColor = System.Drawing.Color.Silver;
                 TAR.DataBind();
             }
         }
@@ -287,6 +289,8 @@ namespace ATN.Web
             {
                 TAR.Enabled = true;
                 TAR.Text = "TAR";
+                TAR.ForeColor = System.Drawing.Color.Black;
+
                 TAR.DataBind();
             }
             else
@@ -294,6 +298,7 @@ namespace ATN.Web
                 TAR.Checked = false;
                 TAR.Enabled = false;
                 TAR.Text = "TAR- Can't be computed";
+                TAR.ForeColor = System.Drawing.Color.Silver;
                 TAR.DataBind();
             }
 

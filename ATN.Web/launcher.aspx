@@ -4,7 +4,7 @@
         <asp:TextBox ID="txtNetworkName" runat="server"></asp:TextBox>
         <br />
         <h3><asp:Label ID="lblNetworkComments" runat="server" Text="Comments"></asp:Label></h3>
-        <asp:TextBox ID="txtNetworkComments" runat="server" TextMode="MultiLine" Rows="3" Width="400px" Height="24px" />
+        <asp:TextBox ID="txtNetworkComments" runat="server" TextMode="MultiLine" Rows="3" Width="400px" Height="48px" />
         <br />
 
         <br />
@@ -25,22 +25,15 @@
 
                     </asp:TemplateField>
                
-             <asp:TemplateField>
-
-                    <HeaderTemplate>
-                        <asp:Label ID="lbMasId2" runat="server" Text="MS Academic Search ID 2"></asp:Label>
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                        <asp:TextBox ID="txtMasId2" runat="server"></asp:TextBox>
-                    </ItemTemplate>
-                  
-                </asp:TemplateField>
+     
 
                 
                 
             </Columns>
        
              </asp:GridView>
+
+
    
                  
                   
@@ -59,12 +52,14 @@
         </asp:DropDownList>
         <br />
         <br />
-        <span class="auto-style1"><strong>Analysis Engine Options:</strong></span><br />
-         <asp:CheckBox ID="AEF" runat="server" TextAlign="Left" Text="AEF" OnCheckedChanged="AEF_CheckedChanged"/>
-         <asp:CheckBox ID="ImpactFactor" runat="server" Text="Impact Factor" OnCheckedChanged="ImpactFactor_CheckedChanged" />       
-         <asp:CheckBox ID="TAR" runat="server" Text="TAR" Enabled="False"  />
-         <asp:CheckBox ID="DataMining" runat="server" Text="Data Mining" />
-         <asp:CheckBox ID="Clustring" runat="server" Text="Clustring"/>
+        <span class="auto-style1"><strong>Analysis Engine Options:<br />
+        </strong></span><br />
+         <asp:CheckBox ID="AEF" runat="server" TextAlign="Left" Text="AEF" OnCheckedChanged="AEF_CheckedChanged" AutoPostBack="True"/>
+         <asp:CheckBox ID="ImpactFactor" runat="server" TextAlign="Left" Text="Impact Factor" OnCheckedChanged="ImpactFactor_CheckedChanged" AutoPostBack="True" />       
+         <asp:CheckBox ID="TAR" runat="server" TextAlign="Left" Text="TAR" Enabled="False" ForeColor="Silver"  />
+         <asp:CheckBox ID="DataMining" runat="server" TextAlign="Left" Text="Data Mining"  />
+
+         <asp:CheckBox ID="Clustring" runat="server" TextAlign="Left" Text="Clustring"  />
         <br />
      
 
