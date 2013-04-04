@@ -28,6 +28,11 @@ namespace ATN.Data
 
         }
 
+        public Crawl[] GetCrawls()
+        {
+            return Context.Crawls.ToArray();
+        }
+
         /// <summary>
         /// Sets a Crawl as having been changed during the course of aa crawl run.
         /// This is used in instances where a crawl may be interupted, such that
@@ -49,6 +54,13 @@ namespace ATN.Data
         {
             Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = false;
             Context.SaveChanges();
+        }
+
+
+        public Crawl[] GetCrawlsWithoutAnalysisRuns(Crawl[] Except)
+        {
+            int[] CrawlIdsWithoutAnalysisRuns = Context.ExecuteStoreQuery<int>("SELECT CrawlId FROM Crawl c WHERE c.TheoryId NOT IN (SELECT DISTINCT TheoryId FROM TheoryMembership)").ToArray();
+            return CrawlIdsWithoutAnalysisRuns.Join(Context.Crawls, cid => cid, c => c.CrawlId, (cid, c) => c).Except(Except).ToArray();
         }
 
         /// <summary>
@@ -221,6 +233,11 @@ namespace ATN.Data
                 }
             }
             Context.SaveChanges();
+        }
+
+        public Crawl GetCrawlById(int CrawlId)
+        {
+            return Context.Crawls.Single(c => c.CrawlId == CrawlId);
         }
 
         /// <summary>

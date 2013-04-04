@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AEF.cs" />
+    <Compile Include="AnalysisRunner.cs" />
     <Compile Include="Support\alglibinternal.cs" />
     <Compile Include="Support\alglibmisc.cs" />
     <Compile Include="Support\ap.cs" />

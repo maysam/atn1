@@ -13,33 +13,15 @@ using ATN.Export;
 
 namespace ATN.Analysis
 {
-    public class AEF
+    public static class AEF
     {
-        AnalysisInterface _analysis;
-        public AEF()
-        {
-            _analysis = new AnalysisInterface();
-        }
-
-        //For storing the translation between Source ID and Index
-        //in order to accommodate alglib's storage constraints
-        static Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
-        static Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
-        static long CurrentSourceIndex = 0;
-
-        //For storage of the theory source tree
-        static Dictionary<long, SourceWithReferences> SourceIdCitedBy;
-
-        //For storing the list of edges that will be passed to alglib
-        static List<SourceEdge> Edges = new List<SourceEdge>();
-
         /// <summary>
         /// Retrieves the index for a particular source, and adds the Source and index
         /// to the translation dictionaries if it has not been seen before
         /// </summary>
         /// <param name="SourceId">The SourceId to retrieve an index for</param>
         /// <returns>The index corresponding to the passed SourceId</returns>
-        static long GetIndexForSource(long SourceId)
+        static long GetIndexForSource(Dictionary<long, long> SourceIdToIndex, Dictionary<long, long> IndexToSourceId, ref long CurrentSourceIndex, long SourceId)
         {
             if (!SourceIdToIndex.ContainsKey(SourceId))
             {
@@ -54,8 +36,17 @@ namespace ATN.Analysis
             }
         }
 
-        public void ComputeAndStoreAEF(int TheoryId, int RunId, Dictionary<long, SourceWithReferences> SourceIdCitedBy)
+        public static Dictionary<long, double> ComputeAEF(Dictionary<long, SourceWithReferences> SourceTree)
         {
+            //For storing the translation between Source ID and Index
+            //in order to accommodate alglib's storage constraints
+            Dictionary<long, long> SourceIdToIndex = new Dictionary<long, long>();
+            Dictionary<long, long> IndexToSourceId = new Dictionary<long, long>();
+            long CurrentSourceIndex = 0;
+
+            //For storing the list of edges that will be passed to alglib
+            List<SourceEdge> Edges = new List<SourceEdge>();
+
             Theories t;
             #if TIMING
                 Trace.WriteLine("TIMING ON \n hour:min:sec:ms format");
@@ -69,19 +60,26 @@ namespace ATN.Analysis
             #endif
 
             //Translate the theory tree into a list of edges
-            foreach (KeyValuePair<long, SourceWithReferences> SourceAndCitations in SourceIdCitedBy)
+            foreach (KeyValuePair<long, SourceWithReferences> SourceAndCitations in SourceTree)
             {
-                foreach (long Citation in SourceAndCitations.Value.References)
+                if (SourceAndCitations.Value.References.Count == 0)
                 {
-                    long EndIndex = GetIndexForSource(Citation);
-                    long StartIndex = GetIndexForSource(SourceAndCitations.Key);
-                    Edges.Add(new SourceEdge(StartIndex, EndIndex));
+                    GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, SourceAndCitations.Key);
+                }
+                else
+                {
+                    foreach (long Citation in SourceAndCitations.Value.References)
+                    {
+                        long EndIndex = GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, Citation);
+                        long StartIndex = GetIndexForSource(SourceIdToIndex, IndexToSourceId, ref CurrentSourceIndex, SourceAndCitations.Key);
+                        Edges.Add(new SourceEdge(StartIndex, EndIndex));
+                    }
                 }
             }
 
             //Compute how many times each source cites other sources
             //This is neccessary for alglib's sparse matrix storage
-            Dictionary<long, int> TimesKeyCitesSomething = SourceIdCitedBy.ToDictionary(kv => kv.Key, kv => kv.Value.OutFactor);
+            Dictionary<long, int> TimesKeyCitesSomething = SourceTree.ToDictionary(kv => kv.Key, kv => kv.Value.OutFactor);
             Edges = Edges.OrderBy(e => e.StartSourceId).ThenBy(e => e.EndSourceId).ToList();
 
             #if TIMING
@@ -103,7 +101,7 @@ namespace ATN.Analysis
             #if VERBOSE
                 double v;
             #endif
-            int MatrixOrder = SourceIdToIndex.Keys.Count();
+            int MatrixOrder = SourceTree.Keys.Count();
             int NumberOfEdges = Edges.Count();
             double[] p = new double[MatrixOrder];
             double[] RowSum = new double[MatrixOrder];
@@ -116,7 +114,7 @@ namespace ATN.Analysis
                 stopWatch.Start();
             #endif
 
-            int[] OFArray = SourceIdToIndex.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
+            int[] OFArray = SourceTree.Keys.OrderBy(k => SourceIdToIndex[k]).Select(k => TimesKeyCitesSomething[k]).ToArray();
             // Read into CRS formatted sparse matrix. Info must be read into the sparse matrix left to right, top to bottom
             alglib.sparsematrix s;
             alglib.sparsecreatecrs(MatrixOrder, MatrixOrder, OFArray, out s);
@@ -245,7 +243,6 @@ namespace ATN.Analysis
             {
                 SourceIDToAEF.Add(IndexToSourceId[i], AEFScore[i]);
             }
-            _analysis.UpdateAEFScores(TheoryId, RunId, SourceIDToAEF);
 
             #if TIMING
                 stopWatch.Stop();
@@ -261,6 +258,8 @@ namespace ATN.Analysis
                 Trace.WriteLine(ParsedFullRunTiming + " (full run)");
                 stopWatch.Restart();
             #endif
+
+            return SourceIDToAEF;
         } // end main
     }
 }

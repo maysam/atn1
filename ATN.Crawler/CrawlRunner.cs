@@ -48,15 +48,6 @@ namespace ATN.Crawler
         }
 
         /// <summary>
-        /// Performs final actions after an analysis run has completed
-        /// </summary>
-        /// <param name="Crawl">The Crawl which to complete</param>
-        public void CompleteAnalysisOnCrawl(ExistingCrawlSpecifier Crawl)
-        {
-            _progress.SetCrawlerStateUnchanged(Crawl.Crawl);
-        }
-
-        /// <summary>
         /// Enumerates all crawls, finishing incomplete ones and recrawling stale ones
         /// </summary>
         public ExistingCrawlSpecifier[] ProcessCurrentCrawls()
@@ -74,6 +65,8 @@ namespace ATN.Crawler
                     ChangedCrawls.Add(Specifier);
                 }
             }
+
+            ChangedCrawls = ChangedCrawls.Union(_progress.GetCrawlsWithoutAnalysisRuns(ChangedCrawls.Select(c => c.Crawl).ToArray()).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
 
             return ChangedCrawls.ToArray();
         }

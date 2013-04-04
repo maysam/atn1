@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace ATN.Data
 {
     /// <summary>
-    /// Represents a source, it's impact for a given theory, it's depth, and its references
+    /// Represents a source, its references, and its theory contribution
     /// </summary>
     public class SourceWithReferences
     {
+        public int TheoryId {get; set;}
         public long SourceId { get; set; }
-        public int ImpactFactor { get; set; }
+        public int? ImpactFactor { get; set; }
         public int OutFactor
         {
             get
@@ -21,10 +22,15 @@ namespace ATN.Data
             }
         }
         public short Depth { get; set; }
+        public double? TheoryAttributionRatio { get; set; }
+        public double? ArticleLevelEigenFactor { get; set; }
+        public bool? TheoryNamePresent { get; set; }
+        public double? PredictionProbability { get; set; }
+        public bool? IsContributingPrediction { get; set; }
         public List<long> References { get; set; }
         public SourceWithReferences(long SourceId, int ImpactFactor, short Depth)
         {
-            this.References = new List<long>();
+            this.References = new List<long>(50);
             this.SourceId = SourceId;
             this.ImpactFactor = ImpactFactor;
             this.Depth = Depth;

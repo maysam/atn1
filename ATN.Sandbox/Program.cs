@@ -8,6 +8,7 @@ using ATN.Analysis;
 using ATN.Export;
 using ATN.Data;
 using System.IO;
+using System.Threading;
 
 namespace ATN.Analysis
 {
@@ -15,11 +16,17 @@ namespace ATN.Analysis
     {
         public static void Main(string[] args)
         {
-            AnalysisInterface ai = new AnalysisInterface();
-            int RunId = ai.InitiateTheoryAnalysis(7, true);
-            AEF AEF = new AEF();
-            AEF.ComputeAndStoreAEF(7, RunId);
-            int x = 0;
+            AnalysisRunner ar = new AnalysisRunner();
+            CrawlerProgress cp = new CrawlerProgress();
+            Crawl[] crawls = cp.GetCrawls();
+
+            if (crawls.Length > 0)
+            {
+                for (int i = 0; i < crawls.Length; i++)
+                {
+                    ar.AnalyzeTheory(crawls[i], crawls[i].TheoryId);
+                }
+            }
         }
     }
 }

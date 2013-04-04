@@ -342,7 +342,6 @@
           <Property Name="ImpactFactor" Type="int" />
           <Property Name="TheoryAttributionRatio" Type="float" />
           <Property Name="ArticleLevelEigenFactor" Type="float" />
-          <Property Name="TheoryNamePresent" Type="bit" />
           <Property Name="PredictionProbability" Type="float" />
           <Property Name="IsContributingPrediction" Type="bit" />
         </EntityType>
@@ -355,6 +354,7 @@
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RAMarkedContributing" Type="bit" />
           <Property Name="IsMetaAnalysis" Type="bit" Nullable="false" />
+          <Property Name="TheoryNamePresent" Type="bit" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Role="Author" Type="ATNModel.Store.Author" Multiplicity="1" />
@@ -1166,7 +1166,6 @@
           <Property Type="Int32" Name="TheoryId" Nullable="false" />
           <Property Type="Int64" Name="SourceId" Nullable="false" />
           <Property Type="Int32" Name="RunId" Nullable="false" />
-          <Property Type="Boolean" Name="TheoryNamePresent" />
           <Property Type="Double" Name="PredictionProbability" />
           <Property Type="Boolean" Name="IsContributingPrediction" />
           <NavigationProperty Name="Run" Relationship="ATNModel.FK_TheoryMembership_Run" FromRole="TheoryMembership" ToRole="Run" />
@@ -1347,6 +1346,7 @@
           <Property Type="Boolean" Name="RAMarkedContributing" />
           <Property Type="Boolean" Name="IsMetaAnalysis" Nullable="false" />
           <NavigationProperty Name="MetaAnalysisMemberships" Relationship="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" FromRole="TheoryMembershipSignificance" ToRole="MetaAnalysisMembership" />
+          <Property Type="Boolean" Name="TheoryNamePresent" Nullable="false" />
         </EntityType>
         <Association Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance">
           <End Type="ATNModel.TheoryMembershipSignificance" Role="TheoryMembershipSignificance" Multiplicity="1" />
@@ -1531,7 +1531,6 @@
                 <ScalarProperty Name="ArticleLevelEigenFactor" ColumnName="ArticleLevelEigenFactor" />
                 <ScalarProperty Name="IsContributingPrediction" ColumnName="IsContributingPrediction" />
                 <ScalarProperty Name="PredictionProbability" ColumnName="PredictionProbability" />
-                <ScalarProperty Name="TheoryNamePresent" ColumnName="TheoryNamePresent" />
                 <ScalarProperty Name="RunId" ColumnName="RunId" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="TheoryId" ColumnName="TheoryId" />
@@ -1588,6 +1587,7 @@
           <EntitySetMapping Name="TheoryMembershipSignificances">
             <EntityTypeMapping TypeName="ATNModel.TheoryMembershipSignificance">
               <MappingFragment StoreEntitySet="TheoryMembershipSignificance">
+                <ScalarProperty Name="TheoryNamePresent" ColumnName="TheoryNamePresent" />
                 <ScalarProperty Name="IsMetaAnalysis" ColumnName="IsMetaAnalysis" />
                 <ScalarProperty Name="RAMarkedContributing" ColumnName="RAMarkedContributing" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
