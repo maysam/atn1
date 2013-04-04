@@ -49,7 +49,7 @@ namespace ATN.Analysis
             //Create any missing TheoryMembershipSignificance rows
 
             Trace.WriteLine("Initiating theory analysis", "Informational");
-            int RunId = _analysis.InitializeTheoryAnalysis(TheoryId, SourceTree.Values.ToArray());
+            int RunId = _analysis.InitializeTheoryAnalysis(TheoryToAnalyze, SourceTree.Values.ToArray());
             Trace.WriteLine(string.Format("Theory analysis initiation completed in {0}", Timer.Elapsed), "Informational");
             Timer.Restart();
 

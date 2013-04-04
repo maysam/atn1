@@ -28,6 +28,11 @@ namespace ATN.Data
 
         }
 
+        public Crawl[] GetCrawls()
+        {
+            return Context.Crawls.ToArray();
+        }
+
         /// <summary>
         /// Sets a Crawl as having been changed during the course of aa crawl run.
         /// This is used in instances where a crawl may be interupted, such that

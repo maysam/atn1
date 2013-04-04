@@ -18,11 +18,10 @@ namespace ATN.Data
         public int? ImpactFactor { get; set; }
         public double? TheoryAttributionRatio { get; set; }
         public double? ArticleLevelEigenFactor { get; set; }
-        public bool? TheoryNamePresent { get; set; }
         public double? PredictionProbability { get; set; }
         public bool? IsContributingPrediction { get; set; }
         public TheoryMembershipBinder(int TheoryId, long SourceId, int RunId, short Depth, int? ImpactFactor, double? TheoryAttributionRatio,
-            double? ArticleLevelEigenFactor, bool? TheoryNamePresent, double? PredictionProbability, bool? IsContributingPrediction)
+            double? ArticleLevelEigenFactor, double? PredictionProbability, bool? IsContributingPrediction)
         {
             this.TheoryId = TheoryId;
             this.SourceId = SourceId;
@@ -31,7 +30,6 @@ namespace ATN.Data
             this.ImpactFactor = ImpactFactor;
             this.TheoryAttributionRatio = TheoryAttributionRatio;
             this.ArticleLevelEigenFactor = ArticleLevelEigenFactor;
-            this.TheoryNamePresent = TheoryNamePresent;
             this.PredictionProbability = PredictionProbability;
             this.IsContributingPrediction = IsContributingPrediction;
         }

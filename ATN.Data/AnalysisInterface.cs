@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-
+using System.Text.RegularExpressions;
 using Microsoft.Samples.EntityDataReader;
 
 namespace ATN.Data
@@ -101,39 +101,60 @@ namespace ATN.Data
         /// <param name="StoreImpactFactor">Whether to store the ImpactFactor of the theory's member sources</param>
         /// <param name="AllLevelSources">All sources which are members of the theory</param>
         /// <returns>The RunId of the analysis run being initiated</returns>
-        public int InitializeTheoryAnalysis(int TheoryId, SourceWithReferences[] AllLevelSources)
+        public int InitializeTheoryAnalysis(Theory Theory, SourceWithReferences[] AllLevelSources)
         {
             //Add new analysis run
             Run r = new Run();
             r.DateStarted = DateTime.Now;
-            r.TheoryId = TheoryId;
+            r.TheoryId = Theory.TheoryId;
             Context.Runs.AddObject(r);
             Context.SaveChanges();
 
-            Theories t = new Theories(Context);
+            StringBuilder AcronymBuilder = new StringBuilder();
+            Regex SplitRegex = new Regex("([A-Z][A-Za-z-]{1,}|/)");
+            MatchCollection Matches = SplitRegex.Matches(Theory.TheoryName);
+            for (int i = 0; i < Matches.Count; i++)
+            {
+                Match m = Matches[i];
+                if (m.Value == "/")
+                {
+                    break;
+                }
+                AcronymBuilder.Append(char.ToUpper(m.Value[0]));
+            }
+            string Acronym = AcronymBuilder.ToString();
 
-            long[] SourceIdsWithTms = Context.ExecuteStoreQuery<long>(
+            TheoryNamePresentBinder[] SourceIdsWithTms = Context.ExecuteStoreQuery<TheoryNamePresentBinder>(
+                string.Format(
                 @"CREATE TABLE #InitiateTheoryTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #InitiateTheoryTable(SourceId, CitesSourceId)
                 INSERT INTO #InitiateTheoryTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", AllLevelSources.TakeWhile(als => als.Depth == 0).Select(cs => cs.SourceId).ToArray()) + @");
                 INSERT INTO #InitiateTheoryTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #InitiateTheoryTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
                 INSERT INTO #InitiateTheoryTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #InitiateTheoryTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
-                SELECT DISTINCT st1.SourceId FROM #InitiateTheoryTable st1 WHERE st1.SourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {0}) UNION SELECT DISTINCT CitesSourceId FROM #InitiateTheoryTable st2 WHERE st2.CitesSourceId IS NOT NULL AND st2.CitesSourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {0});
-                DROP INDEX Index_SourceIdTable_SourceId ON #InitiateTheoryTable;
+                SELECT DISTINCT st.SourceId, (SELECT CASE WHEN COUNT(sub.SubjectText) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM SourceSubject src, Subject sub WHERE src.SourceId = st.SourceId AND sub.SubjectId = src.SubjectId AND sub.SubjectText = '{0}') as InSubject, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.SourceId AND s.Abstract LIKE '%{0}%' AND s.Abstract IS NOT NULL) as InAbstract, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.SourceId AND s.Abstract LIKE '%{1}%' AND s.Abstract IS NOT NULL) as AcronymInAbstract FROM #InitiateTheoryTable st WHERE st.SourceId IS NOT NULL AND st.SourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {2}) UNION
+                SELECT DISTINCT st.CitesSourceId, (SELECT CASE WHEN COUNT(sub.SubjectText) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM SourceSubject src, Subject sub WHERE src.SourceId = st.CitesSourceId AND sub.SubjectId = src.SubjectId AND sub.SubjectText = '{0}') as InSubject, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.CitesSourceId AND s.Abstract LIKE '%{0}%' AND s.Abstract IS NOT NULL) as InAbstract, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.CitesSourceId AND s.Abstract LIKE '%{1}%' AND s.Abstract IS NOT NULL) as AcronymInAbstract FROM #InitiateTheoryTable st WHERE st.CitesSourceId IS NOT NULL AND st.CitesSourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {2})
                 DROP TABLE #InitiateTheoryTable;",
-                TheoryId).ToArray();
-            //var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
-            SourceWithReferences[] SourcesNeedingTheoryMembershipSignificances = SourceIdsWithTms.Distinct().Join(AllLevelSources, sitms => sitms, als => als.SourceId, (sitms, als) => als).ToArray();
+                Theory.TheoryName, Acronym, Theory.TheoryId)).ToArray();
 
+            //var HasTheoryName = SourceIdsWithTms.Where(s => s.AcronymInAbstract || s.InAbstract || s.InSubject);
+            //if (HasTheoryName.Count() > 0)
+            //{
+            //    int x = 0;
+            //}
+
+            //var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
+            TheoryMembershipSignificanceBinder[] SourcesNeedingTheoryMembershipSignificances = SourceIdsWithTms.Distinct(new TheoryNamePresentBinderComparer()).Join(AllLevelSources, sitms => sitms.SourceId, als => als.SourceId, (sitms, als) => new TheoryMembershipSignificanceBinder(Theory.TheoryId, sitms.SourceId, null, false, sitms.AcronymInAbstract || sitms.InAbstract || sitms.InSubject)).ToArray();
+            
             if (SourcesNeedingTheoryMembershipSignificances.Length > 0)
             {
-                SqlBulkCopy TheoryMembershipSignificanceCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString, SqlBulkCopyOptions.KeepIdentity);
+                SqlBulkCopy TheoryMembershipSignificanceCopier = new SqlBulkCopy(((EntityConnection)Context.Connection).StoreConnection.ConnectionString);
                 TheoryMembershipSignificanceCopier.DestinationTableName = "TheoryMembershipSignificance";
                 TheoryMembershipSignificanceCopier.ColumnMappings.Add(0, 1);
                 TheoryMembershipSignificanceCopier.ColumnMappings.Add(1, 2);
                 TheoryMembershipSignificanceCopier.ColumnMappings.Add(2, 3);
                 TheoryMembershipSignificanceCopier.ColumnMappings.Add(3, 4);
-                TheoryMembershipSignificanceCopier.WriteToServer(SourcesNeedingTheoryMembershipSignificances.Select(sntm => new TheoryMembershipSignificanceBinder(TheoryId, sntm.SourceId, null, false)).AsDataReader());
+                TheoryMembershipSignificanceCopier.ColumnMappings.Add(4, 5);
+                TheoryMembershipSignificanceCopier.WriteToServer(SourcesNeedingTheoryMembershipSignificances.AsDataReader());
             }
             else
             {
@@ -157,7 +178,36 @@ namespace ATN.Data
             TheoryMembershipCommitter.ColumnMappings.Add(7, 8);
             TheoryMembershipCommitter.ColumnMappings.Add(8, 9);
 
-            TheoryMembershipCommitter.WriteToServer(AnalysisEntriesToCommit.Select(s => new TheoryMembershipBinder(TheoryId, s.SourceId, RunId, s.Depth, s.ImpactFactor, s.TheoryAttributionRatio, s.ArticleLevelEigenFactor, s.TheoryNamePresent, s.PredictionProbability, s.IsContributingPrediction)).AsDataReader());
+            TheoryMembershipCommitter.WriteToServer(AnalysisEntriesToCommit.Select(s => new TheoryMembershipBinder(TheoryId, s.SourceId, RunId, s.Depth, s.ImpactFactor, s.TheoryAttributionRatio, s.ArticleLevelEigenFactor, s.PredictionProbability, s.IsContributingPrediction)).AsDataReader());
+        }
+
+        public bool IsTheoryNamePresentForSource(string TheoryName, long SourceId)
+        {
+            Source SourceToCheck = Context.Sources.Single(s => s.SourceId == SourceId);
+
+            Regex SplitRegex = new Regex("[^A-Za-z]");
+            string Acronym = string.Join("", SplitRegex.Split(TheoryName).Select(s => char.ToUpper(s[0])));
+
+            if(SourceToCheck.ArticleTitle.ToLower().Contains(TheoryName) || SourceToCheck.ArticleTitle.Contains(Acronym))
+            {
+                return true;
+            }
+            if (!string.IsNullOrEmpty(SourceToCheck.Abstract) &&
+                (SourceToCheck.Abstract.ToLower().Contains(TheoryName.ToLower()) ||
+                SourceToCheck.Abstract.Contains(Acronym)))
+            {
+                    return true;
+            }
+            if (SourceToCheck.Subjects.Count > 0)
+            {
+                string[] SubjectNames = SourceToCheck.Subjects.Select(s => s.SubjectText).ToArray();
+                if (SubjectNames.Contains(TheoryName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

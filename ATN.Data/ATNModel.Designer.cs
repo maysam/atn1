@@ -4775,30 +4775,6 @@ namespace ATN.Data
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public Nullable<global::System.Boolean> TheoryNamePresent
-        {
-            get
-            {
-                return _TheoryNamePresent;
-            }
-            set
-            {
-                OnTheoryNamePresentChanging(value);
-                ReportPropertyChanging("TheoryNamePresent");
-                _TheoryNamePresent = StructuralObject.SetValidValue(value, "TheoryNamePresent");
-                ReportPropertyChanged("TheoryNamePresent");
-                OnTheoryNamePresentChanged();
-            }
-        }
-        private Nullable<global::System.Boolean> _TheoryNamePresent;
-        partial void OnTheoryNamePresentChanging(Nullable<global::System.Boolean> value);
-        partial void OnTheoryNamePresentChanged();
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
-        [DataMemberAttribute()]
         public Nullable<global::System.Double> PredictionProbability
         {
             get
@@ -5077,13 +5053,15 @@ namespace ATN.Data
         /// <param name="theoryId">Initial value of the TheoryId property.</param>
         /// <param name="sourceId">Initial value of the SourceId property.</param>
         /// <param name="isMetaAnalysis">Initial value of the IsMetaAnalysis property.</param>
-        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean isMetaAnalysis)
+        /// <param name="theoryNamePresent">Initial value of the TheoryNamePresent property.</param>
+        public static TheoryMembershipSignificance CreateTheoryMembershipSignificance(global::System.Int64 theoryMembershipSignificanceId, global::System.Int32 theoryId, global::System.Int64 sourceId, global::System.Boolean isMetaAnalysis, global::System.Boolean theoryNamePresent)
         {
             TheoryMembershipSignificance theoryMembershipSignificance = new TheoryMembershipSignificance();
             theoryMembershipSignificance.TheoryMembershipSignificanceId = theoryMembershipSignificanceId;
             theoryMembershipSignificance.TheoryId = theoryId;
             theoryMembershipSignificance.SourceId = sourceId;
             theoryMembershipSignificance.IsMetaAnalysis = isMetaAnalysis;
+            theoryMembershipSignificance.TheoryNamePresent = theoryNamePresent;
             return theoryMembershipSignificance;
         }
 
@@ -5213,6 +5191,30 @@ namespace ATN.Data
         private global::System.Boolean _IsMetaAnalysis;
         partial void OnIsMetaAnalysisChanging(global::System.Boolean value);
         partial void OnIsMetaAnalysisChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean TheoryNamePresent
+        {
+            get
+            {
+                return _TheoryNamePresent;
+            }
+            set
+            {
+                OnTheoryNamePresentChanging(value);
+                ReportPropertyChanging("TheoryNamePresent");
+                _TheoryNamePresent = StructuralObject.SetValidValue(value, "TheoryNamePresent");
+                ReportPropertyChanged("TheoryNamePresent");
+                OnTheoryNamePresentChanged();
+            }
+        }
+        private global::System.Boolean _TheoryNamePresent;
+        partial void OnTheoryNamePresentChanging(global::System.Boolean value);
+        partial void OnTheoryNamePresentChanged();
 
         #endregion
 

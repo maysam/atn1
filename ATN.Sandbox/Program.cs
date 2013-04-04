@@ -18,8 +18,15 @@ namespace ATN.Analysis
         {
             AnalysisRunner ar = new AnalysisRunner();
             CrawlerProgress cp = new CrawlerProgress();
-            ar.AnalyzeTheory(cp.GetCrawlById(3), 2);
-            int x = 0;
+            Crawl[] crawls = cp.GetCrawls();
+
+            if (crawls.Length > 0)
+            {
+                for (int i = 0; i < crawls.Length; i++)
+                {
+                    ar.AnalyzeTheory(crawls[i], crawls[i].TheoryId);
+                }
+            }
         }
     }
 }
