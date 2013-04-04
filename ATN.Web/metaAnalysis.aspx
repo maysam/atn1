@@ -1,9 +1,10 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="theory.aspx.cs" Inherits="ATN.Web.theory" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="metaAnalysis.aspx.cs" Inherits="ATN.Web.metaAnalysis" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <h2><asp:Label ID="lblNetworkName" runat="server" /></h2>
+    <h2><asp:Label ID="lblNetworkName" runat="server" /></h2><h2><asp:LinkButton ID="lnkNetworkName" runat="server" OnClick="lnkNetworkName_OnClick"/></h2>
+    <h3><asp:Label ID="lblMetaAnalysisName" runat="server" /></h3>
     <br />
-    <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" EnableViewState="true">
+    <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" ShowFooter="false">
         <Columns>
             <asp:TemplateField>
                 <HeaderTemplate>
@@ -19,7 +20,7 @@
                     <asp:Image ID="imgTitleHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:LinkButton ID="lnkTitle" runat="server" OnClick="lnkTitle_Click"/>
+                    <asp:Label ID="lblTitle" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
@@ -32,19 +33,15 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblMetaAnalysisHeader" runat="server" Text="Meta-Analysis" />
+                    <asp:Label ID="lblContributingHeader" runat="server" Text="Contributing?" />
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:CheckBox ID="chkMetaAnalysis" runat="server" OnCheckedChanged="chkMetaAnalysis_CheckedChanged"/>
-                    <asp:HiddenField ID="hdnSourceId" runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
-            <asp:TemplateField>
-                <HeaderTemplate>
-                    <asp:Label ID="lblContributingHeader" runat="server" Text="Number Contributing" />
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <asp:Label ID="lblContributing" runat="server" />
+                    <asp:RadioButtonList ID="rblContributing" runat="server" RepeatDirection="Vertical" TextAlign="Right"> 
+                        <asp:ListItem Text="Yes" Value="Yes"/>
+                        <asp:ListItem Text="No" Value="No" />
+                        <asp:ListItem Text="Unknown" Value="Unknown" />
+                    </asp:RadioButtonList>
+                    <asp:HiddenField ID="hdnRadioValue" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
@@ -83,8 +80,8 @@
     </asp:GridView>
 
     <br />
-    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" OnClick="btnPrevious_Click" />
-    <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClick="btnSubmit_Click" />
-    <asp:Button ID="btnNext" runat="server" Text="Next Page" OnClick="btnNext_Click" />
+    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" OnClick="btnPrevious_OnClick" />
+    <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClick="btnSubmit_OnClick" />
+    <asp:Button ID="btnNext" runat="server" Text="Next Page" OnClick="btnNext_OnClick" />
 
 </asp:Content>

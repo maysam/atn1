@@ -203,6 +203,7 @@
     <Content Include="Images\orderedList9.png" />
     <Content Include="Images\visualizationButton.gif" />
     <Content Include="Images\ZtoA.gif" />
+    <Content Include="metaAnalysis.aspx" />
     <Content Include="networks.aspx" />
     <Content Include="packages.config" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
@@ -294,6 +295,13 @@
     </Compile>
     <Compile Include="help.aspx.designer.cs">
       <DependentUpon>help.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="metaAnalysis.aspx.cs">
+      <DependentUpon>metaAnalysis.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="metaAnalysis.aspx.designer.cs">
+      <DependentUpon>metaAnalysis.aspx</DependentUpon>
     </Compile>
     <Compile Include="networks.aspx.cs">
       <DependentUpon>networks.aspx</DependentUpon>

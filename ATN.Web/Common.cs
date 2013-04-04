@@ -13,6 +13,7 @@ namespace ATN.Web
         public struct QueryStrings
         {
             public const string Date = "Date";
+            public const string FromTheory = "FromTheory";
             public const string LastEigenfactor = "LastEigenfactor";
             public const string LastMachineLearning = "LastMachineLearning";
             public const string LastRun = "LastRun";
@@ -34,10 +35,12 @@ namespace ATN.Web
             public const string Asc = "Asc";
             public const string Des = "Desc";
             public const string Eq = "=";
+            public const string False = "false";
             public const string No = "No";
             public const string Question = "?";
+            public const string True = "true";
             public const string Yes = "Yes";
-            public const string Unknown = "No";
+            public const string Unknown = "Unknown";
             public const string Zero = "0";
         }
 
@@ -45,6 +48,7 @@ namespace ATN.Web
         {
             public const string Help = "help.aspx";
             public const string Launcher = "launcher.aspx";
+            public const string MetaAnalysis = "metaAnalysis.aspx";
             public const string Networks = "networks.aspx";
             public const string Theory = "theory.aspx";
             
@@ -53,6 +57,7 @@ namespace ATN.Web
         public struct Data
         {
             public const int PageSize = 200;
+            public const string MetaAnalysisIds = "MetaAnalysisIds";
         }
 
         /// <summary>
