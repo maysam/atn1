@@ -124,26 +124,19 @@ namespace ATN.Data
             }
             string Acronym = AcronymBuilder.ToString();
 
-            TheoryNamePresentBinder[] SourceIdsWithTms = Context.ExecuteStoreQuery<TheoryNamePresentBinder>(
-                string.Format(
-                @"CREATE TABLE #InitiateTheoryTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
+            TheoryNamePresentBinder[] SourceIdsWithoutTms = Context.ExecuteStoreQuery<TheoryNamePresentBinder>(
+                string.Format(@"CREATE TABLE #InitiateTheoryTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #InitiateTheoryTable(SourceId, CitesSourceId)
                 INSERT INTO #InitiateTheoryTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", AllLevelSources.TakeWhile(als => als.Depth == 0).Select(cs => cs.SourceId).ToArray()) + @");
                 INSERT INTO #InitiateTheoryTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #InitiateTheoryTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
                 INSERT INTO #InitiateTheoryTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #InitiateTheoryTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
-                SELECT DISTINCT st.SourceId, (SELECT CASE WHEN COUNT(sub.SubjectText) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM SourceSubject src, Subject sub WHERE src.SourceId = st.SourceId AND sub.SubjectId = src.SubjectId AND sub.SubjectText = '{0}') as InSubject, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.SourceId AND s.Abstract LIKE '%{0}%' AND s.Abstract IS NOT NULL) as InAbstract, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.SourceId AND s.Abstract LIKE '%{1}%' AND s.Abstract IS NOT NULL) as AcronymInAbstract FROM #InitiateTheoryTable st WHERE st.SourceId IS NOT NULL AND st.SourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {2}) UNION
-                SELECT DISTINCT st.CitesSourceId, (SELECT CASE WHEN COUNT(sub.SubjectText) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM SourceSubject src, Subject sub WHERE src.SourceId = st.CitesSourceId AND sub.SubjectId = src.SubjectId AND sub.SubjectText = '{0}') as InSubject, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.CitesSourceId AND s.Abstract LIKE '%{0}%' AND s.Abstract IS NOT NULL) as InAbstract, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.CitesSourceId AND s.Abstract LIKE '%{1}%' AND s.Abstract IS NOT NULL) as AcronymInAbstract FROM #InitiateTheoryTable st WHERE st.CitesSourceId IS NOT NULL AND st.CitesSourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {2})
+                SELECT DISTINCT st.SourceId, (SELECT CASE WHEN COUNT(sub.SubjectText) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM SourceSubject src, Subject sub WHERE src.SourceId = st.SourceId AND sub.SubjectId = src.SubjectId AND sub.SubjectText = '{0}') as InSubject, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.SourceId AND (s.Abstract LIKE '%{0}%' OR s.Abstract LIKE '%{1}%' OR s.ArticleTitle LIKE '%{0}%' OR s.ArticleTitle LIKE '%{1}%')) as InTitleOrAbstract FROM #InitiateTheoryTable st WHERE st.SourceId IS NOT NULL AND st.SourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {2}) UNION
+                SELECT DISTINCT st.CitesSourceId, (SELECT CASE WHEN COUNT(sub.SubjectText) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM SourceSubject src, Subject sub WHERE src.SourceId = st.CitesSourceId AND sub.SubjectId = src.SubjectId AND sub.SubjectText = '{0}') as InSubject, (SELECT CASE WHEN COUNT(s.SourceId) > 0 THEN CAST(1 as bit) ELSE CAST(0 as bit) END FROM Source s WHERE s.SourceId = st.CitesSourceId AND (s.Abstract LIKE '%{0}%' OR s.Abstract LIKE '%{1}%' OR s.ArticleTitle LIKE '%{0}%' OR s.ArticleTitle LIKE '%{1}%')) as InTitleOrAbstract FROM #InitiateTheoryTable st WHERE st.CitesSourceId IS NOT NULL AND st.CitesSourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {2})
                 DROP TABLE #InitiateTheoryTable;",
                 Theory.TheoryName, Acronym, Theory.TheoryId)).ToArray();
 
-            //var HasTheoryName = SourceIdsWithTms.Where(s => s.AcronymInAbstract || s.InAbstract || s.InSubject);
-            //if (HasTheoryName.Count() > 0)
-            //{
-            //    int x = 0;
-            //}
-
             //var ExistingTheoryMembershiSignificance = AllLevelSources.Join(Context.TheoryMembershipSignificances, al => new { al.SourceId, TheoryId }, tm => new { tm.SourceId, tm.TheoryId }, (al, tm) => tm.SourceId).ToList();
-            TheoryMembershipSignificanceBinder[] SourcesNeedingTheoryMembershipSignificances = SourceIdsWithTms.Distinct(new TheoryNamePresentBinderComparer()).Join(AllLevelSources, sitms => sitms.SourceId, als => als.SourceId, (sitms, als) => new TheoryMembershipSignificanceBinder(Theory.TheoryId, sitms.SourceId, null, false, sitms.AcronymInAbstract || sitms.InAbstract || sitms.InSubject)).ToArray();
+            TheoryMembershipSignificanceBinder[] SourcesNeedingTheoryMembershipSignificances = SourceIdsWithoutTms.Distinct(new TheoryNamePresentBinderComparer()).Join(AllLevelSources, sitms => sitms.SourceId, als => als.SourceId, (sitms, als) => new TheoryMembershipSignificanceBinder(Theory.TheoryId, sitms.SourceId, null, false, sitms.InTitleOrAbstract || sitms.InSubject)).ToArray();
             
             if (SourcesNeedingTheoryMembershipSignificances.Length > 0)
             {
