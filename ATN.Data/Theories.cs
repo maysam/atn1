@@ -121,6 +121,7 @@ namespace ATN.Data
             //and then joins against it to select out all of the necessary
             //data for exportation
             QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
+            QueryBuilder.AppendLine("CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #SourceIdTable(SourceId)");
             for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
             {
                 if (AllSources.Length - 1000 * i > 0)
@@ -141,26 +142,22 @@ namespace ATN.Data
         /// <returns>An array of extended sources which are members of the given theory</returns>
         public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex = 0, int PageSize = 200)
         {
-            SourceWithReferences[] AllSources = GetAllSourcesForTheory(TheoryId).Skip(PageSize * PageIndex).Take(PageSize).ToArray();
-
-            StringBuilder QueryBuilder = new StringBuilder();
-
-            //SQL Server does not receive arrays very easily from a client
-            //Consequently, this approach creates a temporary table, loads
-            //the maximum allowable number of values per insert query (1000)
-            //and then joins against it to select out all of the necessary
-            //data for exportation
-            QueryBuilder.AppendLine("CREATE TABLE #SourceIdTable (SourceId bigint, Depth smallint);");
-            for (int i = 0; i < AllSources.Length / 1000 + 1; i++)
-            {
-                if (AllSources.Length - 1000 * i > 0)
-                {
-                    QueryBuilder.AppendLine("INSERT INTO #SourceIdTable VALUES " + String.Join(",", AllSources.Skip(i * 1000).Take(1000).Select(s => "(" + s.SourceId + "," + s.Depth + ")").ToArray()) + ";");
-                }
-            }
-            QueryBuilder.AppendLine(string.Format("SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, st.Depth as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.SourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId = st.SourceId ORDER BY Depth ASC", TheoryId));
-            QueryBuilder.AppendLine("DROP TABLE #SourceIdTable;");
-            return Context.ExecuteStoreQuery<ExtendedSource>(QueryBuilder.ToString()).ToList();
+            return Context.ExecuteStoreQuery<ExtendedSource>(
+                @"WITH TestTable as (
+	                SELECT s.SourceId,
+	                s.ArticleTitle as Title,
+	                [Year],
+	                (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors,
+	                j.JournalName as Journal,
+	                tms.RAMarkedContributing as Contributing,
+	                tms.IsMetaAnalysis as IsMetaAnalysis,
+	                (SELECT COUNT(mam.MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing,
+	                tm.ArticleLevelEigenfactor AS AEF,
+	                tm.Depth as Depth,
+	                ROW_NUMBER() OVER(ORDER BY tm.Depth ASC) As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0}
+                )
+                SELECT SourceId, Title, [Year], Authors,Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
+            TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
         }
 
         /// <summary>
@@ -192,8 +189,8 @@ namespace ATN.Data
                 INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
                 INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
                 INSERT INTO #SourceIdTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1;
-                SELECT st1.SourceId, st1.CitesSourceId, CAST(st1.Depth as smallint) as Depth, COUNT(st2.SourceId) as ImpactFactor FROM #SourceIdTable st1 JOIN #SourceIdTable st2 ON st2.CitesSourceId = st1.SourceId GROUP BY st1.SourceId, st1.CitesSourceId, st1.Depth UNION
-                SELECT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(st3.Depth - 1 as smallint) as Depth, (SELECT COUNT(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL ORDER BY Depth ASC;
+                SELECT st1.SourceId, st1.CitesSourceId, CAST(st1.Depth as smallint) as Depth, (SELECT COUNT(st2.SourceId) FROM #SourceIdTable st2 WHERE st2.CitesSourceId = st1.SourceId) as ImpactFactor FROM #SourceIdTable st1 UNION
+                SELECT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(st3.Depth - 1 as smallint) as Depth, (SELECT COUNT(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL AND st3.CitesSourceId NOT IN(SELECT DISTINCT SourceId FROM #SourceIdTable) ORDER BY Depth ASC
                 DROP TABLE #SourceIdTable"
             ).ToArray();
 
@@ -263,6 +260,7 @@ namespace ATN.Data
         {
             return Context.ExecuteStoreQuery<ExtendedSource>(
                 @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint);
+                CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #SourceIdTable(SourceId, CitesSourceId)
                 INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, c.CitesSourceId FROM CitationsReference c WHERE c.SourceId = {0}
                 SELECT s.SourceId as SourceId, ArticleTitle as Title, [Year], (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, CAST(2 as smallint) as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.CitesSourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {1} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId ORDER BY st.CitesSourceId ASC
                 DROP TABLE #SourceIdTable",
