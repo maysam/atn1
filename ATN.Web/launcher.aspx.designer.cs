@@ -58,15 +58,6 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.GridView DataSourceGrid;
         
         /// <summary>
-        /// Button1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button1;
-        
-        /// <summary>
         /// btnNewSource control.
         /// </summary>
         /// <remarks>
@@ -82,7 +73,7 @@ namespace ATN.Web {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox recrawl;
+        protected global::System.Web.UI.WebControls.Label recrawl;
         
         /// <summary>
         /// crawlperiod control.
@@ -94,12 +85,57 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.DropDownList crawlperiod;
         
         /// <summary>
-        /// btnSubmit control.
+        /// AEF control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSubmit;
+        protected global::System.Web.UI.WebControls.CheckBox AEF;
+        
+        /// <summary>
+        /// ImpactFactor control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ImpactFactor;
+        
+        /// <summary>
+        /// TAR control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox TAR;
+        
+        /// <summary>
+        /// DataMining control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox DataMining;
+        
+        /// <summary>
+        /// Clustring control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox Clustring;
+        
+        /// <summary>
+        /// btnSubmit1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSubmit1;
     }
 }
