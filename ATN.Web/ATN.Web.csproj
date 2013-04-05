@@ -203,11 +203,8 @@
     <Content Include="Images\orderedList9.png" />
     <Content Include="Images\visualizationButton.gif" />
     <Content Include="Images\ZtoA.gif" />
-<<<<<<< HEAD
     <Content Include="launcher.aspx" />
-=======
     <Content Include="metaAnalysis.aspx" />
->>>>>>> f932ab872d2d45f7d266240a2b63d8ec89f3827b
     <Content Include="networks.aspx" />
     <Content Include="packages.config" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
@@ -240,6 +237,7 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="theory.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
   </ItemGroup>
@@ -299,21 +297,19 @@
     <Compile Include="help.aspx.designer.cs">
       <DependentUpon>help.aspx</DependentUpon>
     </Compile>
-<<<<<<< HEAD
     <Compile Include="launcher.aspx.cs">
       <DependentUpon>launcher.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="launcher.aspx.designer.cs">
       <DependentUpon>launcher.aspx</DependentUpon>
-=======
+    </Compile>
     <Compile Include="metaAnalysis.aspx.cs">
       <DependentUpon>metaAnalysis.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="metaAnalysis.aspx.designer.cs">
       <DependentUpon>metaAnalysis.aspx</DependentUpon>
->>>>>>> f932ab872d2d45f7d266240a2b63d8ec89f3827b
     </Compile>
     <Compile Include="networks.aspx.cs">
       <DependentUpon>networks.aspx</DependentUpon>
@@ -329,6 +325,12 @@
     </Compile>
     <Compile Include="Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+    <Compile Include="theory.aspx.cs">
+      <DependentUpon>theory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="theory.aspx.designer.cs">
+      <DependentUpon>theory.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
