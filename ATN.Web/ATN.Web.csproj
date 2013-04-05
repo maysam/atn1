@@ -328,6 +328,7 @@
     </Compile>
     <Compile Include="theory.aspx.cs">
       <DependentUpon>theory.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="theory.aspx.designer.cs">
       <DependentUpon>theory.aspx</DependentUpon>

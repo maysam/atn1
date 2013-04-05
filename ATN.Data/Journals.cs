@@ -23,7 +23,7 @@ namespace ATN.Data
         /// <returns>A persistence-model attached copy of the passed Journal</returns>
         public Journal GetJournalFromDetachedJournal(Journal DetachedJournal)
         {
-            Journal PersistentJournal = Context.Journals.Where(j => j.JournalName.ToLower().Trim() == DetachedJournal.JournalName.ToLower().Trim()).SingleOrDefault();
+            Journal PersistentJournal = Context.Journals.FirstOrDefault(j => j.JournalName.ToLower().Trim() == DetachedJournal.JournalName.ToLower().Trim());
             if (PersistentJournal == null)
             {
                 PersistentJournal = DetachedJournal;

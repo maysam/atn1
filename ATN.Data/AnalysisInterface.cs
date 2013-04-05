@@ -124,6 +124,9 @@ namespace ATN.Data
             }
             string Acronym = AcronymBuilder.ToString();
 
+            //Piggybacking the identification of theory name presence with which theory members still need
+            //TheoryMembershipSignificance rows; as it greatly improves performance to not have to do
+            //another lookup once the rows have been identified
             TheoryNamePresentBinder[] SourceIdsWithoutTms = Context.ExecuteStoreQuery<TheoryNamePresentBinder>(
                 string.Format(@"CREATE TABLE #InitiateTheoryTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #InitiateTheoryTable(SourceId, CitesSourceId)
@@ -172,35 +175,6 @@ namespace ATN.Data
             TheoryMembershipCommitter.ColumnMappings.Add(8, 9);
 
             TheoryMembershipCommitter.WriteToServer(AnalysisEntriesToCommit.Select(s => new TheoryMembershipBinder(TheoryId, s.SourceId, RunId, s.Depth, s.ImpactFactor, s.TheoryAttributionRatio, s.ArticleLevelEigenFactor, s.PredictionProbability, s.IsContributingPrediction)).AsDataReader());
-        }
-
-        public bool IsTheoryNamePresentForSource(string TheoryName, long SourceId)
-        {
-            Source SourceToCheck = Context.Sources.Single(s => s.SourceId == SourceId);
-
-            Regex SplitRegex = new Regex("[^A-Za-z]");
-            string Acronym = string.Join("", SplitRegex.Split(TheoryName).Select(s => char.ToUpper(s[0])));
-
-            if(SourceToCheck.ArticleTitle.ToLower().Contains(TheoryName) || SourceToCheck.ArticleTitle.Contains(Acronym))
-            {
-                return true;
-            }
-            if (!string.IsNullOrEmpty(SourceToCheck.Abstract) &&
-                (SourceToCheck.Abstract.ToLower().Contains(TheoryName.ToLower()) ||
-                SourceToCheck.Abstract.Contains(Acronym)))
-            {
-                    return true;
-            }
-            if (SourceToCheck.Subjects.Count > 0)
-            {
-                string[] SubjectNames = SourceToCheck.Subjects.Select(s => s.SubjectText).ToArray();
-                if (SubjectNames.Contains(TheoryName))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

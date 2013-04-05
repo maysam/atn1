@@ -65,9 +65,17 @@ namespace ATN.Analysis
                 Trace.WriteLine(string.Format("AEF completed in {0}", Timer.Elapsed));
                 Timer.Restart();
 
+                //Run TAR
                 if (TheoryToAnalyze.TheoryAttributionRatio)
                 {
-                    //Compute TAR
+                    Trace.WriteLine("Running TAR", "Informational");
+                    Dictionary<long, double?> TARScores = TAR.ComputeTAR(SourceTree);
+                    foreach (KeyValuePair<long, double?> TARScore in TARScores)
+                    {
+                        SourceTree[TARScore.Key].TheoryAttributionRatio = TARScore.Value;
+                    }
+                    Trace.WriteLine(string.Format("TAR completed in {0}", Timer.Elapsed));
+                    Timer.Restart();
                 }
             }
 

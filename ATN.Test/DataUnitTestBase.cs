@@ -129,7 +129,7 @@ namespace ATN.Test
             s.DataSourceSpecificId = Guid.NewGuid().ToString();
             s.ArticleTitle = "Test Source";
             s.SerializedDataSourceResponse = "<Response />";
-
+            s.Year = DateTime.Now.Year;
             if (Attach)
             {
                 Context.Sources.AddObject(s);
@@ -137,6 +137,18 @@ namespace ATN.Test
             }
 
             return s;
+        }
+
+        protected Journal CreateJournal(bool Attach)
+        {
+            Journal JournalToAdd = new Journal();
+            JournalToAdd.JournalName = "Test Journal";
+            if (Attach)
+            {
+                Context.AddToJournals(JournalToAdd);
+                Context.SaveChanges();
+            }
+            return JournalToAdd;
         }
 
         protected Author CreateAuthor(bool Attach)
@@ -176,9 +188,81 @@ namespace ATN.Test
             return SubjectToAdd;
         }
 
+        public void CreateTestTheoryNetwork(out Theory Theory, out Source CanonicalSource, out Source FirstLevelSource,
+            out Source SecondLevelSource, out Journal SourceJournal, out Author SourceAuthor)
+        {
+            //Create canonical source
+            CanonicalSource = CreateSource(true);
+
+            //Create journal and set canonical source journalid
+            SourceJournal = CreateJournal(true);
+            CanonicalSource.JournalId = SourceJournal.JournalId;
+
+            //Create author, add to canonical source
+            SourceAuthor = CreateAuthor(true);
+            AuthorsReference SourceAuthorReference = new AuthorsReference();
+            SourceAuthorReference.SourceId = CanonicalSource.SourceId;
+            SourceAuthorReference.AuthorId = SourceAuthor.AuthorId;
+            Context.AuthorsReferences.AddObject(SourceAuthorReference);
+            Context.SaveChanges();
+
+            //Create first and second level sources
+            FirstLevelSource = CreateSource(true);
+            SecondLevelSource = CreateSource(true);
+
+            //Set authors and journals            
+            FirstLevelSource.JournalId = SourceJournal.JournalId;
+            AuthorsReference FirstLevelAuthorReference = new AuthorsReference();
+            FirstLevelAuthorReference.SourceId = FirstLevelSource.SourceId;
+            FirstLevelAuthorReference.AuthorId = SourceAuthor.AuthorId;
+            Context.AuthorsReferences.AddObject(FirstLevelAuthorReference);
+            SecondLevelSource.JournalId = SourceJournal.JournalId;
+            AuthorsReference SecondLevelAuthorReference = new AuthorsReference();
+            SecondLevelAuthorReference.SourceId = SecondLevelSource.SourceId;
+            SecondLevelAuthorReference.AuthorId = SourceAuthor.AuthorId;
+            Context.AuthorsReferences.AddObject(SecondLevelAuthorReference);
+            Context.SaveChanges();
+
+            CanonicalSource.CitingSources.Add(FirstLevelSource);
+            FirstLevelSource.References.Add(SecondLevelSource);
+            Context.SaveChanges();
+
+            Theories t = new Theories(Context);
+            Theory = t.AddTheory("Test Theory", "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
+        }
+
+        protected string GetConcatAuthorString(Source Source)
+        {
+            return string.Join("", Source.AuthorsReferences.Join(Context.Authors, ar => ar.AuthorId, a => a.AuthorId, (ar, a) => a).Select(a => a.LastName + " " + a.FirstName + ", ").ToArray());
+        }
+
         protected void DeleteSource(long SourceId)
         {
-            Context.DeleteObject(Context.Sources.SingleOrDefault(s => s.SourceId == SourceId));
+            var TheoryMemberships = Context.TheoryMemberships.Where(tm => tm.SourceId == SourceId);
+            foreach (var TheoryMembership in TheoryMemberships)
+            {
+                Context.DeleteObject(TheoryMembership);
+            }
+            var TheoryMembershipSignificances = Context.TheoryMembershipSignificances.Where(tms => tms.SourceId == SourceId);
+            foreach (var TheoryMembershipSignificance in TheoryMembershipSignificances)
+            {
+                Context.DeleteObject(TheoryMembershipSignificance);
+            }
+            var AuthorsReferences = Context.AuthorsReferences.Where(ar => ar.SourceId == SourceId);
+            foreach (var AuthorReference in AuthorsReferences)
+            {
+                Context.DeleteObject(AuthorReference);
+            }
+            var Source = Context.Sources.SingleOrDefault(s => s.SourceId == SourceId);
+            foreach (var Citation in Source.CitingSources.ToArray())
+            {
+                Source.CitingSources.Remove(Citation);
+            }
+            foreach (var Reference in Source.References.ToArray())
+            {
+                Source.References.Remove(Reference);
+            }
+            Context.DeleteObject(Source);
             Context.SaveChanges();
         }
 
@@ -196,6 +280,11 @@ namespace ATN.Test
 
         protected void DeleteAuthor(Author Author)
         {
+            var AuthorsReferences = Context.AuthorsReferences.Where(ar => ar.AuthorId == Author.AuthorId);
+            foreach (var AuthorReference in AuthorsReferences)
+            {
+                Context.DeleteObject(AuthorReference);
+            }
             Context.DeleteObject(Author);
             Context.SaveChanges();
         }
@@ -212,6 +301,21 @@ namespace ATN.Test
             foreach (var TheoryDef in TheoryDefs)
             {
                 Context.DeleteObject(TheoryDef);
+            }
+            var TheoryMemberships = Context.TheoryMemberships.Where(tm => tm.TheoryId == Theory.TheoryId);
+            foreach (var TheoryMembership in TheoryMemberships)
+            {
+                Context.DeleteObject(TheoryMembership);
+            }
+            var TheoryMembershipSignificances = Context.TheoryMembershipSignificances.Where(tms => tms.TheoryId == Theory.TheoryId);
+            foreach (var TheoryMembershipSignificance in TheoryMembershipSignificances)
+            {
+                Context.DeleteObject(TheoryMembershipSignificance);
+            }
+            var Runs = Context.Runs.Where(r => r.TheoryId == Theory.TheoryId);
+            foreach (var Run in Runs)
+            {
+                Context.DeleteObject(Run);
             }
             Context.DeleteObject(Theory);
             Context.SaveChanges();
