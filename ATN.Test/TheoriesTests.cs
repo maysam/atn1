@@ -316,5 +316,33 @@ namespace ATN.Test
                 Assert.AreEqual(0, s.numContributing);
             }
         }
+
+        [TestMethod]
+        public void VerifyTheoryNamePresence()
+        {
+            Source AddedSource;
+            Source FirstLevelSource;
+            Source SecondLevelSource;
+            Journal SourceJournal;
+            Author SourceAuthor;
+            Theory Theory;
+
+            Crawl UnusedCrawl = CreateCrawl(true);
+            CreateTestTheoryNetwork(out Theory, out AddedSource, out FirstLevelSource, out SecondLevelSource, out SourceJournal, out SourceAuthor, "TEST", "Source TEST title");
+
+            var SourceTree = Theories.GetSourceTreeForTheory(Theory.TheoryId);
+            Analysis.InitializeTheoryAnalysis(Theory, SourceTree.Values.ToArray());
+
+            TheoryMembershipSignificance[] Significances = Context.TheoryMembershipSignificances.Where(s => s.SourceId == AddedSource.SourceId || s.SourceId == FirstLevelSource.SourceId || s.SourceId == SecondLevelSource.SourceId).ToArray();
+            foreach (TheoryMembershipSignificance tms in Significances)
+            {
+                Assert.IsTrue(tms.TheoryNamePresent);
+            }
+
+            DeleteTheory(Theory);
+            DeleteSource(AddedSource.SourceId);
+            DeleteSource(FirstLevelSource.SourceId);
+            DeleteSource(SecondLevelSource.SourceId);
+        }
     }
 }

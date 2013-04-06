@@ -121,13 +121,13 @@ namespace ATN.Test
             return c;
         }
 
-        protected Source CreateSource(bool Attach)
+        protected Source CreateSource(bool Attach, string Title = "Test Source")
         {
 
             Source s = new Source();
             s.DataSourceId = 1;
             s.DataSourceSpecificId = Guid.NewGuid().ToString();
-            s.ArticleTitle = "Test Source";
+            s.ArticleTitle = Title;
             s.SerializedDataSourceResponse = "<Response />";
             s.Year = DateTime.Now.Year;
             if (Attach)
@@ -189,10 +189,10 @@ namespace ATN.Test
         }
 
         public void CreateTestTheoryNetwork(out Theory Theory, out Source CanonicalSource, out Source FirstLevelSource,
-            out Source SecondLevelSource, out Journal SourceJournal, out Author SourceAuthor)
+            out Source SecondLevelSource, out Journal SourceJournal, out Author SourceAuthor, string TheoryName = "Test Theory", string SourceTitles = "Test Source")
         {
             //Create canonical source
-            CanonicalSource = CreateSource(true);
+            CanonicalSource = CreateSource(true, SourceTitles);
 
             //Create journal and set canonical source journalid
             SourceJournal = CreateJournal(true);
@@ -207,8 +207,8 @@ namespace ATN.Test
             Context.SaveChanges();
 
             //Create first and second level sources
-            FirstLevelSource = CreateSource(true);
-            SecondLevelSource = CreateSource(true);
+            FirstLevelSource = CreateSource(true, SourceTitles);
+            SecondLevelSource = CreateSource(true, SourceTitles);
 
             //Set authors and journals            
             FirstLevelSource.JournalId = SourceJournal.JournalId;
@@ -228,7 +228,7 @@ namespace ATN.Test
             Context.SaveChanges();
 
             Theories t = new Theories(Context);
-            Theory = t.AddTheory("Test Theory", "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
+            Theory = t.AddTheory(TheoryName, "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
         }
 
         protected string GetConcatAuthorString(Source Source)
