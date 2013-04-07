@@ -10,10 +10,13 @@ namespace ATN.Data
     /// </summary>
     public class ExtendedSource : ExportSource
     {
-        public bool metaAnalysis { get; set; }
+        public bool isMetaAnalysis { get; set; }
         public int? numContributing { get; set; }
         public bool? isContributing { get; set; }
-        public double? aefScore { get; set; }
+        public double? aef { get; set; }
+        public double? tar { get; set; }
+        public double? predictionProbability { get; set; }
+        public bool? isContributingPrediction { get; set; }
         public short depth { get; set; }
 
         public ExtendedSource()

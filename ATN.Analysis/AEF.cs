@@ -47,16 +47,13 @@ namespace ATN.Analysis
             //For storing the list of edges that will be passed to alglib
             List<SourceEdge> Edges = new List<SourceEdge>();
 
-            Theories t;
             #if TIMING
                 Trace.WriteLine("TIMING ON \n hour:min:sec:ms format");
                 Stopwatch stopWatch = new Stopwatch();
                 Stopwatch FullstopWatch = new Stopwatch();
                 FullstopWatch.Start();
                 stopWatch.Start();
-                t = new Theories();
             #else
-                t = new Theories();
             #endif
 
             //Translate the theory tree into a list of edges

@@ -40,11 +40,64 @@ namespace ATN.Export
                 XGMMLWriter.WriteStartElement("node");
                 XGMMLWriter.WriteAttributeString("label", Node.Title);
                 XGMMLWriter.WriteAttributeString("id", Node.SourceId.ToString());
+
                 XGMMLWriter.WriteStartElement("att");
-                XGMMLWriter.WriteAttributeString("name", "size");
+                XGMMLWriter.WriteAttributeString("name", "Depth");
                 XGMMLWriter.WriteAttributeString("type", "integer");
-                XGMMLWriter.WriteAttributeString("value", Node.Citations.ToString());
+                XGMMLWriter.WriteAttributeString("value", Node.Depth.ToString());
                 XGMMLWriter.WriteEndElement();
+
+                XGMMLWriter.WriteStartElement("att");
+                XGMMLWriter.WriteAttributeString("name", "Year");
+                XGMMLWriter.WriteAttributeString("type", "integer");
+                XGMMLWriter.WriteAttributeString("value", Node.Year.ToString());
+                XGMMLWriter.WriteEndElement();
+
+               /* if (Node.ImpactFactor.HasValue)
+                {
+                    XGMMLWriter.WriteStartElement("att");
+                    XGMMLWriter.WriteAttributeString("name", "ImpactFactor");
+                    XGMMLWriter.WriteAttributeString("type", "integer");
+                    XGMMLWriter.WriteAttributeString("value", Node.ImpactFactor.ToString());
+                    XGMMLWriter.WriteEndElement();
+                }
+
+                if (Node.AEF.HasValue)
+                {
+                    XGMMLWriter.WriteStartElement("att");
+                    XGMMLWriter.WriteAttributeString("name", "AEF");
+                    XGMMLWriter.WriteAttributeString("type", "integer");
+                    XGMMLWriter.WriteAttributeString("value", Node.AEF.ToString());
+                    XGMMLWriter.WriteEndElement();
+                }
+
+                if (Node.TAR.HasValue)
+                {
+                    XGMMLWriter.WriteStartElement("att");
+                    XGMMLWriter.WriteAttributeString("name", "TAR");
+                    XGMMLWriter.WriteAttributeString("type", "integer");
+                    XGMMLWriter.WriteAttributeString("value", Node.TAR.ToString());
+                    XGMMLWriter.WriteEndElement();
+                }
+
+                if (Node.PredictionProbability.HasValue)
+                {
+                    XGMMLWriter.WriteStartElement("att");
+                    XGMMLWriter.WriteAttributeString("name", "PredictionProbability");
+                    XGMMLWriter.WriteAttributeString("type", "integer");
+                    XGMMLWriter.WriteAttributeString("value", Node.PredictionProbability.ToString());
+                    XGMMLWriter.WriteEndElement();
+                }
+
+                if (Node.IsContributingPrediction.HasValue)
+                {
+                    XGMMLWriter.WriteStartElement("att");
+                    XGMMLWriter.WriteAttributeString("name", "IsContributingPrediction");
+                    XGMMLWriter.WriteAttributeString("type", "integer");
+                    XGMMLWriter.WriteAttributeString("value", Node.IsContributingPrediction.ToString());
+                    XGMMLWriter.WriteEndElement();
+                }*/
+
                 XGMMLWriter.WriteEndElement();
             }
 

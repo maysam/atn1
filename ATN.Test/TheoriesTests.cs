@@ -205,7 +205,7 @@ namespace ATN.Test
                 Assert.AreEqual(CompareSource.Year, s.Year);
                 Assert.AreEqual(Depth, s.depth);
                 Assert.AreEqual(null, s.isContributing);
-                Assert.AreEqual(false, s.metaAnalysis);
+                Assert.AreEqual(false, s.isMetaAnalysis);
                 Assert.AreEqual(0, s.numContributing);
             }
 
@@ -312,7 +312,7 @@ namespace ATN.Test
                 Assert.AreEqual(CompareSource.Year, s.Year);
                 Assert.AreEqual(Depth, s.depth);
                 Assert.AreEqual(null, s.isContributing);
-                Assert.AreEqual(false, s.metaAnalysis);
+                Assert.AreEqual(false, s.isMetaAnalysis);
                 Assert.AreEqual(0, s.numContributing);
             }
         }

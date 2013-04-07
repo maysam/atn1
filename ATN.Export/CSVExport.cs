@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using ATN.Data;
-using System.Xml;
-using System.IO;
 
 namespace ATN.Export
 {
-    public class Program
+    public class CSVExport
     {
-        static void Main(string[] args)
+        static void ExportCSV(int TheoryId, Stream DestinationNetStream)
         {
             Theories t = new Theories();
-            ExtendedSource[] CanonicalSources = t.GetExtendedSourceReferencesForSource(2, 52).ToArray();
-
-            FileStream DestinationNetStream = File.Open("SmallTheory.csv", FileMode.Create);
+            ExtendedSource[] CanonicalSources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).ToArray();
             StreamWriter sw = new StreamWriter(DestinationNetStream, Encoding.Unicode);
             sw.WriteLine("Source ID\tMAS ID\tTitle\tYear\tAuthors\tJournal\tContributing (Yes/No)\tIs Meta Analysis (Yes/No)\tMeta Analysis Members (MAS IDs)");
             foreach (ExtendedSource cs in CanonicalSources)

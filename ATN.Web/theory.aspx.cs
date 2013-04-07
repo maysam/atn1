@@ -122,7 +122,7 @@ namespace ATN.Web
                 //cell 3 - meta analysis checkbox
                 //if metaAnalysis then checked
                 CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
-                chkMetaAnalysis.Checked = source.metaAnalysis;
+                chkMetaAnalysis.Checked = source.isMetaAnalysis;
 
                 //cell 4 - number of contributing papers in meta analysis
                 //show number of papers contributing to this papers meta analysis
@@ -138,7 +138,7 @@ namespace ATN.Web
 
                 //cell 6 - AEF
                 Label lblEigenfactor = e.Row.Cells[6].Controls[1] as Label;
-                lblEigenfactor.Text = source.aefScore.ToString();
+                lblEigenfactor.Text = source.aef.ToString();
 
                 //cell 7 - depth
                 Label lblDepth = e.Row.Cells[7].Controls[1] as Label;

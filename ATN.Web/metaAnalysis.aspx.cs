@@ -146,7 +146,7 @@ namespace ATN.Web
 
                 //cell 5 - AEF
                 Label lblEigenfactor = e.Row.Cells[5].Controls[1] as Label;
-                lblEigenfactor.Text = source.aefScore.ToString();
+                lblEigenfactor.Text = source.aef.ToString();
 
                 //cell 6 - Depth
                 Label lblDepth = e.Row.Cells[6].Controls[1] as Label;

@@ -16,17 +16,13 @@ namespace ATN.Analysis
     {
         public static void Main(string[] args)
         {
-            AnalysisRunner ar = new AnalysisRunner();
-            CrawlerProgress cp = new CrawlerProgress();
-            Crawl[] crawls = cp.GetCrawls();
+            int TheoryId = 3;
 
-            if (crawls.Length > 0)
-            {
-                for (int i = 0; i < crawls.Length; i++)
-                {
-                    ar.AnalyzeTheory(crawls[i], crawls[i].TheoryId);
-                }
-            }
+            GraphBuilder gb = new GraphBuilder();
+            Graph ExportGraph = gb.GetGraphForTheory(TheoryId, true, true, true, true);
+
+            FileStream fs = File.Open(TheoryId.ToString() + "Graph.xml", FileMode.Create);
+            XGMMLExporter.Export(ExportGraph.Nodes.ToArray(), ExportGraph.Edges.ToArray(), fs);
         }
     }
 }
