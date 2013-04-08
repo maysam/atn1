@@ -21,7 +21,7 @@ namespace ATN.Analysis
             GraphBuilder gb = new GraphBuilder();
             Graph ExportGraph = gb.GetGraphForTheory(TheoryId, true, true, true, true);
 
-            FileStream fs = File.Open(TheoryId.ToString() + "Graph.xml", FileMode.Create);
+            FileStream fs = File.Open(TheoryId.ToString() + "-Graph.xml", FileMode.Create);
             XGMMLExporter.Export(ExportGraph.Nodes.ToArray(), ExportGraph.Edges.ToArray(), fs);
         }
     }

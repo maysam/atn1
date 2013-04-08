@@ -12,10 +12,6 @@ namespace ATN.Data
     public class Theories : DatabaseInterface
     {
         Sources _sources;
-        /// <summary>
-        /// This is the key used by the GetSourceTreeForTheory method to contain the canonical sources.
-        /// </summary>
-        public const long CanonicalSourceKey = -1;
         public Theories(ATNEntities Entities = null) : base(Entities)
         {
             _sources = new Sources(Entities);
@@ -263,11 +259,26 @@ namespace ATN.Data
         public List<ExtendedSource> GetExtendedSourceReferencesForSource(int TheoryId, long SourceId)
         {
             return Context.ExecuteStoreQuery<ExtendedSource>(
-                @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint);
-                CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #SourceIdTable(SourceId, CitesSourceId)
-                INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, c.CitesSourceId FROM CitationsReference c WHERE c.SourceId = {1}
-                SELECT s.SourceId as SourceId, s.DataSourceSpecificId as MasID, ArticleTitle as Title, [Year], (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors, j.JournalName as Journal, tms.RAMarkedContributing as Contributing, tms.IsMetaAnalysis as IsMetaAnalysis, (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing, (SELECT TOP 1 ArticleLevelEigenfactor FROM TheoryMembership tm WHERE tm.TheoryId = tms.TheoryId AND tm.SourceId = tms.SourceId ORDER BY RunID DESC) AS AEF, tm.TheoryAttributionRatio As TAR, tm.PredictionProbability as PredictionProbability, tm.isContributingPrediction as IsContributingPrediction, CAST(2 as smallint) as Depth FROM Source s JOIN #SourceIdTable st ON s.SourceId = st.CitesSourceId LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0} LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId WHERE s.SourceId NOT IN (SELECT DISTINCT SourceId FROM TheoryMembership tm WHERE tm.Depth = 0 AND tm.TheoryId = tms.TheoryId) ORDER BY st.CitesSourceId ASC
-                DROP TABLE #SourceIdTable",
+                @"SELECT s.SourceId as SourceId,
+                s.DataSourceSpecificId as MasID,
+                ArticleTitle as Title, [Year],
+                (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors,
+                j.JournalName as Journal,
+                tms.RAMarkedContributing as Contributing,
+                tms.IsMetaAnalysis as IsMetaAnalysis,
+                (SELECT COUNT(MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing,
+                tm.ArticleLevelEigenfactor as AEF,
+                tm.TheoryAttributionRatio As TAR,
+                tm.PredictionProbability as PredictionProbability,
+                tm.isContributingPrediction as IsContributingPrediction,
+                tm.Depth as Depth FROM CitationsReference c
+                JOIN Source s ON c.CitesSourceId = s.SourceId
+                LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId AND tms.TheoryId = {0}
+                LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId
+                JOIN TheoryMembership tm ON tm.SourceId = c.CitesSourceId AND
+                tm.RunId = (SELECT TOP 1 r.RunId FROM Run r WHERE r.TheoryId = tms.TheoryId ORDER BY r.RunId DESC)
+                WHERE c.SourceId = {1}
+                ORDER BY SourceId ASC",
                 TheoryId, SourceId
             ).ToList();
         }

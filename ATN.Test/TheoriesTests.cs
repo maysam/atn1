@@ -289,7 +289,7 @@ namespace ATN.Test
             CreateTestTheoryNetwork(out Theory, out AddedSource, out FirstLevelSource, out SecondLevelSource, out SourceJournal, out SourceAuthor);
             Runner.AnalyzeTheory(UnusedCrawl, Theory.TheoryId);
             List<ExtendedSource> ExtendedSources = Theories.GetExtendedSourceReferencesForSource(Theory.TheoryId, FirstLevelSource.SourceId);
-            Assert.AreEqual(1, ExtendedSources.Count);
+            Assert.AreEqual(2, ExtendedSources.Count);
 
             foreach (ExtendedSource s in ExtendedSources)
             {

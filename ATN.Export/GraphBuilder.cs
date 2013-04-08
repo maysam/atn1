@@ -47,7 +47,7 @@ namespace ATN.Export
 
         public Graph GetGraphForTheory(int TheoryId, bool ImpactFactorCutoff, bool AEFCutoff, bool TARCutoff, bool MachineLearningCutoff)
         {
-            const int nSigma = 5;
+            const int nSigma = 6;
             Graph ExportGraph = new Graph();
 
             ExtendedSource[] AllSources = _theories.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).ToArray();
