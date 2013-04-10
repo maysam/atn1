@@ -19,7 +19,9 @@ namespace ATN.Export
             StreamWriter ExportDestination = new System.IO.StreamWriter(DestinationStream, Encoding.ASCII);
 
             // Write header to file
+            // Depth, IF, AEF computed for Theory 2 as of 04-02-13
             ExportDestination.WriteLine("@RELATION atn");
+            ExportDestination.WriteLine("@ATTRIBUTE SourceID Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE Year Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
@@ -33,7 +35,8 @@ namespace ATN.Export
             //Write training data to file
             foreach (var Source in Sources)
             {
-                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5}",
+                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                    Source.SourceId,
                     Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.ToString(),
                     Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?", Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
                     Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
@@ -54,9 +57,12 @@ namespace ATN.Export
 
             // Write header to file
             ExportDestination.WriteLine("@RELATION atn-test");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryId Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE SourceId Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ArticleLevelEigenFactor Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
+            //ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE class {contributing, not-contributing}");
             ExportDestination.WriteLine();
             ExportDestination.WriteLine("@DATA");
@@ -65,10 +71,13 @@ namespace ATN.Export
             //Write training data to file
             foreach (var Node in Nodes)
             {
-                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId,TheoryId);
+                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId, TheoryId);
 
-                ExportDestination.WriteLine("{0}, {1}, {2}, ?",
-                    TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(), TM.TheoryAttributionRatio.ToString());
+                ExportDestination.WriteLine("{0}, {1}, {2}, {3}, {4}, ?",
+                    TheoryId.ToString(), TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(),
+                    //TM.TheoryAttributionRatio.ToString());
+                    TM.ImpactFactor.ToString(), TM.Depth.ToString()
+                );
             }
             ExportDestination.Close();
         }
