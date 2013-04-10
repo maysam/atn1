@@ -113,6 +113,10 @@
       <Project>{7c83a4df-3cc8-4934-8034-c032bdf03136}</Project>
       <Name>ATN.Export</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ATN.Import\ATN.Import.csproj">
+      <Project>{283ee2db-c6b2-4863-84c8-56d7ac05abda}</Project>
+      <Name>ATN.Import</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

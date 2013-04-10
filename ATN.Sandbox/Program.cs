@@ -9,6 +9,7 @@ using ATN.Export;
 using ATN.Data;
 using System.IO;
 using System.Threading;
+using ATN.Import;
 
 namespace ATN.Analysis
 {
@@ -16,13 +17,26 @@ namespace ATN.Analysis
     {
         public static void Main(string[] args)
         {
-            int TheoryId = 3;
+            Theories t = new Theories();
+            List<ExtendedSource> AllSourcesForTheory = t.GetAllExtendedSourcesForTheory(2, 0, Int32.MaxValue);
 
-            GraphBuilder gb = new GraphBuilder();
-            Graph ExportGraph = gb.GetGraphForTheory(TheoryId, true, true, true, true);
+            int CountContrib = AllSourcesForTheory.Count(c => c.Contributing.HasValue && c.Contributing.Value);
+            int CountNotContrib = AllSourcesForTheory.Count(c => c.Contributing.HasValue && !c.Contributing.Value);
+            int CountNull = AllSourcesForTheory.Count(c => !c.Contributing.HasValue);
 
-            FileStream fs = File.Open(TheoryId.ToString() + "-Graph.xml", FileMode.Create);
-            XGMMLExporter.Export(ExportGraph.Nodes.ToArray(), ExportGraph.Edges.ToArray(), fs);
+            var Things = AllSourcesForTheory.Where(ast => ast.AEF.HasValue && ast.TAR.HasValue);
+
+            int x = 0;
+
+            //FileStream fs = File.Open(@"D:\users\pfaffj\Documents\Visual Studio 2012\Projects\atn\ATN.Sandbox\bin\x64\Debug\TAM - Training Data.csv", FileMode.Open, FileAccess.Read);
+            //ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
+            //Importer.ImportTheory(2, fs);
+
+            //int TheoryId = 2;
+            //AnalysisRunner ar = new AnalysisRunner();
+            //CrawlerProgress cp = new CrawlerProgress();
+            //Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
+            //ar.AnalyzeTheory(c, TheoryId);
         }
     }
 }

@@ -127,15 +127,15 @@ namespace ATN.Web
                 RadioButtonList rblContributing = e.Row.Cells[3].Controls[1] as RadioButtonList;
                 //check if contributing
                 //null is interpreted as false so this condition must be first
-                if (source.isContributing == null)
+                if (source.Contributing == null)
                 {
                     rblContributing.SelectedValue = Common.Symbols.Unknown;
                 }
-                else if (source.isContributing == true)
+                else if (source.Contributing == true)
                 {
                     rblContributing.SelectedValue = Common.Symbols.Yes;
                 }
-                else if (source.isContributing == false)
+                else if (source.Contributing == false)
                 {
                     rblContributing.SelectedValue = Common.Symbols.No;
                 }
@@ -146,11 +146,11 @@ namespace ATN.Web
 
                 //cell 5 - AEF
                 Label lblEigenfactor = e.Row.Cells[5].Controls[1] as Label;
-                lblEigenfactor.Text = source.aef.ToString();
+                lblEigenfactor.Text = source.AEF.ToString();
 
                 //cell 6 - Depth
                 Label lblDepth = e.Row.Cells[6].Controls[1] as Label;
-                lblDepth.Text = source.depth.ToString();
+                lblDepth.Text = source.Depth.ToString();
 
                 //cell 7 - Journal
                 Label lblJournal = e.Row.Cells[7].Controls[1] as Label;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using ATN.Data;
 using ATN.Analysis;
+using ATN.Export;
 
 namespace MLSandbox
 {
@@ -13,24 +14,30 @@ namespace MLSandbox
     {
         static void Main(string[] args)
         {
-            FileStream TrainBatStream = File.Open(@"C:\Users\fault_000\Documents\WEKAtest\train_tree.bat", FileMode.Create);
-            FileStream ClassifyBatStream = File.Open(@"C:\Users\fault_000\Documents\WEKAtest\classify_data.bat", FileMode.Create);
+            int TheoryId = 2;
 
-            MachineLearning.GenerateWekaTrainBatchFile(
-                @"C:\Users\fault_000\Documents\WEKAtest\soybean-model.dat",
-                @"C:\Users\fault_000\Documents\WEKAtest\arff\soybean-train.arff",
-                TrainBatStream);
-            MachineLearning.GenerateWekaClassificationBatchFile(
-                @"C:\Users\fault_000\Documents\WEKAtest\soybean-model.dat",
-                @"C:\Users\fault_000\Documents\WEKAtest\arff\soybean-test-noclass.arff",
-                @"C:\Users\fault_000\Documents\WEKAtest\soybean-classification.txt",
-                ClassifyBatStream);
-            MachineLearning.GenerateDecisionTree(@"C:\Users\fault_000\Documents\WEKAtest", "train_tree.bat");
-            MachineLearning.ClassifyData(@"C:\Users\fault_000\Documents\WEKAtest", "classify_data.bat");
-            MachineLearning.ParseClassificationOutput(@"C:\Users\fault_000\Documents\WEKAtest\soybean-classification.txt");
+            AnalysisRunner ar = new AnalysisRunner();
+            CrawlerProgress cp = new CrawlerProgress();
+            Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
+            ar.AnalyzeTheory(c, TheoryId);
 
-            //FileStream DestinationARFFStream = File.Open("atn-train.arff", FileMode.Create);
-            //ARFFExporter.ExportTrain(Nodes.Values.ToArray(), 6, DestinationARFFStream);
+            string DecisionTree = Environment.CurrentDirectory + "\\" + TheoryId + "-model.dat";
+            string TrainArff = Environment.CurrentDirectory + "\\" + TheoryId + "-train.arff";
+            string ClassifyArff = Environment.CurrentDirectory + "\\" + TheoryId + "-classify.arff";
+            string ClassifyOutput = Environment.CurrentDirectory + "\\" + TheoryId + "-classified.txt";
+
+            Theories t = new Theories();
+            FileStream TrainStream = File.Open(TrainArff, FileMode.Create);
+            var TrainSources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+            ARFFExporter.Export(TrainSources, TheoryId, TrainStream);
+
+            FileStream ClassifyStream = File.Open(ClassifyArff, FileMode.Create);
+            var ClassifySources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => !s.Contributing.HasValue).ToArray();
+            ARFFExporter.Export(ClassifySources, TheoryId, ClassifyStream);
+            
+            MachineLearning.GenerateDecisionTree(TrainArff, DecisionTree);
+            MachineLearning.ClassifyData(DecisionTree, ClassifyArff, ClassifyOutput);
+            //MachineLearning.ParseClassificationOutput(@"soybean-classification.txt");
         }
     }
 }

@@ -203,10 +203,10 @@ namespace ATN.Test
                 Assert.AreEqual(CompareSource.DataSourceSpecificId, s.MasID);
                 Assert.AreEqual(CompareSource.ArticleTitle, s.Title);
                 Assert.AreEqual(CompareSource.Year, s.Year);
-                Assert.AreEqual(Depth, s.depth);
-                Assert.AreEqual(null, s.isContributing);
-                Assert.AreEqual(false, s.isMetaAnalysis);
-                Assert.AreEqual(0, s.numContributing);
+                Assert.AreEqual(Depth, s.Depth);
+                Assert.AreEqual(null, s.Contributing);
+                Assert.AreEqual(false, s.IsMetaAnalysis);
+                Assert.AreEqual(0, s.NumContributing);
             }
 
             Assert.IsTrue(VerifiedCanonical);
@@ -310,10 +310,10 @@ namespace ATN.Test
                 Assert.AreEqual(CompareSource.DataSourceSpecificId, s.MasID);
                 Assert.AreEqual(CompareSource.ArticleTitle, s.Title);
                 Assert.AreEqual(CompareSource.Year, s.Year);
-                Assert.AreEqual(Depth, s.depth);
-                Assert.AreEqual(null, s.isContributing);
-                Assert.AreEqual(false, s.isMetaAnalysis);
-                Assert.AreEqual(0, s.numContributing);
+                Assert.AreEqual(Depth, s.Depth);
+                Assert.AreEqual(null, s.Contributing);
+                Assert.AreEqual(false, s.IsMetaAnalysis);
+                Assert.AreEqual(0, s.NumContributing);
             }
         }
 

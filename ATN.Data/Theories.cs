@@ -146,17 +146,22 @@ namespace ATN.Data
 	                [Year],
 	                (SELECT a.LastName + ' ' + a.FirstName + ', ' as 'data()' FROM AuthorsReference ar, Author a WHERE ar.SourceId = s.SourceId AND ar.AuthorId = a.AuthorId FOR xml path('')) as Authors,
 	                j.JournalName as Journal,
-	                tms.RAMarkedContributing as Contributing,
+	                (SELECT CASE WHEN tms.RAMarkedContributing IS NOT NULL THEN tms.RAMarkedContributing ELSE (
+						SELECT CASE WHEN (SELECT COUNT(DISTINCT mm.SourceId) FROM MetaAnalysisMembership mm JOIN TheoryMembershipSignificance tms2 ON mm.TheoryMembershipSignificanceId = tms2.TheoryMembershipSignificanceId AND tms2.IsMetaAnalysis = 1 AND tms2.TheoryId = tms.TheoryId WHERE mm.SourceId = s.SourceId) >= 1 THEN CAST(1 as bit) ELSE (
+							SELECT CASE WHEN COUNT(*) >= 1 THEN CAST(0 as bit) ELSE NULL END FROM TheoryMembershipSignificance tms2 JOIN CitationsReference cr ON cr.SourceId = tms2.SourceId WHERE tms2.IsMetaAnalysis = 1 AND tms2.TheoryId = tms.TheoryId  AND cr.CitesSourceId = s.SourceId
+						) END
+	                ) END) as Contributing,
 	                tms.IsMetaAnalysis as IsMetaAnalysis,
 	                (SELECT COUNT(mam.MetaAnalysisMembershipId) FROM MetaAnalysisMembership mam WHERE mam.TheoryMembershipSignificanceId = tms.TheoryMembershipSignificanceId) as NumContributing,
 	                tm.ArticleLevelEigenfactor AS AEF,
                     tm.TheoryAttributionRatio As TAR,
+                    tm.ImpactFactor as ImpactFactor,
                     tm.PredictionProbability as PredictionProbability,
                     tm.isContributingPrediction as IsContributingPrediction,
-	                tm.Depth as Depth,
+	                (CASE WHEN tm.Depth IS NULL THEN CAST(3 as smallint) ELSE tm.Depth END) as Depth,
 	                ROW_NUMBER() OVER(ORDER BY tm.Depth ASC) As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0}
                 )
-                SELECT SourceId, MasID, Title, [Year], Authors,Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
+                SELECT SourceId, MasID, Title, [Year], Authors,Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, TAR, ImpactFactor, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
             TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
         }
 
@@ -184,14 +189,15 @@ namespace ATN.Data
             //to select all of the papers which are cited by another source but do not cite
             //anything themselves
             SourceIdCitedByWithDepth[] SourcesCited = Context.ExecuteStoreQuery<SourceIdCitedByWithDepth>(
-                @"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
+                string.Format(@"CREATE TABLE #SourceIdTable (SourceId bigint, CitesSourceId bigint NULL, Depth SMALLINT);
                 CREATE CLUSTERED INDEX Index_SourceIdTable_SourceId ON #SourceIdTable(SourceId, CitesSourceId)
-                INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN (" + String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()) + @");
+                INSERT INTO #SourceIdTable SELECT s.SourceId as SourceId, NULL, 0 as Depth FROM Source s WHERE SourceId IN ({0});
                 INSERT INTO #SourceIdTable SELECT c.SourceId as SourceId, st.SourceId, 1 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.CitesSourceId WHERE st.Depth = 0;
                 INSERT INTO #SourceIdTable SELECT st.SourceId as SourceId, c.CitesSourceId as CitesSourceId, 2 as Depth FROM CitationsReference c JOIN #SourceIdTable st ON st.SourceId = c.SourceId WHERE st.Depth = 1 AND c.CitesSourceId NOT IN (SELECT SourceID FROM #SourceIdTable WHERE Depth = 0)
                 SELECT st1.SourceId, st1.CitesSourceId, CAST(st1.Depth as smallint) as Depth, (SELECT COUNT(st2.SourceId) FROM #SourceIdTable st2 WHERE st2.CitesSourceId = st1.SourceId) as ImpactFactor FROM #SourceIdTable st1 UNION
-                SELECT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(st3.Depth as smallint) as Depth, (SELECT COUNT(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL AND st3.CitesSourceId NOT IN(SELECT DISTINCT SourceId FROM #SourceIdTable) ORDER BY Depth ASC
-                DROP TABLE #SourceIdTable"
+                SELECT st3.CitesSourceId as SourceId, NULL as CitesSourceId, CAST(st3.Depth as smallint) as Depth, (SELECT COUNT(st4.SourceId) FROM #SourceIdTable st4 WHERE st4.CitesSourceId = st3.CitesSourceId) as ImpactFactor FROM #SourceIdTable st3 WHERE st3.CitesSourceId IS NOT NULL AND st3.CitesSourceId NOT IN(SELECT DISTINCT SourceId FROM #SourceIdTable) UNION
+                SELECT tms.SourceId as SourceId, NULL as CitesSourceId, CAST(3 as smallint) as Depth, 0 as ImpactFactor FROM TheoryMembershipSignificance tms WHERE tms.TheoryId = {1} AND tms.SourceId NOT IN (SELECT SourceId FROM #SourceIdTable UNION SELECT CitesSourceId FROM #SourceIdTable st WHERE st.CitesSourceId IS NOT NULL) ORDER BY Depth ASC
+                DROP TABLE #SourceIdTable", String.Join(",", CanonicalSources.Select(s => s.SourceId.ToString()).ToArray()), TheoryId)
             ).ToArray();
 
             //Could optimize this by setting the initial count to the distinct count of sources returned from the store query
@@ -288,13 +294,36 @@ namespace ATN.Data
         /// </summary>
         /// <param name="TheoryId">The theory the source corresponds to</param>
         /// <param name="SourceId">The source having its metaAnalysis status evaluated</param>
-        public void MarkSourceMetaAnalysis(int TheoryId, long SourceId)
+        public long MarkSourceMetaAnalysis(int TheoryId, long SourceId)
         {
             TheoryMembershipSignificance ContributionSignificance = Context.TheoryMembershipSignificances.SingleOrDefault(tms => tms.TheoryId == TheoryId && tms.SourceId == SourceId);
+
+            if (ContributionSignificance == null)
+            {
+                ContributionSignificance = new TheoryMembershipSignificance();
+                ContributionSignificance.TheoryId = TheoryId;
+                ContributionSignificance.SourceId = SourceId;
+                Context.TheoryMembershipSignificances.AddObject(ContributionSignificance);
+            }
             ContributionSignificance.IsMetaAnalysis = true;
             Context.SaveChanges();
+            return ContributionSignificance.TheoryMembershipSignificanceId;
         }
 
+        public void AddManualTheoryMember(int TheoryId, long SourceId)
+        {
+            TheoryMembershipSignificance ContributionSignificance = Context.TheoryMembershipSignificances.SingleOrDefault(tms => tms.TheoryId == TheoryId && tms.SourceId == SourceId);
+
+            if (ContributionSignificance == null)
+            {
+                ContributionSignificance = new TheoryMembershipSignificance();
+                ContributionSignificance.TheoryId = TheoryId;
+                ContributionSignificance.SourceId = SourceId;
+                Context.TheoryMembershipSignificances.AddObject(ContributionSignificance);
+            }
+            ContributionSignificance.IsMetaAnalysis = false;
+            Context.SaveChanges();
+        }
         /// <summary>
         /// Marks a given Source as contributing to a meta analysis indicated by the provided TheoryId and MetaAnalysisSourceId
         /// </summary>
@@ -306,12 +335,16 @@ namespace ATN.Data
         {
             TheoryMembershipSignificance ContributionSignificance = Context.TheoryMembershipSignificances.SingleOrDefault(tms => tms.TheoryId == TheoryId && tms.SourceId == MetaAnalysisSourceId && tms.IsMetaAnalysis);
 
-            MetaAnalysisMembership mam = new MetaAnalysisMembership();
+            MetaAnalysisMembership mam = Context.MetaAnalysisMemberships.SingleOrDefault(m => m.TheoryMembershipSignificanceId == ContributionSignificance.TheoryMembershipSignificanceId && m.SourceId == MemberSourceId);
+            if (mam == null)
+            {
+                mam = new MetaAnalysisMembership();
+                Context.MetaAnalysisMemberships.AddObject(mam);
+            }
             mam.RAMarkedContributing = Contributing;
             mam.SourceId = MemberSourceId;
             mam.TheoryMembershipSignificanceId = ContributionSignificance.TheoryMembershipSignificanceId;
 
-            Context.MetaAnalysisMemberships.AddObject(mam);
             Context.SaveChanges();
         }
 
