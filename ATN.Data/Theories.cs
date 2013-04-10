@@ -24,7 +24,7 @@ namespace ATN.Data
         /// <param name="CanonicalSources">The representation of canonical source identifiers for the theory</param>
         /// <param name="TheoryComment">Any comments relating to the theory</param>
         /// <returns>A persistence-model attached representation of the added theory</returns>
-        public Theory AddTheory(string TheoryName, string TheoryComment, params CanonicalDataSource[] CanonicalSources)
+        public Theory AddTheory(string TheoryName, string TheoryComment, bool AEF, bool ImpactFactor, bool TAR, bool DataMining, bool Clustering, params CanonicalDataSource[] CanonicalSources)
         {
             Theory TheoryToAdd = new Theory();
             TheoryToAdd.TheoryName = TheoryName;
@@ -42,6 +42,11 @@ namespace ATN.Data
                 Context.TheoryDefinitions.AddObject(TheoryCanonicalSource);
             }
 
+            TheoryToAdd.ArticleLevelEigenfactor = AEF;
+            TheoryToAdd.Clustering = Clustering;
+            TheoryToAdd.DataMining = DataMining;
+            TheoryToAdd.ImpactFactor = ImpactFactor;
+            TheoryToAdd.TheoryAttributionRatio = TAR;
             Context.SaveChanges();
             return TheoryToAdd;
         }

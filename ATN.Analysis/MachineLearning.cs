@@ -85,7 +85,7 @@ namespace ATN.Analysis
             StartInfo.RedirectStandardError = true;
             StartInfo.WorkingDirectory = Environment.CurrentDirectory;
             StartInfo.FileName = "java.exe";
-            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 2-8", decision_tree_path, test_data_path);
+            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 2-7", decision_tree_path, test_data_path);
 
             //try
             //{

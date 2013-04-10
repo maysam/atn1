@@ -10,7 +10,7 @@ namespace ATN.Data
     /// </summary>
     public class ExtendedSource : ExportSource
     {
-        public int ImpactFactor { get; set; }
+        public int? ImpactFactor { get; set; }
         public bool IsMetaAnalysis { get; set; }
         public int? NumContributing { get; set; }
         public bool? Contributing { get; set; }

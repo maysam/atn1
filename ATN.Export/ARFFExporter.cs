@@ -21,7 +21,7 @@ namespace ATN.Export
             // Write header to file
             // Depth, IF, AEF computed for Theory 2 as of 04-02-13
             ExportDestination.WriteLine("@RELATION atn");
-            ExportDestination.WriteLine("@ATTRIBUTE SourceID Numeric");
+            //ExportDestination.WriteLine("@ATTRIBUTE SourceID Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE Year Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
@@ -35,9 +35,13 @@ namespace ATN.Export
             //Write training data to file
             foreach (var Source in Sources)
             {
-                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
-                    Source.SourceId,
-                    Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.ToString(),
+                //ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                //    Source.SourceId,
+                //    Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
+                //    Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?", Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
+                //    Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
+                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5}",
+                    Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
                     Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?", Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
                     Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
             }

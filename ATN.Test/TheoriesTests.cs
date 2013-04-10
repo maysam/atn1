@@ -24,7 +24,7 @@ namespace ATN.Test
         [TestMethod]
         public void VerifyAddTheory()
         {
-            Theory BoundTheory = Theories.AddTheory("Test Theory", "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, Guid.NewGuid().ToString()));
+            Theory BoundTheory = Theories.AddTheory("Test Theory", "Test Theory Comment", true, true, true, true, true, new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, Guid.NewGuid().ToString()));
             Assert.AreNotEqual(0, BoundTheory.TheoryId, "Theory was not added");
 
             DeleteTheory(BoundTheory);
@@ -44,7 +44,7 @@ namespace ATN.Test
         public void VerifyGetCanonicalSourcesForTheory()
         {
             Source AddedSource = CreateSource(true);
-            Theory BoundTheory = Theories.AddTheory("Test Theory", "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AddedSource.DataSourceSpecificId));
+            Theory BoundTheory = Theories.AddTheory("Test Theory", "Test Theory Comment", true, true, true, true, true, new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AddedSource.DataSourceSpecificId));
             Source CanonicalSourceForTheory = Theories.GetCanonicalSourcesForTheory(BoundTheory.TheoryId).SingleOrDefault();
             Assert.AreEqual(AddedSource, CanonicalSourceForTheory, "Source was not associated with Theory");
 
@@ -61,7 +61,7 @@ namespace ATN.Test
             CanonicalSource.CitingSources.Add(CitingSource);
             Context.SaveChanges();
 
-            Theory BoundTheory = Theories.AddTheory("Test Theory", "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
+            Theory BoundTheory = Theories.AddTheory("Test Theory", "Test Theory Comment", true, true, true, true, true, new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
             Source RetrievedFirstLevelSource = Theories.GetFirstLevelSourcesForTheory(BoundTheory.TheoryId).SingleOrDefault();
 
             Assert.AreEqual(CitingSource, RetrievedFirstLevelSource, "First level source was not added");
