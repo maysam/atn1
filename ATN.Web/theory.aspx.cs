@@ -31,9 +31,7 @@ namespace ATN.Web
             Theory theoryRetriever = new Theory();
             List<ExtendedSource> sources = new List<ExtendedSource>(); 
 
-            //show the papers contributing to the theory
-            //ExtendedSource allSources = 
-                
+            //show the papers contributing to the theory                
             sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
                 
             theoryRetriever = sourceRetriever.GetTheory(theoryId);
@@ -67,16 +65,36 @@ namespace ATN.Web
                     Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + pageNumber.ToString();
             }
+            btnSubmit.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
+                Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
 
-            //if (!IsPostBack)
-            //{
+            //save the results if necessary and display the correct information
+            string postBackControl = Common.GetPostBackControlId(Page);
+            //not a post back
+            if (postBackControl == string.Empty)
+            {
                 grdFirstLevelSources.DataSource = sources;
                 grdFirstLevelSources.DataBind();
-            //}
-            //else if(Session[Common.Data.MetaAnalysisIds] != null)
-            //{
-            //    save_results((List<long>)Session[Common.Data.MetaAnalysisIds]);
-            //}
+            }
+            //postback to same page, use viewstate to save results
+            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit")
+            {
+                save_results();
+                grdFirstLevelSources.DataSource = sources;
+                grdFirstLevelSources.DataBind();
+            }
+            //redirect to metaAnalysis
+            else
+            {
+                save_results();
+                long metaAnalysis = (Request.QueryString[Common.QueryStrings.MetaAnalysis] != null) ?
+                    long.Parse(Request.QueryString[Common.QueryStrings.MetaAnalysis]) : 0;
+                Response.Redirect(Common.Pages.MetaAnalysis + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysis.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
+            }
 
         }
 
@@ -110,7 +128,7 @@ namespace ATN.Web
                 //cell 1 - Title
                 LinkButton lnkTitle = e.Row.Cells[1].Controls[1] as LinkButton;
                 lnkTitle.Text = source.Title;
-                lnkTitle.PostBackUrl = Common.Pages.MetaAnalysis + Common.Symbols.Question +
+                lnkTitle.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
                     Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + source.SourceId.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString(); 
@@ -123,6 +141,10 @@ namespace ATN.Web
                 //if metaAnalysis then checked
                 CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
                 chkMetaAnalysis.Checked = source.isMetaAnalysis;
+
+                //put sourceId in hidden field for postBack 
+                HiddenField hdnSourceId = e.Row.Cells[3].Controls[3] as HiddenField;
+                hdnSourceId.Value = source.SourceId.ToString();
 
                 //cell 4 - number of contributing papers in meta analysis
                 //show number of papers contributing to this papers meta analysis
@@ -156,126 +178,35 @@ namespace ATN.Web
             }
         }
 
-        protected void btnPrevious_Click(object sender, EventArgs e)
-        {
-            //List<long> values = new List<long>();
-            //HiddenField hdnSourceId;
-            //for (int i = 0; i < grdFirstLevelSources.Rows.Count; i++)
-            //{
-            //    hdnSourceId = grdFirstLevelSources.Rows[i].Cells[3].Controls[3] as HiddenField;
-
-            //    if (hdnSourceId.Value != null)
-            //    {
-
-            //        values.Add(long.Parse(hdnSourceId.Value));
-            //    }
-            //}
-            //Session[Common.Data.MetaAnalysisIds] = values;
-            //Response.Redirect(Common.Pages.Theory + Common.Symbols.Question +
-            //    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp + 
-            //    Common.QueryStrings.PageNumber + Common.Symbols.Eq + (lastPageIndex - 1).ToString());
-            save_results();
-        }
-
-        protected void btnNext_Click(object sender, EventArgs e)
-        {
-            //List<long> values = new List<long>();
-            //HiddenField hdnSourceId;
-            //for (int i = 0; i < grdFirstLevelSources.Rows.Count; i++)
-            //{
-            //    hdnSourceId = grdFirstLevelSources.Rows[i].Cells[3].Controls[3] as HiddenField;
-
-            //    if (hdnSourceId.Value != null)
-            //    {
-                    
-            //        values.Add(long.Parse(hdnSourceId.Value));
-            //    }
-            //}
-            //Session[Common.Data.MetaAnalysisIds] = values;
-            //Response.Redirect(Common.Pages.Theory + Common.Symbols.Question +
-            //    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
-            //    Common.QueryStrings.PageNumber + Common.Symbols.Eq + (lastPageIndex + 1).ToString());
-            save_results();
-        }
-
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
-            //save changes
-            save_results();
+
         }
 
         protected void lnkTitle_Click(object sender, EventArgs e)
         {
-            //save changes
-            save_results();
+
         }
 
         protected void save_results()
         {
             Theories dataSaver = new Theories();
-
-            foreach (GridViewRow row in grdFirstLevelSources.Rows)
+            int itr;
+            for (itr = 0; itr < Page.Request.Form.Keys.Count; itr++)
             {
-                ExtendedSource rowSource = row.DataItem as ExtendedSource;
-                CheckBox chkMetaAnalysis = row.Cells[3].Controls[1] as CheckBox;
-                //mark the paper as metaAnalysis
-                if (chkMetaAnalysis.Checked == true)
+                if (Page.Request.Form[itr] == "on")
                 {
-                    lblNetworkName.Text = rowSource.SourceId.ToString();
-                    //save to database
-                    //dataSaver.MarkSourceMetaAnalysis(theoryId, rowSource.SourceId);
+                    //lblNetworkName.Text = Page.Request.Form[itr + 1];
+                    dataSaver.MarkSourceMetaAnalysis(theoryId, long.Parse(Page.Request.Form[itr + 1]));
                 }
+                else
+                {
+                    continue;
+                }
+
             }
+
         }
-
-        //protected void save_results(List<long> values)
-        //{
-        //    Theories dataSaver = new Theories();
-
-        //    foreach (GridViewRow row in grdFirstLevelSources.Rows)
-        //    {
-        //        foreach (long sourceId in values)
-        //        {
-        //            lblNetworkName.Text = sourceId.ToString();
-        //            //dataSaver.MarkSourceMetaAnalysis(theoryId, sourceId);
-        //        }
-        //    }
-        //}
-
-        protected void chkMetaAnalysis_CheckedChanged(object sender, EventArgs e)
-        {
-            //CheckBox chb = sender as CheckBox;
-            //HiddenField hdnSourceId = chb.Parent.Controls[3] as HiddenField;
-            //ExtendedSource source = ((GridViewRow)chb.Parent.Parent).DataItem as ExtendedSource;
-            //if (chb.Checked == true)
-            //{
-            //    hdnSourceId.Value = source.SourceId.ToString();
-            //}
-        }
-
-        //protected void grdFirstLevelSources_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        //{
-        //    List<long> values = new List<long>();
-        //    CheckBox chb;
-        //    ExtendedSource source;
-        //    for (int i = 0; i < grdFirstLevelSources.Rows.Count; i++)
-        //    {
-        //        chb = grdFirstLevelSources.Rows[i].Cells[3].Controls[1] as CheckBox;
-
-        //        if (chb.Checked == true)
-        //        {
-        //            source = grdFirstLevelSources.Rows[i].DataItem as ExtendedSource;
-        //            values.Add(source.SourceId);
-        //        }
-        //    }
-        //    Session["page" + grdFirstLevelSources.PageIndex] = values;
-        //}
-
-        //protected void rblContributing_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    HiddenField hdnRadioValue = 
-        //}
-
-        
+       
     }
 }

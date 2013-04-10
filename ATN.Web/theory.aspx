@@ -35,7 +35,7 @@
                     <asp:Label ID="lblMetaAnalysisHeader" runat="server" Text="Meta-Analysis" />
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:CheckBox ID="chkMetaAnalysis" runat="server" OnCheckedChanged="chkMetaAnalysis_CheckedChanged"/>
+                    <asp:CheckBox ID="chkMetaAnalysis" runat="server" />
                     <asp:HiddenField ID="hdnSourceId" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
@@ -83,8 +83,8 @@
     </asp:GridView>
 
     <br />
-    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" OnClick="btnPrevious_Click" />
+    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" />
     <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClick="btnSubmit_Click" />
-    <asp:Button ID="btnNext" runat="server" Text="Next Page" OnClick="btnNext_Click" />
+    <asp:Button ID="btnNext" runat="server" Text="Next Page" />
 
 </asp:Content>
