@@ -79,10 +79,6 @@ namespace ATN.Analysis
                 }
             }
 
-            //Run ML
-
-            //Analysis complete
-
             //Remove ImpactFactor data if it's not an analysis option
             if (!TheoryToAnalyze.ImpactFactor)
             {
@@ -91,6 +87,10 @@ namespace ATN.Analysis
                     SourceTree[Source.Key].ImpactFactor = null;
                 }
             }
+
+            //Run ML
+
+            //Analysis complete
 
             //Store analysis data
             Trace.WriteLine("Storing analysis results");

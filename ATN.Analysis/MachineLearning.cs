@@ -91,7 +91,7 @@ namespace ATN.Analysis
             //{
                 using (Process batProcess = Process.Start(StartInfo))
                 {
-                    //batProcess.WaitForExit();
+                    batProcess.WaitForExit(2000);
                     string stdout = batProcess.StandardOutput.ReadToEnd();
                     string stderr = batProcess.StandardError.ReadToEnd();
                     batProcess.Close();

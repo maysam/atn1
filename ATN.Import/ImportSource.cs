@@ -32,8 +32,8 @@ namespace ATN.Import
             Map(m => m.Year).Name("Year");
             Map(m => m.Authors).Name("Authors");
             Map(m => m.Journal).Name("Journal");
-            Map(m => m.IsContributing).Name("Is Contributing");
-            Map(m => m.IsMetaAnalysis).Name("Is Meta Analysis");
+            Map(m => m.IsContributing).Name("Contributing (Yes/No)");
+            Map(m => m.IsMetaAnalysis).Name("Is Meta Analysis (Yes/No)");
             Map(m => m.MemberOfMetaAnalyses).Name("Meta Analysis Members (MAS IDs)");
 
         }
