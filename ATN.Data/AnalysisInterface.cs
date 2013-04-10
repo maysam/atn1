@@ -51,6 +51,20 @@ namespace ATN.Data
             TM.ImpactFactor = Context.Sources.Single(s => s.SourceId == SourceId).CitingSources.Count();
             Context.SaveChanges();
         }
+
+        public void UpdatePredictionProbability(int TheoryId, long SourceId, double Probability)
+        {
+            TheoryMembership TM = GetTheoryMembershipForSource(SourceId, TheoryId);
+            TM.PredictionProbability = Probability;
+            Context.SaveChanges();
+        }
+
+        public void UpdateIsContributingPrediction(int TheoryId, long SourceId, bool IsContributing)
+        {
+            TheoryMembership TM = GetTheoryMembershipForSource(SourceId, TheoryId);
+            TM.IsContributingPrediction = IsContributing;
+            Context.SaveChanges();
+        }
         /// <summary>
         /// Retrieves all papers marked by hand as either contributing or not.
         /// Used in the construction of ML training data. Meta Anlyses are

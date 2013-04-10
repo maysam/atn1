@@ -21,10 +21,14 @@ namespace ATN.Export
             StreamWriter ExportDestination = new System.IO.StreamWriter(DestinationStream, Encoding.ASCII);
 
             // Write header to file
+            // Depth, IF, AEF computed for Theory 2 as of 04-02-13
             ExportDestination.WriteLine("@RELATION atn");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryId Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE SourceId Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ArticleLevelEigenFactor Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
+            //ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE class {contributing, not-contributing}");
             ExportDestination.WriteLine();
             ExportDestination.WriteLine("@DATA");
@@ -33,18 +37,24 @@ namespace ATN.Export
             //Write training data to file
             foreach (var Node in Nodes)
             {
-                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId,TheoryId);
-                TheoryMembershipSignificance TMS = AnalysisInterface.GetTheoryMembershipSignificanceForSource(Node.SourceId,TheoryId);
+                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId, TheoryId);
+                TheoryMembershipSignificance TMS = AnalysisInterface.GetTheoryMembershipSignificanceForSource(Node.SourceId, TheoryId);
 
                 if ((bool)TMS.RAMarkedContributing)
                 {
-                    ExportDestination.WriteLine("{0}, {1}, {2}, contributing",
-                        TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(), TM.TheoryAttributionRatio.ToString());
+                    ExportDestination.WriteLine("{0}, {1}, {2}, {3}, {4}, contributing",
+                            TheoryId.ToString(), TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(),
+                        //TM.TheoryAttributionRatio.ToString());
+                            TM.ImpactFactor.ToString(), TM.Depth.ToString()
+                        );
                 }
                 else
                 {
-                    ExportDestination.WriteLine("{0}, {1}, {2}, not-contributing",
-                        TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(), TM.TheoryAttributionRatio.ToString());
+                    ExportDestination.WriteLine("{0}, {1}, {2}, {3}, {4}, not-contributing",
+                            TheoryId.ToString(), TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(),
+                        //TM.TheoryAttributionRatio.ToString());
+                            TM.ImpactFactor.ToString(), TM.Depth.ToString()
+                        );
                 }
             }
             ExportDestination.Close();
@@ -63,9 +73,12 @@ namespace ATN.Export
 
             // Write header to file
             ExportDestination.WriteLine("@RELATION atn-test");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryId Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE SourceId Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ArticleLevelEigenFactor Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
+            //ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE class {contributing, not-contributing}");
             ExportDestination.WriteLine();
             ExportDestination.WriteLine("@DATA");
@@ -74,10 +87,13 @@ namespace ATN.Export
             //Write training data to file
             foreach (var Node in Nodes)
             {
-                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId,TheoryId);
+                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId, TheoryId);
 
-                ExportDestination.WriteLine("{0}, {1}, {2}, ?",
-                    TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(), TM.TheoryAttributionRatio.ToString());
+                ExportDestination.WriteLine("{0}, {1}, {2}, {3}, {4}, ?",
+                    TheoryId.ToString(), TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(),
+                    //TM.TheoryAttributionRatio.ToString());
+                    TM.ImpactFactor.ToString(), TM.Depth.ToString()
+                );
             }
             ExportDestination.Close();
         }

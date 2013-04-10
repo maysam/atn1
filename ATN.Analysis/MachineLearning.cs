@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
+using ATN.Data;
 
 namespace ATN.Analysis
 {
@@ -27,7 +28,7 @@ namespace ATN.Analysis
             StreamWriter BatDestination = new System.IO.StreamWriter(BatStream, Encoding.ASCII);
 
             string weka_command = "java -cp weka.jar weka.classifiers.trees.J48 -l \"" +
-                decision_tree_path + "\" -T \"" + test_data_path + "\" -p 1-4 > " + 
+                decision_tree_path + "\" -T \"" + test_data_path + "\" -p 1-4 > " +
                 "\"" + classification_output_path + "\"\n";
 
             BatDestination.WriteLine(weka_command);
@@ -111,16 +112,45 @@ namespace ATN.Analysis
 
         public static void ParseClassificationOutput(string classification_output_path)
         {
+            AnalysisInterface AnalysisInterface = new AnalysisInterface();
             try
             {
                 using (StreamReader sr = new StreamReader(classification_output_path))
                 {
                     String co = sr.ReadToEnd();
-                    string[] lines = co.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    string[] lines = co.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Skip(3).ToArray();
 
                     foreach (string l in lines)
                     {
-                        string[] data = l.Split(new string[] { "        ", "     ", " " }, StringSplitOptions.None);
+                        string[] data = l.Split(new string[] { "        ", "     ", " ", "\n" }, StringSplitOptions.None);
+
+                        for (int i = 0; i < data.Length; i += 4)
+                        {
+                            //long source_id = Convert.ToInt64(data[i]);
+
+                            bool prediction;
+                            if (data[i + 1].Equals("1:contribu", StringComparison.Ordinal))
+                            {
+                                prediction = true;
+                            }
+                            else
+                            {
+                                prediction = false;
+                            }
+
+                            double probability = Convert.ToDouble(data[i + 2]);
+
+                            string class_values = data[i + 3];
+
+                            class_values.Trim('(', ')');
+                            string[] values = class_values.Split(new string[] { "," }, StringSplitOptions.None);
+
+                            int TheoryId = Convert.ToInt32(values[0]);
+                            long SourceId = Convert.ToInt64(values[1]);
+
+                            //AnalysisInterface.UpdateIsContributingPrediction(
+                        }
+                        /*
                         foreach (string d in data)
                         {
                             if (d != "")
@@ -128,6 +158,8 @@ namespace ATN.Analysis
                                 Console.WriteLine(d);
                             }
                         }
+                        */
+                        Console.ReadLine();
                         //Console.WriteLine(l);
                     }
                     //Console.WriteLine(line);
