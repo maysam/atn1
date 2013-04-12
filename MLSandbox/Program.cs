@@ -27,14 +27,17 @@ namespace MLSandbox
             string ClassifyOutput = Environment.CurrentDirectory + "\\" + TheoryId + "-classified.txt";
 
             Theories t = new Theories();
-            FileStream TrainStream = File.Open(TrainArff, FileMode.Create);
-            var TrainSources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+
+            var AllExtendedSourcesForTheory = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).ToArray();
+            var TrainSources = AllExtendedSourcesForTheory.Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+            var ClassifySources = AllExtendedSourcesForTheory.Where(s => !s.Contributing.HasValue).ToArray();
+            
+            FileStream TrainStream = File.Open(TrainArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             ARFFExporter.Export(TrainSources, TheoryId, TrainStream);
 
-            FileStream ClassifyStream = File.Open(ClassifyArff, FileMode.Create);
-            var ClassifySources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => !s.Contributing.HasValue).ToArray();
+            FileStream ClassifyStream = File.Open(ClassifyArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             ARFFExporter.Export(ClassifySources, TheoryId, ClassifyStream);
-            
+
             MachineLearning.GenerateDecisionTree(TrainArff, DecisionTree);
             MachineLearning.ClassifyData(DecisionTree, ClassifyArff, ClassifyOutput);
             //MachineLearning.ParseClassificationOutput(@"soybean-classification.txt");

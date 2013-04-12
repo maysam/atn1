@@ -54,7 +54,7 @@ namespace ATN.Analysis
             using (Process batProcess = Process.Start(StartInfo))
             {
                 //System.Threading.Thread.Sleep(5000);
-                //batProcess.WaitForExit();
+                //batProcess.WaitForExit(5000);
                 //string stdout = batProcess.StandardOutput.ReadToEnd();
                 //string stderr = batProcess.StandardError.ReadToEnd();
                 batProcess.Close();
@@ -85,19 +85,19 @@ namespace ATN.Analysis
             StartInfo.RedirectStandardError = true;
             StartInfo.WorkingDirectory = Environment.CurrentDirectory;
             StartInfo.FileName = "java.exe";
-            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 1-6", decision_tree_path, test_data_path);
+            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 1-5", decision_tree_path, test_data_path);
 
             //try
             //{
                 using (Process batProcess = Process.Start(StartInfo))
                 {
-                    batProcess.WaitForExit(2000);
+                    //batProcess.WaitForExit(5000);
                     string stdout = batProcess.StandardOutput.ReadToEnd();
                     string stderr = batProcess.StandardError.ReadToEnd();
                     batProcess.Close();
                     //Console.Write(stdout);
                     //Console.Write(stderr);
-                    Stream s = File.OpenWrite(classification_output_path);
+                    Stream s = File.Open(classification_output_path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
                     StreamWriter sw = new StreamWriter(s);
                     sw.Write(stdout);
                     sw.Close();
