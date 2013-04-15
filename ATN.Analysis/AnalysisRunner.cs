@@ -94,8 +94,8 @@ namespace ATN.Analysis
                 Dictionary<long, Prediction> Classifications = MachineLearning.RunML(TheoryId);
                 foreach (KeyValuePair<long, Prediction> Classification in Classifications)
                 {
-                    SourceTree[Classification.Key].IsContributingPrediction = Classification.Value.Prediction;
-                    SourceTree[Classification.Key].PredictionProbability = Classification.Value.Probability;
+                    SourceTree[Classification.Key].IsContributingPrediction = Classification.Value.IsContributingPrediction;
+                    SourceTree[Classification.Key].PredictionProbability = Classification.Value.PredictionProbability;
                 }
                 Trace.WriteLine(string.Format("ML completed in {0}", Timer.Elapsed));
                 Timer.Restart();

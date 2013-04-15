@@ -8,13 +8,13 @@ namespace ATN.Analysis
 {
     public class Prediction
     {
-        public bool Prediction;
-        public double Probability;
+        public bool IsContributingPrediction;
+        public double PredictionProbability;
 
         public Prediction(bool pred, double prob)
         {
-            Prediction = pred;
-            Probability = prob;
+            IsContributingPrediction = pred;
+            PredictionProbability = prob;
         }
     }
 }

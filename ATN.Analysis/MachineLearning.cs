@@ -140,7 +140,7 @@ namespace ATN.Analysis
 
                         double probability = Convert.ToDouble(data[2].Split(new string [] { " " }, StringSplitOptions.None)[0]);
 
-                        Console.WriteLine("Probability: {0}, Prediciton: {1}", probability.ToString(), prediction.ToString());
+                        //Console.WriteLine("Probability: {0}, Prediciton: {1}", probability.ToString(), prediction.ToString());
 
                         Prediction p = new Prediction(prediction, probability);
                         Classifications[ClassifySources[instance_id].SourceId] = p;
