@@ -88,7 +88,18 @@ namespace ATN.Analysis
                 }
             }
 
-            //Run ML
+            if (TheoryToAnalyze.DataMining)
+            {
+                Trace.WriteLine("Running ML", "Informational");
+                Dictionary<long, Prediction> Classifications = MachineLearning.RunML(TheoryId);
+                foreach (KeyValuePair<long, Prediction> Classification in Classifications)
+                {
+                    SourceTree[Classification.Key].IsContributingPrediction = Classification.Value.Prediction;
+                    SourceTree[Classification.Key].PredictionProbability = Classification.Value.Probability;
+                }
+                Trace.WriteLine(string.Format("ML completed in {0}", Timer.Elapsed));
+                Timer.Restart();
+            }
 
             //Analysis complete
 

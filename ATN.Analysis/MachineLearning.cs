@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
+using ATN.Export;
 using ATN.Data;
+using System.Text.RegularExpressions;
 
 namespace ATN.Analysis
 {
@@ -28,7 +30,7 @@ namespace ATN.Analysis
             StreamWriter BatDestination = new System.IO.StreamWriter(BatStream, Encoding.ASCII);
 
             string weka_command = "java -cp weka.jar weka.classifiers.trees.J48 -l \"" +
-                decision_tree_path + "\" -T \"" + test_data_path + "\" -p 1-4 > " +
+                decision_tree_path + "\" -T \"" + test_data_path + "\" -p 1-5 > " +
                 "\"" + classification_output_path + "\"\n";
 
             BatDestination.WriteLine(weka_command);
@@ -54,7 +56,7 @@ namespace ATN.Analysis
             using (Process batProcess = Process.Start(StartInfo))
             {
                 //System.Threading.Thread.Sleep(5000);
-                //batProcess.WaitForExit(5000);
+                batProcess.WaitForExit(5000);
                 //string stdout = batProcess.StandardOutput.ReadToEnd();
                 //string stderr = batProcess.StandardError.ReadToEnd();
                 batProcess.Close();
@@ -91,13 +93,13 @@ namespace ATN.Analysis
             //{
                 using (Process batProcess = Process.Start(StartInfo))
                 {
-                    //batProcess.WaitForExit(5000);
+                    batProcess.WaitForExit(5000);
                     string stdout = batProcess.StandardOutput.ReadToEnd();
                     string stderr = batProcess.StandardError.ReadToEnd();
                     batProcess.Close();
                     //Console.Write(stdout);
                     //Console.Write(stderr);
-                    Stream s = File.Open(classification_output_path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                    Stream s = File.OpenWrite(classification_output_path);
                     StreamWriter sw = new StreamWriter(s);
                     sw.Write(stdout);
                     sw.Close();
@@ -109,59 +111,40 @@ namespace ATN.Analysis
             //}
         }
 
-        public static void ParseClassificationOutput(string classification_output_path)
+        public static Dictionary<long, Prediction> ParseClassificationOutput(string classification_output_path, int TheoryId, ExtendedSource[] ClassifySources)
         {
-            AnalysisInterface AnalysisInterface = new AnalysisInterface();
+            Dictionary<long, Prediction> Classifications = new Dictionary<long, Prediction>(ClassifySources.Length);
+
             try
             {
                 using (StreamReader sr = new StreamReader(classification_output_path))
                 {
                     String co = sr.ReadToEnd();
-                    string[] lines = co.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Skip(3).ToArray();
+                    string[] lines = co.Split(new string[] { "\n" }, StringSplitOptions.None).Skip(5).ToArray();
 
                     foreach (string l in lines)
                     {
-                        string[] data = l.Split(new string[] { "        ", "     ", " ", "\n" }, StringSplitOptions.None);
+                        string[] data = l.Split(new string[] { "        ", "       " }, StringSplitOptions.None);
+                        
+                        long instance_id = Convert.ToInt64(data[0]);
 
-                        for (int i = 0; i < data.Length; i += 4)
+                        bool prediction;
+                        if (data[1].Equals("1:? 1:contribu", StringComparison.Ordinal))
                         {
-                            //long source_id = Convert.ToInt64(data[i]);
-
-                            bool prediction;
-                            if (data[i + 1].Equals("1:contribu", StringComparison.Ordinal))
-                            {
-                                prediction = true;
-                            }
-                            else
-                            {
-                                prediction = false;
-                            }
-
-                            double probability = Convert.ToDouble(data[i + 2]);
-
-                            string class_values = data[i + 3];
-
-                            class_values.Trim('(', ')');
-                            string[] values = class_values.Split(new string[] { "," }, StringSplitOptions.None);
-
-                            int TheoryId = Convert.ToInt32(values[0]);
-                            long SourceId = Convert.ToInt64(values[1]);
-
-                            //AnalysisInterface.UpdateIsContributingPrediction(
+                            prediction = true;
                         }
-                        /*
-                        foreach (string d in data)
+                        else
                         {
-                            if (d != "")
-                            {
-                                Console.WriteLine(d);
-                            }
+                            prediction = false;
                         }
-                        */
-                        Console.ReadLine();
-                        //Console.WriteLine(l);
+
+                        double probability = Convert.ToDouble(data[2].Split(new string [] { " " }, StringSplitOptions.None)[0]);
+
+                        Console.WriteLine("Probability: {0}, Prediciton: {1}", probability.ToString(), prediction.ToString());
+
+                        Prediction p = new Prediction(prediction, probability);
+                        Classifications[ClassifySources[instance_id].SourceId] = p;
                     }
-                    //Console.WriteLine(line);
                 }
             }
             catch (Exception e)
@@ -169,6 +152,30 @@ namespace ATN.Analysis
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
             }
+            return Classifications;
+        }
+
+        public static Dictionary<long, Prediction> RunML(int TheoryId)
+        {
+            string DecisionTree = Environment.CurrentDirectory + "\\" + TheoryId + "-model.dat";
+            string TrainArff = Environment.CurrentDirectory + "\\" + TheoryId + "-train.arff";
+            string ClassifyArff = Environment.CurrentDirectory + "\\" + TheoryId + "-classify.arff";
+            string ClassifyOutput = Environment.CurrentDirectory + "\\" + TheoryId + "-classified.txt";
+
+            Theories t = new Theories();
+            FileStream TrainStream = File.Open(TrainArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            var TrainSources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+            ARFFExporter.Export(TrainSources, TheoryId, TrainStream);
+
+            FileStream ClassifyStream = File.Open(ClassifyArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            var ClassifySources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => !s.Contributing.HasValue).ToArray();
+            ARFFExporter.Export(ClassifySources, TheoryId, ClassifyStream);
+
+            MachineLearning.GenerateDecisionTree(TrainArff, DecisionTree);
+            MachineLearning.ClassifyData(DecisionTree, ClassifyArff, ClassifyOutput);
+            Dictionary<long, Prediction> Classifications = MachineLearning.ParseClassificationOutput(ClassifyOutput, TheoryId, ClassifySources);
+
+            return Classifications;
         }
     }
 }
