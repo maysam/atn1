@@ -126,7 +126,7 @@ namespace ATN.Analysis
                     {
                         string[] data = l.Split(new string[] { "        ", "       " }, StringSplitOptions.None);
                         
-                        long instance_id = Convert.ToInt64(data[0]);
+                        long instance_id = Convert.ToInt64(data[0]) - 1;
 
                         bool prediction;
                         if (data[1].Equals("1:? 1:contribu", StringComparison.Ordinal))

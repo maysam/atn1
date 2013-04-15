@@ -20,8 +20,6 @@ namespace MLSandbox
             CrawlerProgress cp = new CrawlerProgress();
             Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
             ar.AnalyzeTheory(c, TheoryId);
-
-            Dictionary<long, Prediction> Classifications = MachineLearning.RunML(TheoryId);
         }
     }
 }
