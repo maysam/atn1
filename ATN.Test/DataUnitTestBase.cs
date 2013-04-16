@@ -228,7 +228,7 @@ namespace ATN.Test
             Context.SaveChanges();
 
             Theories t = new Theories(Context);
-            Theory = t.AddTheory(TheoryName, "Test Theory Comment", new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
+            Theory = t.AddTheory(TheoryName, "Test Theory Comment", true, true, true, true, true, new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, CanonicalSource.DataSourceSpecificId));
         }
 
         protected string GetConcatAuthorString(Source Source)

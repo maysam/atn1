@@ -79,10 +79,6 @@ namespace ATN.Analysis
                 }
             }
 
-            //Run ML
-
-            //Analysis complete
-
             //Remove ImpactFactor data if it's not an analysis option
             if (!TheoryToAnalyze.ImpactFactor)
             {
@@ -91,6 +87,21 @@ namespace ATN.Analysis
                     SourceTree[Source.Key].ImpactFactor = null;
                 }
             }
+
+            if (TheoryToAnalyze.DataMining)
+            {
+                Trace.WriteLine("Running ML", "Informational");
+                Dictionary<long, Prediction> Classifications = MachineLearning.RunML(TheoryId);
+                foreach (KeyValuePair<long, Prediction> Classification in Classifications)
+                {
+                    SourceTree[Classification.Key].IsContributingPrediction = Classification.Value.IsContributingPrediction;
+                    SourceTree[Classification.Key].PredictionProbability = Classification.Value.PredictionProbability;
+                }
+                Trace.WriteLine(string.Format("ML completed in {0}", Timer.Elapsed));
+                Timer.Restart();
+            }
+
+            //Analysis complete
 
             //Store analysis data
             Trace.WriteLine("Storing analysis results");

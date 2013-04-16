@@ -140,7 +140,7 @@ namespace ATN.Web
                 //cell 3 - meta analysis checkbox
                 //if metaAnalysis then checked
                 CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
-                chkMetaAnalysis.Checked = source.isMetaAnalysis;
+                chkMetaAnalysis.Checked = source.IsMetaAnalysis;
 
                 //put sourceId in hidden field for postBack 
                 HiddenField hdnSourceId = e.Row.Cells[3].Controls[3] as HiddenField;
@@ -149,8 +149,8 @@ namespace ATN.Web
                 //cell 4 - number of contributing papers in meta analysis
                 //show number of papers contributing to this papers meta analysis
                 Label lblContributing = e.Row.Cells[4].Controls[1] as Label;
-                if(source.numContributing != null)
-                    lblContributing.Text = source.numContributing.ToString();
+                if(source.NumContributing != null)
+                    lblContributing.Text = source.NumContributing.ToString();
                 else
                     lblContributing.Text = Common.Symbols.Zero;
 
@@ -160,11 +160,11 @@ namespace ATN.Web
 
                 //cell 6 - AEF
                 Label lblEigenfactor = e.Row.Cells[6].Controls[1] as Label;
-                lblEigenfactor.Text = source.aef.ToString();
+                lblEigenfactor.Text = source.AEF.ToString();
 
                 //cell 7 - depth
                 Label lblDepth = e.Row.Cells[7].Controls[1] as Label;
-                lblDepth.Text = source.depth.ToString();
+                lblDepth.Text = source.Depth.ToString();
 
                 //cell 8 - Journal
                 Label lblJournal = e.Row.Cells[8].Controls[1] as Label;

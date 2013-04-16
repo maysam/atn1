@@ -7,55 +7,43 @@ using ATN.Data;
 
 namespace ATN.Export
 {
-    class ARFFExporter
+    public class ARFFExporter
     {
         /// <summary>
         /// Export nodes into an ARFF training data file for analysis in WEKA.
         /// </summary>
         /// <param name="Nodes">Nodes marked by RAs to train decision tree with</param>
         /// <param name="DestinationStream">Output ARFF training data file</param>
-        public static void ExportTrain(SourceNode[] Nodes, int TheoryId, Stream DestinationStream)
+        public static void Export(ExtendedSource[] Sources, int TheoryId, Stream DestinationStream)
         {
-            UnicodeEncoding UniEncoding = new UnicodeEncoding();
-            AnalysisInterface AnalysisInterface = new AnalysisInterface();
             StreamWriter ExportDestination = new System.IO.StreamWriter(DestinationStream, Encoding.ASCII);
 
             // Write header to file
             // Depth, IF, AEF computed for Theory 2 as of 04-02-13
             ExportDestination.WriteLine("@RELATION atn");
-            ExportDestination.WriteLine("@ATTRIBUTE TheoryId Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE SourceId Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE ArticleLevelEigenFactor Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
+            //ExportDestination.WriteLine("@ATTRIBUTE SourceID Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE Year Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
-            //ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE ArticleLevelEigenFactor Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE class {contributing, not-contributing}");
             ExportDestination.WriteLine();
             ExportDestination.WriteLine("@DATA");
             ExportDestination.WriteLine();
 
             //Write training data to file
-            foreach (var Node in Nodes)
+            foreach (var Source in Sources)
             {
-                TheoryMembership TM = AnalysisInterface.GetTheoryMembershipForSource(Node.SourceId, TheoryId);
-                TheoryMembershipSignificance TMS = AnalysisInterface.GetTheoryMembershipSignificanceForSource(Node.SourceId, TheoryId);
-
-                if ((bool)TMS.RAMarkedContributing)
-                {
-                    ExportDestination.WriteLine("{0}, {1}, {2}, {3}, {4}, contributing",
-                            TheoryId.ToString(), TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(),
-                        //TM.TheoryAttributionRatio.ToString());
-                            TM.ImpactFactor.ToString(), TM.Depth.ToString()
-                        );
-                }
-                else
-                {
-                    ExportDestination.WriteLine("{0}, {1}, {2}, {3}, {4}, not-contributing",
-                            TheoryId.ToString(), TM.SourceId.ToString(), TM.ArticleLevelEigenFactor.ToString(),
-                        //TM.TheoryAttributionRatio.ToString());
-                            TM.ImpactFactor.ToString(), TM.Depth.ToString()
-                        );
-                }
+                //ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                //    Source.SourceId,
+                //    Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
+                //    Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?", Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
+                //    Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
+                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5}",
+                    Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
+                    Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?", Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
+                    Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
             }
             ExportDestination.Close();
         }
