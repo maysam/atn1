@@ -72,6 +72,15 @@ namespace ATN.Data
         }
 
         /// <summary>
+        /// Retrieves all existing theories in a list
+        /// </summary>
+        /// <returns>All existing theories in a list</returns>
+        public List<Theory> GetTheoriesAsList()
+        {
+            return Context.Theories.ToList<Theory>();
+        }
+
+        /// <summary>
         /// Retrieves a specific theory
         /// </summary>
         /// <param name="TheoryId">ID of theory to retrieve</param>

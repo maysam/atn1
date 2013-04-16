@@ -26,9 +26,9 @@ namespace ATN.Web
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
-                Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 6;
+                Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 2;
             metaAnalysisId = (Request.QueryString[Common.QueryStrings.MetaAnalysis] != null) ?
-                long.Parse(Request.QueryString[Common.QueryStrings.MetaAnalysis]) : 307;
+                long.Parse(Request.QueryString[Common.QueryStrings.MetaAnalysis]) : 645;
             lastPageIndex = (Request.QueryString[Common.QueryStrings.PageNumber] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.PageNumber]) : 0;
             
@@ -39,6 +39,7 @@ namespace ATN.Web
 
             //retrieve information from database
             sources = sourceRetriever.GetExtendedSourceReferencesForSource(theoryId, metaAnalysisId);
+            
             theoryRetriever = sourceRetriever.GetTheory(theoryId);
             //set the network label
             lnkNetworkName.Text = theoryRetriever.TheoryName;
@@ -48,7 +49,15 @@ namespace ATN.Web
                 Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
 
             //display the meta analysis label
-            lblMetaAnalysisName.Text = "Meta-Analysis ID: " + metaAnalysisId.ToString();
+            if (sources.Count != 0)
+            {
+                lblMetaAnalysisName.Text = "Meta-Analysis ID: " + metaAnalysisId.ToString();
+            }
+            else
+            {
+                lblMetaAnalysisName.Text = "There are no citations available for source ID " + metaAnalysisId.ToString();
+            }
+            
 
             //if first page
             if (lastPageIndex == 0)
@@ -99,7 +108,7 @@ namespace ATN.Web
             {
                 //ExtendedSource source = e.Row.DataItem as ExtendedSource;
                 ExtendedSource source = e.Row.DataItem as ExtendedSource;
-
+                
                 #region populate cells
 
                 //cell 0 - author
@@ -155,6 +164,20 @@ namespace ATN.Web
                 //cell 7 - Journal
                 Label lblJournal = e.Row.Cells[7].Controls[1] as Label;
                 lblJournal.Text = source.Journal;
+
+                //cell 8 - Prediction
+                Label lblPrediction = e.Row.Cells[8].Controls[1] as Label;
+                if (source.isContributingPrediction == true)
+                {
+                    lblPrediction.Text = "Contributing";
+                }
+                else if (source.isContributingPrediction == false)
+                {
+                    lblPrediction.Text = "Not Contributing";
+                }
+
+                Label lblPredictionScore = e.Row.Cells[8].Controls[3] as Label;
+                lblPredictionScore.Text = (source.predictionProbability != null) ? "Probability: " + source.predictionProbability.ToString() : string.Empty;
                 #endregion
 
             }

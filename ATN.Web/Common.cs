@@ -14,6 +14,7 @@ namespace ATN.Web
         public struct QueryStrings
         {
             public const string Date = "Date";
+            public const string DateAdded = "DateAdded";
             public const string FromTheory = "FromTheory";
             public const string LastEigenfactor = "LastEigenfactor";
             public const string LastMachineLearning = "LastMachineLearning";
@@ -27,6 +28,7 @@ namespace ATN.Web
             public const string Status = "Status";
             public const string TheoryContributing = "TheoryContributing";
             public const string TheoryId = "TheoryId";
+            public const string TheoryName = "TheoryName";
             public const string ThirdLevel = "ThirdLevel";
         }
 
