@@ -150,6 +150,9 @@ namespace ATN.Data
         /// Retrieves all extended sources that are members of a particular theory
         /// </summary>
         /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
+        /// <param name="PageIndex">The 0-based page of sources to retrieve</param>
+        /// <param name="PageSize">The size of pages</param>
+        /// <param name="OrderByRandom">Whether to select a random sample of sources; note that when this is true subsequent page indexes may contain sources seen in previous pages</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
         public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex, int PageSize, bool OrderByRandom = false)
         {
