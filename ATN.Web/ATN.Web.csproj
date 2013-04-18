@@ -202,6 +202,7 @@
     <Content Include="metaAnalysis.aspx" />
     <Content Include="networks.aspx" />
     <Content Include="packages.config" />
+    <Content Include="ExportVisualization.ashx" />
     <None Include="Properties\PublishProfiles\ATN Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -248,6 +249,9 @@
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Common.cs" />
+    <Compile Include="ExportVisualization.ashx.cs">
+      <DependentUpon>ExportVisualization.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -318,6 +322,10 @@
     <ProjectReference Include="..\ATN.Data\ATN.Data.csproj">
       <Project>{d656a9ed-9157-42b1-a870-ab260ecbeed2}</Project>
       <Name>ATN.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATN.Export\ATN.Export.csproj">
+      <Project>{7c83a4df-3cc8-4934-8034-c032bdf03136}</Project>
+      <Name>ATN.Export</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

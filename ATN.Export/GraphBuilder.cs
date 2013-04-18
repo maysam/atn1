@@ -149,6 +149,17 @@ namespace ATN.Export
             //    }
             //}
 
+            if (MachineLearningCutoff)
+            {
+                foreach (SourceWithReferences Source in SourceTree.Values.ToArray())
+                {
+                    if (Source.IsContributingPrediction.HasValue && !Source.IsContributingPrediction.Value)
+                    {
+                        SourceTree.Remove(Source.SourceId);
+                    }
+                }
+            }
+
             int MinYear = AllSources.Where(s => s.Depth == 0 && s.Year != 0).Min(s => s.Year);
             if(MinYear == 0)
             {
@@ -157,7 +168,7 @@ namespace ATN.Export
 
             foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { Year = src.Year, Title = src.Title, Source = st}))
             {
-                if (YearCutoff && Source.Year >= MinYear)
+                if (!YearCutoff || (YearCutoff && Source.Year >= MinYear))
                 {
                     ExportGraph.Nodes.Add(new SourceNode(Source.Source.SourceId, Source.Title, Source.Source.ImpactFactor,
                         Source.Year, Source.Source.ArticleLevelEigenFactor, Source.Source.TheoryAttributionRatio, Source.Source.PredictionProbability,
