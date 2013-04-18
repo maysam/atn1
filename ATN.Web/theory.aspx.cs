@@ -15,11 +15,6 @@ namespace ATN.Web
         //The page number
         int lastPageIndex;
 
-        protected void Page_Init(object sender, EventArgs e)
-        {
-
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
@@ -29,10 +24,18 @@ namespace ATN.Web
             
             Theories sourceRetriever = new Theories();
             Theory theoryRetriever = new Theory();
-            List<ExtendedSource> sources = new List<ExtendedSource>(); 
+            List<ExtendedSource> sources = new List<ExtendedSource>();
+            string postBackControl = Common.GetPostBackControlId(Page);
 
             //show the papers contributing to the theory                
-            sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
+            if (postBackControl != "btnRandomize")
+            {
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
+            }
+            else
+            {
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, true);
+            }
                 
             theoryRetriever = sourceRetriever.GetTheory(theoryId);
             
@@ -70,7 +73,7 @@ namespace ATN.Web
                 Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
 
             //save the results if necessary and display the correct information
-            string postBackControl = Common.GetPostBackControlId(Page);
+            
             //not a post back
             if (postBackControl == string.Empty)
             {
@@ -78,7 +81,7 @@ namespace ATN.Web
                 grdFirstLevelSources.DataBind();
             }
             //postback to same page, use viewstate to save results
-            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit")
+            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit" || postBackControl == "btnRandomize")
             {
                 save_results();
                 grdFirstLevelSources.DataSource = sources;
@@ -220,6 +223,21 @@ namespace ATN.Web
 
             }
 
+        }
+
+        protected void btnRandomize_Click(object sender, EventArgs e)
+        {
+            Theories sourceCounter = new Theories();
+            Random rand = new Random();
+            int numSources = sourceCounter.GetAllSourcesForTheory(theoryId).Length;
+            //get the number of pages 
+            numSources = numSources % Common.Data.PageSize;    
+            //choose a random page
+            lastPageIndex = rand.Next(0,numSources);
+            //go to random page
+            Response.Redirect(Common.Pages.Theory + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
         }
        
     }

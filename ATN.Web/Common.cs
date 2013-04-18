@@ -13,9 +13,13 @@ namespace ATN.Web
     {
         public struct QueryStrings
         {
+            public const string AEF = "AEF";
+            public const string Authors = "Authors";
             public const string Date = "Date";
             public const string DateAdded = "DateAdded";
+            public const string Depth = "Depth";
             public const string FromTheory = "FromTheory";
+            public const string Journal = "Journal";
             public const string LastEigenfactor = "LastEigenfactor";
             public const string LastMachineLearning = "LastMachineLearning";
             public const string LastRun = "LastRun";
@@ -25,11 +29,14 @@ namespace ATN.Web
             public const string SecondLevel = "SecondLevel";
             public const string SortCol = "SortCol";
             public const string SortOrder = "SortOrder";
+            public const string SourceId = "SourceId";
             public const string Status = "Status";
             public const string TheoryContributing = "TheoryContributing";
             public const string TheoryId = "TheoryId";
             public const string TheoryName = "TheoryName";
             public const string ThirdLevel = "ThirdLevel";
+            public const string Title = "Title";
+            public const string Year = "Year";
         }
 
         public struct Symbols

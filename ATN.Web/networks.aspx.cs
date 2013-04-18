@@ -86,7 +86,7 @@ namespace ATN.Web
                 lblLastRun.Text = lastCrawl.GetLastCrawlDate(theory.TheoryId).ToString();
 
                 Label lblLastEigenfactor = e.Row.Cells[4].Controls[1] as Label;
-                //lblLastEigenfactor.Text
+                lblLastEigenfactor.Text = theory.LastAnalysisDate.ToString();
 
                 Label lblLastMachineLearning = e.Row.Cells[5].Controls[1] as Label;
 
@@ -94,7 +94,7 @@ namespace ATN.Web
                 
                 Label lblSecondLevel = e.Row.Cells[7].Controls[1] as Label;
                 lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheory(theory.TheoryId).Length.ToString();
-
+                
                 Label lblThirdLevel = e.Row.Cells[8].Controls[1] as Label;
 
                 Label lblTheoryContributing  = e.Row.Cells[9].Controls[1] as Label;
