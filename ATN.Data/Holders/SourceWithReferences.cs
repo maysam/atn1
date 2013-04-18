@@ -28,6 +28,7 @@ namespace ATN.Data
         public double? PredictionProbability { get; set; }
         public bool? IsContributingPrediction { get; set; }
         public List<long> References { get; set; }
+        public int? Year { get; set; }
         public SourceWithReferences(long SourceId, int ImpactFactor, short Depth)
         {
             this.References = new List<long>(50);

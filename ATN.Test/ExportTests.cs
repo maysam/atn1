@@ -43,7 +43,7 @@ namespace ATN.Test
             Runner.AnalyzeTheory(UnusedCrawl, Theory.TheoryId);
 
             GraphBuilder Builder = new GraphBuilder(Context);
-            Graph ExportGraph = Builder.GetGraphForTheory(Theory.TheoryId, false, false, false, false);
+            Graph ExportGraph = Builder.GetGraphForTheory(Theory.TheoryId, false, false, false, false, true);
             bool VerifiedCanonical = false;
             bool VerifiedFirstLevel = false;
             bool VerifiedSecondLevel = false;
