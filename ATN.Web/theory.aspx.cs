@@ -23,7 +23,7 @@ namespace ATN.Web
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
-                Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 6;
+                Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 2;
             lastPageIndex = (Request.QueryString[Common.QueryStrings.PageNumber] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.PageNumber]) : 0;
             
@@ -169,6 +169,20 @@ namespace ATN.Web
                 //cell 8 - Journal
                 Label lblJournal = e.Row.Cells[8].Controls[1] as Label;
                 lblJournal.Text = source.Journal;
+
+                //cell 9 - Prediction
+                Label lblPrediction = e.Row.Cells[9].Controls[1] as Label;
+                if(source.isContributingPrediction == true)
+                {
+                    lblPrediction.Text = "Contributing";
+                }
+                else if (source.isContributingPrediction == false)
+                {
+                    lblPrediction.Text = "Not Contributing";
+                }
+                
+                Label lblPredictionScore = e.Row.Cells[9].Controls[3] as Label;
+                lblPredictionScore.Text = (source.predictionProbability != null) ? "Probability: " + source.predictionProbability.ToString() : string.Empty;
                 #endregion
                 
             }

@@ -79,6 +79,16 @@
                     <asp:Label ID="lblJournal" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
+            <asp:TemplateField>
+                <HeaderTemplate>
+                    <asp:Label ID="lblPredictionHeader" runat="server" Text="Machine Learning Prediction" />
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <asp:Label ID="lblPrediction" runat="server" />
+                    <br />
+                    <asp:Label ID="lblPredictionScore" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
         </Columns>
     </asp:GridView>
 

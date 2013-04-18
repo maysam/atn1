@@ -14,8 +14,8 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkNetworkHeader" runat="server" Text="Network Name" />
-                        <asp:Image ID="imgNetworkHeader" runat="server" Visible="false" ImageAlign="Left" />
+                        <asp:LinkButton ID="lnkTheoryNameHeader" runat="server" Text="Network Name" />
+                        <asp:Image ID="imgTheoryNameHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate> 
                     <ItemTemplate>
                         <asp:LinkButton ID="lnkNetwork" runat="server" Text='<% #Bind("TheoryName") %>' />
@@ -25,8 +25,8 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkDateHeader" runat="server" Text="Date Added" />
-                        <asp:Image ID="imgDateHeader" runat="server" Visible="false" ImageAlign="Left" />
+                        <asp:LinkButton ID="lnkDateAddedHeader" runat="server" Text="Date Added" />
+                        <asp:Image ID="imgDateDateAddedHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
                         <asp:Label ID="lblDate" runat="server" Text='<% #Bind("DateAdded") %>' />
@@ -34,7 +34,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkLastRun" runat="server" Text="Last Run" />
+                        <asp:LinkButton ID="lnkLastRunHeader" runat="server" Text="Last Run" />
                         <asp:Image ID="imgLastRunHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
@@ -43,7 +43,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkLastEigenfactor" runat="server" Text="Eigenfactor Score" />
+                        <asp:LinkButton ID="lnkLastEigenfactorHeader" runat="server" Text="Eigenfactor Score" />
                         <asp:Image ID="imgLastEigenfactorHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
@@ -52,7 +52,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkLastMachineLearning" runat="server" Text="Last Machine Learning" />
+                        <asp:LinkButton ID="lnkLastMachineLearningHeader" runat="server" Text="Last Machine Learning" />
                         <asp:Image ID="imgLastMachineLearningHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
@@ -61,7 +61,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkStatus" runat="server" Text="Status" />
+                        <asp:LinkButton ID="lnkStatusHeader" runat="server" Text="Status" />
                         <asp:Image ID="imgStatusHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
@@ -70,7 +70,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkSecondLevel" runat="server" Text="Size of 2nd Level Network" />
+                        <asp:LinkButton ID="lnkSecondLevelHeader" runat="server" Text="Size of 2nd Level Network" />
                         <asp:Image ID="imgSecondLevelHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
@@ -79,7 +79,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkThirdLevel" runat="server" Text="Size of 3rd Level Network" />
+                        <asp:LinkButton ID="lnkThirdLevelHeader" runat="server" Text="Size of 3rd Level Network" />
                         <asp:Image ID="imgThirdLevelHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
@@ -88,7 +88,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkTheoryContributing" runat="server" Text="Size of Theory Contributing Network" />
+                        <asp:LinkButton ID="lnkTheoryContributingHeader" runat="server" Text="Size of Theory Contributing Network" />
                         <asp:Image ID="imgTheoryContributingHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
                     <ItemTemplate>
