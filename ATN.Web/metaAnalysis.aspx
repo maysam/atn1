@@ -8,7 +8,8 @@
         <Columns>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblAuthorsHeader" runat="server" Text="Authors"/>
+                    <asp:Linkbutton ID="lnkAuthorsHeader" runat="server" Text="Authors"/>
+                    <asp:Image ID="imgAuthorsHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblAuthors" runat="server" />
@@ -25,7 +26,8 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblSourceIdHeader" runat="server" Text="Source ID" />
+                    <asp:LinkButton ID="lnkSourceIdHeader" runat="server" Text="Source ID" />
+                    <asp:Image ID="imgSourceIdHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblSourceId" runat="server" />
@@ -41,12 +43,13 @@
                         <asp:ListItem Text="No" Value="No" />
                         <asp:ListItem Text="Unknown" Value="Unknown" />
                     </asp:RadioButtonList>
-                    <asp:HiddenField ID="hdnRadioValue" runat="server" />
+                    <asp:HiddenField ID="hdnSourceId" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblYearHeader" runat="server" Text="Year"/>
+                    <asp:LinkButton ID="lnkYearHeader" runat="server" Text="Year"/>
+                    <asp:Image ID="imgYearHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblYear" runat="server" />
@@ -54,7 +57,8 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblEigenfactorHeader" runat="server" Text="Eigenfactor Score"/>
+                    <asp:LinkButton ID="lnkAEFHeader" runat="server" Text="Eigenfactor Score"/>
+                    <asp:Image ID="imgAEFHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblEigenfactor" runat="server" />
@@ -62,7 +66,8 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblDepthHeader" runat="server" Text="Citation Level"/>
+                    <asp:LinkButton ID="lnkDepthHeader" runat="server" Text="Citation Level"/>
+                    <asp:Image ID="imgDepthHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblDepth" runat="server" />
@@ -70,7 +75,8 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblJournalHeader" runat="server" Text="Journal"/>
+                    <asp:LinkButton ID="lnkJournalHeader" runat="server" Text="Journal"/>
+                    <asp:Image ID="imgJournalHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblJournal" runat="server" />
@@ -78,7 +84,8 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblPredictionHeader" runat="server" Text="Machine Learning Prediction" />
+                    <asp:LinkButton ID="lnkPredictionHeader" runat="server" Text="Machine Learning Prediction" />
+                    <asp:Image ID="imgPredictionHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblPrediction" runat="server" />

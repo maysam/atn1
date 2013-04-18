@@ -94,7 +94,7 @@ namespace ATN.Web
                 
                 Label lblSecondLevel = e.Row.Cells[7].Controls[1] as Label;
                 lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheory(theory.TheoryId).Length.ToString();
-
+                
                 Label lblThirdLevel = e.Row.Cells[8].Controls[1] as Label;
 
                 Label lblTheoryContributing  = e.Row.Cells[9].Controls[1] as Label;

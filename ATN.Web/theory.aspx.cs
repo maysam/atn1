@@ -15,11 +15,6 @@ namespace ATN.Web
         //The page number
         int lastPageIndex;
 
-        protected void Page_Init(object sender, EventArgs e)
-        {
-
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
@@ -78,7 +73,7 @@ namespace ATN.Web
                 grdFirstLevelSources.DataBind();
             }
             //postback to same page, use viewstate to save results
-            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit")
+            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit" || postBackControl == "btnRandomize")
             {
                 save_results();
                 grdFirstLevelSources.DataSource = sources;
@@ -172,11 +167,11 @@ namespace ATN.Web
 
                 //cell 9 - Prediction
                 Label lblPrediction = e.Row.Cells[9].Controls[1] as Label;
-                if(source.isContributingPrediction == true)
+                if(source.IsContributingPrediction == true)
                 {
                     lblPrediction.Text = "Contributing";
                 }
-                else if (source.isContributingPrediction == false)
+                else if (source.IsContributingPrediction == false)
                 {
                     lblPrediction.Text = "Not Contributing";
                 }
@@ -220,6 +215,21 @@ namespace ATN.Web
 
             }
 
+        }
+
+        protected void btnRandomize_Click(object sender, EventArgs e)
+        {
+            Theories sourceCounter = new Theories();
+            Random rand = new Random();
+            int numSources = sourceCounter.GetAllSourcesForTheory(theoryId).Length;
+            //get the number of pages 
+            numSources = numSources % Common.Data.PageSize;    
+            //choose a random page
+            lastPageIndex = rand.Next(0,numSources);
+            //go to random page
+            Response.Redirect(Common.Pages.Theory + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
         }
        
     }

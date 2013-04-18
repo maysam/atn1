@@ -17,6 +17,8 @@ namespace ATN.Web
         //The page number
         int pageNumber;
         int lastPageIndex;
+        string sortCol = string.Empty;
+        string sortOrder = string.Empty;
 
         protected void Page_Init(object sender, EventArgs e)
         {
@@ -28,9 +30,13 @@ namespace ATN.Web
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 2;
             metaAnalysisId = (Request.QueryString[Common.QueryStrings.MetaAnalysis] != null) ?
-                long.Parse(Request.QueryString[Common.QueryStrings.MetaAnalysis]) : 645;
+                long.Parse(Request.QueryString[Common.QueryStrings.MetaAnalysis]) : 654;
             lastPageIndex = (Request.QueryString[Common.QueryStrings.PageNumber] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.PageNumber]) : 0;
+            sortCol = (Request.QueryString[Common.QueryStrings.SortCol] != null) ?
+                Request.QueryString[Common.QueryStrings.SortCol] : null;
+            sortOrder = (Request.QueryString[Common.QueryStrings.SortOrder] != null) ?
+                 Request.QueryString[Common.QueryStrings.SortOrder] : null;
             
             //Declare variables
             Theories sourceRetriever = new Theories();
@@ -44,8 +50,9 @@ namespace ATN.Web
             //set the network label
             lnkNetworkName.Text = theoryRetriever.TheoryName;
             //link back to theory page
-            lnkNetworkName.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
+            lnkNetworkName.PostBackUrl = Common.Pages.MetaAnalysis + Common.Symbols.Question +
                 Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp +
                 Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
 
             //display the meta analysis label
@@ -57,8 +64,8 @@ namespace ATN.Web
             {
                 lblMetaAnalysisName.Text = "There are no citations available for source ID " + metaAnalysisId.ToString();
             }
-            
 
+            #region end of page navigation and save buttons
             //if first page
             if (lastPageIndex == 0)
             {
@@ -87,14 +94,52 @@ namespace ATN.Web
                     Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + pageNumber.ToString();
             }
+            #endregion
 
-            if (!IsPostBack)
+            #region sort the data
+            if (sortCol != null)
             {
-                //Bind data to grid
+                Common.Sort<ExtendedSource>(sources, Request.QueryString[Common.QueryStrings.SortCol] + " " +
+                                                    Request.QueryString[Common.QueryStrings.SortOrder]);
+            }
+            //default sort by Theory Name
+            else
+            {
+                Common.Sort<ExtendedSource>(sources, Common.QueryStrings.SourceId + " " + Common.Symbols.Asc);
+            }
+            #endregion
+
+            #region post back controls
+            string postBackControl = Common.GetPostBackControlId(Page);
+            //not a post back
+            if (postBackControl == string.Empty)
+            {
                 grdFirstLevelSources.DataSource = sources;
                 grdFirstLevelSources.DataBind();
             }
-
+            //postback to same page, use viewstate to save results
+            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit")
+            {
+                save_results();
+                //grdFirstLevelSources.DataSource = sources;
+                //grdFirstLevelSources.DataBind();
+            }
+            else if (postBackControl == "lnkAuthorsHeader" || postBackControl == "lnkTitleHeader" || postBackControl == "lnkSourceIdHeader" || postBackControl == "lnkYearHeader" || 
+                     postBackControl == "lnkAEFHeader" || postBackControl == "lnkDepthHeader" || postBackControl == "lnkJournalHeader")
+            {
+                save_results();
+                grdFirstLevelSources.DataSource = sources;
+                grdFirstLevelSources.DataBind();
+            }
+            //redirect to theory
+            else
+            {
+                save_results();
+                Response.Redirect(Common.Pages.Theory + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
+            }
+            #endregion
         }
 
         protected void grdFirstLevelSources_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -103,6 +148,59 @@ namespace ATN.Web
             if (e.Row.RowType == DataControlRowType.Header)
             {
                 //header
+                Image imgSort = new Image();
+                if (sortCol != null)
+                {
+                    foreach (TableCell cell in e.Row.Cells)
+                    {
+                        if (cell.FindControl("img" + sortCol + "Header") != null)
+                        {
+                            imgSort = cell.FindControl("img" + sortCol + "Header") as Image;
+                            imgSort.Visible = true;
+                            imgSort.ImageUrl = (sortOrder == Common.Symbols.Asc) ? "Images/AtoZ.gif" : "Images/ZtoA.gif";
+                        }
+                    }
+                }
+
+                string URL = Common.Pages.MetaAnalysis + Common.Symbols.Question +
+                    Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp +
+                    Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString() + Common.Symbols.Amp;
+
+                switch (sortOrder)
+                {
+                    case null:
+                        URL += Common.QueryStrings.SortOrder + Common.Symbols.Eq + Common.Symbols.Des + Common.Symbols.Amp;
+                        break;
+                    case Common.Symbols.Asc:
+                        URL += Common.QueryStrings.SortOrder + Common.Symbols.Eq + Common.Symbols.Des + Common.Symbols.Amp;
+                        break;
+                    case Common.Symbols.Des:
+                        URL += Common.QueryStrings.SortOrder + Common.Symbols.Eq + Common.Symbols.Asc + Common.Symbols.Amp;
+                        break;
+                }
+
+                //make headers sortable
+                LinkButton lnkAuthorsHeader = e.Row.Cells[0].Controls[1] as LinkButton;
+                lnkAuthorsHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Authors;
+
+                LinkButton lnkTitleHeader = e.Row.Cells[1].Controls[1] as LinkButton;
+                lnkTitleHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Title;
+
+                LinkButton lnkSourceIdHeader = e.Row.Cells[2].Controls[1] as LinkButton;
+                lnkSourceIdHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.SourceId;
+
+                LinkButton lnkYearHeader = e.Row.Cells[4].Controls[1] as LinkButton;
+                lnkYearHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Year;
+
+                LinkButton lnkAEFHeader = e.Row.Cells[5].Controls[1] as LinkButton;
+                lnkAEFHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.AEF;
+
+                LinkButton lnkDepthHeader = e.Row.Cells[6].Controls[1] as LinkButton;
+                lnkDepthHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Depth;
+
+                LinkButton lnkJournalHeader = e.Row.Cells[7].Controls[1] as LinkButton;
+                lnkJournalHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Journal;
             }
             else if (e.Row.RowType == DataControlRowType.DataRow)
             {
@@ -148,6 +246,8 @@ namespace ATN.Web
                 {
                     rblContributing.SelectedValue = Common.Symbols.No;
                 }
+                HiddenField hdnSourceId = e.Row.Cells[3].Controls[3] as HiddenField;
+                hdnSourceId.Value = source.SourceId.ToString();
 
                 //cell 4 - year
                 Label lblYear = e.Row.Cells[4].Controls[1] as Label;
@@ -167,11 +267,11 @@ namespace ATN.Web
 
                 //cell 8 - Prediction
                 Label lblPrediction = e.Row.Cells[8].Controls[1] as Label;
-                if (source.isContributingPrediction == true)
+                if (source.IsContributingPrediction == true)
                 {
                     lblPrediction.Text = "Contributing";
                 }
-                else if (source.isContributingPrediction == false)
+                else if (source.IsContributingPrediction == false)
                 {
                     lblPrediction.Text = "Not Contributing";
                 }
@@ -189,67 +289,61 @@ namespace ATN.Web
 
         protected void btnPrevious_OnClick(object sender, EventArgs e)
         {
-            save_results();
+            //save_results();
         }
 
         protected void btnNext_OnClick(object sender, EventArgs e)
         {
-            save_results();
+            //save_results();
         }
 
         protected void btnSubmit_OnClick(object sender, EventArgs e)
         {
             //save changes            
-            save_results();
+            //save_results();
         }
 
         protected void lnkTitle_OnClick(object sender, EventArgs e)
         {
             //save changes
-            save_results();
+            //save_results();
         }
 
         protected void lnkNetworkName_OnClick(object sender, EventArgs e)
         {
-            save_results();
+            Response.Redirect(Common.Pages.MetaAnalysis + Common.Symbols.Question + 
+                Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp + 
+                Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
         }
 
         protected void save_results()
         {
             Theories dataSaver = new Theories();
-
-            foreach (GridViewRow row in grdFirstLevelSources.Rows)
+            int itr;
+            bool? contributing;
+            for (itr = 0; itr < Page.Request.Form.Keys.Count; itr++)
             {
-                ExtendedSource rowSource = row.DataItem as ExtendedSource;
-                RadioButtonList rblContributing = row.Cells[3].Controls[1] as RadioButtonList;
-                bool? contributing = null;
-                //mark the paper as contributing
-                if (rblContributing.SelectedValue == Common.Symbols.Unknown)
+                contributing = null;
+                if (Page.Request.Form[itr] == Common.Symbols.Unknown)
                 {
-                    //unmarked by RA
+                    //unmarked by RA or reset to null
+                    dataSaver.MarkSourceTheoryContribution(theoryId, long.Parse(Page.Request.Form[itr + 1]), contributing);
                 }
-                else if (rblContributing.SelectedValue == Common.Symbols.Yes)
+                else if (Page.Request.Form[itr] == Common.Symbols.Yes)
                 {
-                    //paper is contributing
                     contributing = true;
+                    dataSaver.MarkSourceTheoryContribution(theoryId, long.Parse(Page.Request.Form[itr + 1]), contributing);
                 }
-                else if (rblContributing.SelectedValue == Common.Symbols.No)
+                else if(Page.Request.Form[itr] == Common.Symbols.No)
                 {
-                    //paper is not contributing
                     contributing = false;
+                    dataSaver.MarkSourceTheoryContribution(theoryId, long.Parse(Page.Request.Form[itr + 1]), contributing);
                 }
-                if (contributing != null)
-                {
-                    dataSaver.MarkSourceTheoryContribution(theoryId, rowSource.SourceId, contributing);
-                }
+                
             }
+
         }
-
-        //protected void rblContributing_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    HiddenField hdnRadioValue = 
-        //}
-
 
     }
 }
