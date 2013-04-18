@@ -45,7 +45,7 @@ namespace ATN.Export
             return ret;
         }
 
-        public Graph GetGraphForTheory(int TheoryId, bool ImpactFactorCutoff, bool AEFCutoff, bool TARCutoff, bool MachineLearningCutoff)
+        public Graph GetGraphForTheory(int TheoryId, bool ImpactFactorCutoff, bool AEFCutoff, bool TARCutoff, bool MachineLearningCutoff, bool YearCutoff)
         {
             const int nSigma = 6;
             Graph ExportGraph = new Graph();
@@ -149,16 +149,25 @@ namespace ATN.Export
             //    }
             //}
 
+            int MinYear = AllSources.Where(s => s.Depth == 0 && s.Year != 0).Min(s => s.Year);
+            if(MinYear == 0)
+            {
+                MinYear = Int32.MaxValue;
+            }
+
             foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { Year = src.Year, Title = src.Title, Source = st}))
             {
-                ExportGraph.Nodes.Add(new SourceNode(Source.Source.SourceId, Source.Title, Source.Source.ImpactFactor,
-                    Source.Year, Source.Source.ArticleLevelEigenFactor, Source.Source.TheoryAttributionRatio, Source.Source.PredictionProbability,
-                    Source.Source.IsContributingPrediction, Source.Source.Depth));
-                foreach (long Reference in Source.Source.References)
+                if (YearCutoff && Source.Year >= MinYear)
                 {
-                    if (SourceTree.ContainsKey(Reference))
+                    ExportGraph.Nodes.Add(new SourceNode(Source.Source.SourceId, Source.Title, Source.Source.ImpactFactor,
+                        Source.Year, Source.Source.ArticleLevelEigenFactor, Source.Source.TheoryAttributionRatio, Source.Source.PredictionProbability,
+                        Source.Source.IsContributingPrediction, Source.Source.Depth));
+                    foreach (long Reference in Source.Source.References)
                     {
-                        ExportGraph.Edges.Add(new SourceEdge(Source.Source.SourceId, Reference));
+                        if (SourceTree.ContainsKey(Reference))
+                        {
+                            ExportGraph.Edges.Add(new SourceEdge(Source.Source.SourceId, Reference));
+                        }
                     }
                 }
             }
