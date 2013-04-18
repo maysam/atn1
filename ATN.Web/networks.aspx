@@ -1,5 +1,10 @@
 ﻿<%@ Page Title="Theory Networks" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="networks.aspx.cs" Inherits="ATN.Web.networks" %>
 
+<script type="text/javascript" >
+
+
+</script>
+
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <h1>Theory Networks Overview</h1>
         <asp:GridView ID="grdNetworks" runat="server" AutoGenerateColumns="false" OnRowDataBound="grdNetworks_RowDataBound" Visible="true">

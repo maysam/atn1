@@ -69,8 +69,10 @@ namespace ATN.Web
                 CrawlerProgress lastCrawl = new CrawlerProgress();
 
                 ImageButton ImgVisualizationLink = e.Row.Cells[0].Controls[1] as ImageButton;
-                //ImgVisualizationLink.OnClientClick
-                ImgVisualizationLink.ImageUrl = "~/Images/HBPLogo.png";
+
+                string BaseAttributes = "channelmode=no,directories=no,resizable=yes,scrollbars=yes,location=yes,menubar=yes,status=no,toolbar=no";
+                ImgVisualizationLink.Attributes.Add("onclick", "window.open('ExportVisualization.ashx?TheoryId=" + theory.TheoryId.ToString() + "','_blank','" + BaseAttributes + "',false);");
+                ImgVisualizationLink.ImageUrl = "/Images/HBPLogo.png";
 
                 LinkButton lnkTheoryNameHeader = e.Row.Cells[1].Controls[1] as LinkButton;
                 lnkTheoryNameHeader.Text = theory.TheoryName;
