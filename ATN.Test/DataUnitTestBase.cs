@@ -52,14 +52,22 @@ namespace ATN.Test
             Context.SaveChanges();
         }
 
-        protected Crawl CreateCrawl(bool Attach)
+        protected Crawl CreateCrawl(bool Attach, Theory TheoryToUse = null)
         {
             Crawl c = new Crawl();
             c.CrawlIntervalDays = 7;
             c.CrawlState = (int)CrawlerState.CanonicalPaperComplete;
             c.DateCrawled = DateTime.Now;
             c.LastEnumeratedSourceId = 1234;
-            c.TheoryId = 1;
+            if (TheoryToUse == null)
+            {
+                Theory t = CreateTheory(DateTime.Now, true);
+                c.TheoryId = t.TheoryId;
+            }
+            else
+            {
+                c.TheoryId = TheoryToUse.TheoryId;
+            }
 
             if (Attach)
             {
@@ -75,6 +83,7 @@ namespace ATN.Test
             Theory t = new Theory();
             t.DateAdded = DateAdded;
             t.TheoryName = Guid.NewGuid().ToString();
+            t.LastModifiedDate = DateTime.Now;
 
             if (Attach)
             {
@@ -103,14 +112,24 @@ namespace ATN.Test
             return cq;
         }
 
-        protected Crawl CreateCrawl(DateTime DateAdded, bool Attach)
+        protected Crawl CreateCrawl(DateTime DateAdded, bool Attach, Theory TheoryToUse = null)
         {
             Crawl c = new Crawl();
             c.CrawlIntervalDays = 7;
             c.CrawlState = (int)CrawlerState.ScheduledCrawlEnqueueingReferencesComplete;
             c.DateCrawled = DateAdded;
             c.LastEnumeratedSourceId = 1234;
-            c.TheoryId = 1;
+
+            if (TheoryToUse == null)
+            {
+                Theory t = CreateTheory(DateTime.Now, true);
+                c.TheoryId = t.TheoryId;
+            }
+            else
+            {
+                c.TheoryId = TheoryToUse.TheoryId;
+
+            }
 
             if (Attach)
             {

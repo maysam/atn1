@@ -30,6 +30,7 @@ namespace ATN.Data
             TheoryToAdd.TheoryName = TheoryName;
             TheoryToAdd.DateAdded = DateTime.Now;
             TheoryToAdd.TheoryComment = TheoryComment;
+            TheoryToAdd.LastModifiedDate = DateTime.Now;
             Context.Theories.AddObject(TheoryToAdd);
             Context.SaveChanges();
 
