@@ -24,10 +24,18 @@ namespace ATN.Web
             
             Theories sourceRetriever = new Theories();
             Theory theoryRetriever = new Theory();
-            List<ExtendedSource> sources = new List<ExtendedSource>(); 
+            List<ExtendedSource> sources = new List<ExtendedSource>();
+            string postBackControl = Common.GetPostBackControlId(Page);
 
             //show the papers contributing to the theory                
-            sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
+            if (postBackControl != "btnRandomize")
+            {
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
+            }
+            else
+            {
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, true);
+            }
                 
             theoryRetriever = sourceRetriever.GetTheory(theoryId);
             
@@ -65,7 +73,7 @@ namespace ATN.Web
                 Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
 
             //save the results if necessary and display the correct information
-            string postBackControl = Common.GetPostBackControlId(Page);
+            
             //not a post back
             if (postBackControl == string.Empty)
             {
@@ -167,11 +175,11 @@ namespace ATN.Web
 
                 //cell 9 - Prediction
                 Label lblPrediction = e.Row.Cells[9].Controls[1] as Label;
-                if(source.IsContributingPrediction == true)
+                if(source.isContributingPrediction == true)
                 {
                     lblPrediction.Text = "Contributing";
                 }
-                else if (source.IsContributingPrediction == false)
+                else if (source.isContributingPrediction == false)
                 {
                     lblPrediction.Text = "Not Contributing";
                 }

@@ -86,7 +86,7 @@ namespace ATN.Web
                 lblLastRun.Text = lastCrawl.GetLastCrawlDate(theory.TheoryId).ToString();
 
                 Label lblLastEigenfactor = e.Row.Cells[4].Controls[1] as Label;
-                //lblLastEigenfactor.Text
+                lblLastEigenfactor.Text = theory.LastAnalysisDate.ToString();
 
                 Label lblLastMachineLearning = e.Row.Cells[5].Controls[1] as Label;
 

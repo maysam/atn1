@@ -3,7 +3,7 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Label ID="lblNetworkName" runat="server" /></h2>
     <br />
-    <asp:Button ID="btnRandomize" runat="server" OnClick="btnRandomize_Click" Text="Random Page" />
+    <asp:Button ID="btnRandomize" runat="server" OnClick="btnRandomize_Click" Text="Random Sample" />
     <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" EnableViewState="true">
         <Columns>
             <asp:TemplateField>

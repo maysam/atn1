@@ -267,11 +267,11 @@ namespace ATN.Web
 
                 //cell 8 - Prediction
                 Label lblPrediction = e.Row.Cells[8].Controls[1] as Label;
-                if (source.IsContributingPrediction == true)
+                if (source.isContributingPrediction == true)
                 {
                     lblPrediction.Text = "Contributing";
                 }
-                else if (source.IsContributingPrediction == false)
+                else if (source.isContributingPrediction == false)
                 {
                     lblPrediction.Text = "Not Contributing";
                 }
