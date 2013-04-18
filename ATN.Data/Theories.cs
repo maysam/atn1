@@ -30,6 +30,7 @@ namespace ATN.Data
             TheoryToAdd.TheoryName = TheoryName;
             TheoryToAdd.DateAdded = DateTime.Now;
             TheoryToAdd.TheoryComment = TheoryComment;
+            TheoryToAdd.LastModifiedDate = DateTime.Now;
             Context.Theories.AddObject(TheoryToAdd);
             Context.SaveChanges();
 
@@ -149,8 +150,11 @@ namespace ATN.Data
         /// Retrieves all extended sources that are members of a particular theory
         /// </summary>
         /// <param name="TheoryId">The Theory to retrieve extended sources for</param>
+        /// <param name="PageIndex">The 0-based page of sources to retrieve</param>
+        /// <param name="PageSize">The size of pages</param>
+        /// <param name="OrderByRandom">Whether to select a random sample of sources; note that when this is true subsequent page indexes may contain sources seen in previous pages</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
-        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex = 0, int PageSize = 200)
+        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex, int PageSize, bool OrderByRandom = false)
         {
             return Context.ExecuteStoreQuery<ExtendedSource>(
                 @"WITH TestTable as (
@@ -173,7 +177,7 @@ namespace ATN.Data
                     tm.PredictionProbability as PredictionProbability,
                     tm.isContributingPrediction as IsContributingPrediction,
 	                (CASE WHEN tm.Depth IS NULL THEN CAST(3 as smallint) ELSE tm.Depth END) as Depth,
-	                ROW_NUMBER() OVER(ORDER BY tm.Depth ASC) As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0}
+	                ROW_NUMBER() " + (OrderByRandom ? "OVER(ORDER BY newid())" : "OVER(ORDER BY tm.Depth ASC)") + @" As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0}
                 )
                 SELECT SourceId, MasID, Title, [Year], Authors,Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, TAR, ImpactFactor, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
             TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
@@ -372,6 +376,30 @@ namespace ATN.Data
         {
             TheoryMembershipSignificance ContributionSignificance = Context.TheoryMembershipSignificances.SingleOrDefault(tms => tms.TheoryId == TheoryId && tms.SourceId == SourceId);
             ContributionSignificance.RAMarkedContributing = RAMarkedContributing;
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Sets the date of the last analysis run for a given theory
+        /// </summary>
+        /// <param name="TheoryId">The theory to set the analysis date</param>
+        /// <param name="LastAnalysisDate">The date of the last analysis run for the theory</param>
+        public void SetLastAnalysisRunDateForTheory(int TheoryId, DateTime LastAnalysisDate)
+        {
+            Theory TheoryToUpdate = Context.Theories.Single(t => t.TheoryId == TheoryId);
+            TheoryToUpdate.LastAnalysisDate = LastAnalysisDate;
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Sets the last modified date for a particular theory
+        /// </summary>
+        /// <param name="TheoryId">The theory to set the last modified date of</param>
+        /// <param name="LastModified">The date the theory was last modified</param>
+        public void SetLastModifiedDateForTheory(int TheoryId, DateTime LastModified)
+        {
+            Theory TheoryToUpdate = Context.Theories.Single(t => t.TheoryId == TheoryId);
+            TheoryToUpdate.LastModifiedDate = LastModified;
             Context.SaveChanges();
         }
     }

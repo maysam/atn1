@@ -26,9 +26,9 @@ namespace ATN.Analysis
 
             //int x = 0;
 
-            FileStream fs = File.Open(@"D:\users\pfaffj\Documents\Visual Studio 2012\Projects\atn\ATN.Sandbox\bin\x64\Debug\TAM - Training Data.csv", FileMode.Open, FileAccess.Read);
-            ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
-            Importer.ImportTheory(2, fs);
+            //FileStream fs = File.Open(@"D:\users\pfaffj\Documents\Visual Studio 2012\Projects\atn\ATN.Sandbox\bin\x64\Debug\TAM - Training Data.csv", FileMode.Open, FileAccess.Read);
+            //ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
+            //Importer.ImportTheory(2, fs);
 
             int TheoryId = 2;
             AnalysisRunner ar = new AnalysisRunner();
