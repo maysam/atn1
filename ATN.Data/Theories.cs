@@ -365,5 +365,29 @@ namespace ATN.Data
             ContributionSignificance.RAMarkedContributing = RAMarkedContributing;
             Context.SaveChanges();
         }
+
+        /// <summary>
+        /// Sets the date of the last analysis run for a given theory
+        /// </summary>
+        /// <param name="TheoryId">The theory to set the analysis date</param>
+        /// <param name="LastAnalysisDate">The date of the last analysis run for the theory</param>
+        public void SetLastAnalysisRunDateForTheory(int TheoryId, DateTime LastAnalysisDate)
+        {
+            Theory TheoryToUpdate = Context.Theories.Single(t => t.TheoryId == TheoryId);
+            TheoryToUpdate.LastAnalysisDate = LastAnalysisDate;
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Sets the last modified date for a particular theory
+        /// </summary>
+        /// <param name="TheoryId">The theory to set the last modified date of</param>
+        /// <param name="LastModified">The date the theory was last modified</param>
+        public void SetLastModifiedDateForTheory(int TheoryId, DateTime LastModified)
+        {
+            Theory TheoryToUpdate = Context.Theories.Single(t => t.TheoryId == TheoryId);
+            TheoryToUpdate.LastModifiedDate = LastModified;
+            Context.SaveChanges();
+        }
     }
 }

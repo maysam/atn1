@@ -203,6 +203,7 @@
     <Content Include="metaAnalysis.aspx" />
     <Content Include="networks.aspx" />
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\ATN Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />

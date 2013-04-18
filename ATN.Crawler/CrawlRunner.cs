@@ -251,6 +251,7 @@ namespace ATN.Crawler
                 _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.Complete);
                 Trace.WriteLine("Dequeueing references complete", "Informational");
             }
+            SetModifiedIfChanged(Changed, Specifier.TheoryId);
             return Changed;
         }
 
@@ -329,6 +330,13 @@ namespace ATN.Crawler
             else
             {
                 return false;
+            }
+        }
+        public void SetModifiedIfChanged(bool Changed, int TheoryId)
+        {
+            if (Changed)
+            {
+                _theories.SetLastModifiedDateForTheory(TheoryId, DateTime.Now);
             }
         }
     }

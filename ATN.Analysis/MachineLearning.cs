@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using ATN.Export;
 using ATN.Data;
-using System.Text.RegularExpressions;
 
 namespace ATN.Analysis
 {
@@ -115,47 +114,46 @@ namespace ATN.Analysis
         {
             Dictionary<long, Prediction> Classifications = new Dictionary<long, Prediction>(ClassifySources.Length);
 
-            try
+            using (StreamReader sr = new StreamReader(classification_output_path))
             {
-                using (StreamReader sr = new StreamReader(classification_output_path))
+                String co = sr.ReadToEnd();
+                string[] lines = co.Split(new string[] { "\n", "\r" }, StringSplitOptions.None).Skip(5).ToArray();
+
+                foreach (string l in lines)
                 {
-                    String co = sr.ReadToEnd();
-                    string[] lines = co.Split(new string[] { "\n" }, StringSplitOptions.None).Skip(5).ToArray();
-
-                    foreach (string l in lines)
+                    try
                     {
-                        string[] data = l.Split(new string[] { "        ", "       " }, StringSplitOptions.None);
-                        
-                        long instance_id = Convert.ToInt64(data[0]) - 1;
-
-                        bool prediction;
-                        if (data[1].Equals("1:? 1:contribu", StringComparison.Ordinal))
+                        if (l != string.Empty)
                         {
-                            prediction = true;
+                            string[] data = l.Split(new string[] { "        ", "       " }, StringSplitOptions.None);
+
+                            long instance_id = Convert.ToInt64(data[0]) - 1;
+
+                            bool prediction;
+                            if (data[1].Equals("1:? 1:contribu", StringComparison.Ordinal))
+                            {
+                                prediction = true;
+                            }
+                            else
+                            {
+                                prediction = false;
+                            }
+
+                            double probability = Convert.ToDouble(data[2].Split(new string[] { " " }, StringSplitOptions.None)[0]);
+
+                            //Console.WriteLine("Probability: {0}, Prediciton: {1}", probability.ToString(), prediction.ToString());
+
+                            Prediction p = new Prediction(prediction, probability);
+                            Classifications[ClassifySources[instance_id].SourceId] = p;
                         }
-                        else
-                        {
-                            prediction = false;
-                        }
-
-                        double probability = Convert.ToDouble(data[2].Split(new string [] { " " }, StringSplitOptions.None)[0]);
-
-                        //Console.WriteLine("Probability: {0}, Prediciton: {1}", probability.ToString(), prediction.ToString());
-
-                        Prediction p = new Prediction(prediction, probability);
-                        Classifications[ClassifySources[instance_id].SourceId] = p;
                     }
+                    catch { }
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("The file could not be read:");
-                Console.WriteLine(e.Message);
             }
             return Classifications;
         }
 
-        public static Dictionary<long, Prediction> RunML(int TheoryId)
+        public static Dictionary<long, Prediction> RunML(ExtendedSource[] TrainSources, ExtendedSource[] ClassifySources, int TheoryId)
         {
             string DecisionTree = Environment.CurrentDirectory + "\\" + TheoryId + "-model.dat";
             string TrainArff = Environment.CurrentDirectory + "\\" + TheoryId + "-train.arff";
@@ -164,11 +162,11 @@ namespace ATN.Analysis
 
             Theories t = new Theories();
             FileStream TrainStream = File.Open(TrainArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            var TrainSources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+            //var TrainSources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
             ARFFExporter.Export(TrainSources, TheoryId, TrainStream);
 
             FileStream ClassifyStream = File.Open(ClassifyArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            var ClassifySources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => !s.Contributing.HasValue).ToArray();
+            //var ClassifySources = t.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).Where(s => !s.Contributing.HasValue).ToArray();
             ARFFExporter.Export(ClassifySources, TheoryId, ClassifyStream);
 
             MachineLearning.GenerateDecisionTree(TrainArff, DecisionTree);

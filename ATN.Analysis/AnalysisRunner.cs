@@ -91,11 +91,39 @@ namespace ATN.Analysis
             if (TheoryToAnalyze.DataMining)
             {
                 Trace.WriteLine("Running ML", "Informational");
-                Dictionary<long, Prediction> Classifications = MachineLearning.RunML(TheoryId);
-                foreach (KeyValuePair<long, Prediction> Classification in Classifications)
+
+                ExtendedSource[] SourcesForTheory = _theories.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue)
+                    .Join(SourceTree.Values, es => es.SourceId, swr => swr.SourceId, (es, swr) => new ExtendedSource()
+                    {
+                        AEF = swr.ArticleLevelEigenFactor,
+                        Authors = es.Authors,
+                        Contributing = es.Contributing,
+                        Depth = es.Depth,
+                        ImpactFactor = swr.ImpactFactor,
+                        IsMetaAnalysis = es.IsMetaAnalysis,
+                        Journal = es.Journal,
+                        MasID = es.MasID,
+                        NumContributing = es.NumContributing,
+                        SourceId = es.SourceId,
+                        TAR = swr.TheoryAttributionRatio,
+                        Year = es.Year,
+                        Title = es.Title
+                    }).ToArray();
+                var TrainSources = SourcesForTheory.Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+                var ClassifySources = SourcesForTheory.Where(s => !s.Contributing.HasValue).ToArray();
+
+                if (TrainSources.Length > 0)
                 {
-                    SourceTree[Classification.Key].IsContributingPrediction = Classification.Value.IsContributingPrediction;
-                    SourceTree[Classification.Key].PredictionProbability = Classification.Value.PredictionProbability;
+                    Dictionary<long, Prediction> Classifications = MachineLearning.RunML(TrainSources, ClassifySources, TheoryId);
+                    foreach (KeyValuePair<long, Prediction> Classification in Classifications)
+                    {
+                        SourceTree[Classification.Key].IsContributingPrediction = Classification.Value.IsContributingPrediction;
+                        SourceTree[Classification.Key].PredictionProbability = Classification.Value.PredictionProbability;
+                    }
+                }
+                else
+                {
+                    Trace.WriteLine("No sources to train on; machine learning no run");
                 }
                 Trace.WriteLine(string.Format("ML completed in {0}", Timer.Elapsed));
                 Timer.Restart();
@@ -111,6 +139,7 @@ namespace ATN.Analysis
             TotalTimer.Stop();
             Trace.WriteLine(string.Format("Analysis run completed in {0}", TotalTimer.Elapsed));
 
+            _theories.SetLastAnalysisRunDateForTheory(TheoryId, DateTime.Now);
             _progress.SetCrawlerStateUnchanged(Crawl);
         }
     }

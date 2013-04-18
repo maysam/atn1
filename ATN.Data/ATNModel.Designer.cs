@@ -4129,7 +4129,8 @@ namespace ATN.Data
         /// <param name="dataMining">Initial value of the DataMining property.</param>
         /// <param name="clustering">Initial value of the Clustering property.</param>
         /// <param name="theoryAttributionRatio">Initial value of the TheoryAttributionRatio property.</param>
-        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded, global::System.Boolean articleLevelEigenfactor, global::System.Boolean impactFactor, global::System.Boolean dataMining, global::System.Boolean clustering, global::System.Boolean theoryAttributionRatio)
+        /// <param name="lastModifiedDate">Initial value of the LastModifiedDate property.</param>
+        public static Theory CreateTheory(global::System.Int32 theoryId, global::System.String theoryName, global::System.DateTime dateAdded, global::System.Boolean articleLevelEigenfactor, global::System.Boolean impactFactor, global::System.Boolean dataMining, global::System.Boolean clustering, global::System.Boolean theoryAttributionRatio, global::System.DateTime lastModifiedDate)
         {
             Theory theory = new Theory();
             theory.TheoryId = theoryId;
@@ -4140,6 +4141,7 @@ namespace ATN.Data
             theory.DataMining = dataMining;
             theory.Clustering = clustering;
             theory.TheoryAttributionRatio = theoryAttributionRatio;
+            theory.LastModifiedDate = lastModifiedDate;
             return theory;
         }
 
@@ -4365,6 +4367,54 @@ namespace ATN.Data
         private global::System.Boolean _TheoryAttributionRatio;
         partial void OnTheoryAttributionRatioChanging(global::System.Boolean value);
         partial void OnTheoryAttributionRatioChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.DateTime> LastAnalysisDate
+        {
+            get
+            {
+                return _LastAnalysisDate;
+            }
+            set
+            {
+                OnLastAnalysisDateChanging(value);
+                ReportPropertyChanging("LastAnalysisDate");
+                _LastAnalysisDate = StructuralObject.SetValidValue(value, "LastAnalysisDate");
+                ReportPropertyChanged("LastAnalysisDate");
+                OnLastAnalysisDateChanged();
+            }
+        }
+        private Nullable<global::System.DateTime> _LastAnalysisDate;
+        partial void OnLastAnalysisDateChanging(Nullable<global::System.DateTime> value);
+        partial void OnLastAnalysisDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime LastModifiedDate
+        {
+            get
+            {
+                return _LastModifiedDate;
+            }
+            set
+            {
+                OnLastModifiedDateChanging(value);
+                ReportPropertyChanging("LastModifiedDate");
+                _LastModifiedDate = StructuralObject.SetValidValue(value, "LastModifiedDate");
+                ReportPropertyChanged("LastModifiedDate");
+                OnLastModifiedDateChanged();
+            }
+        }
+        private global::System.DateTime _LastModifiedDate;
+        partial void OnLastModifiedDateChanging(global::System.DateTime value);
+        partial void OnLastModifiedDateChanged();
 
         #endregion
 

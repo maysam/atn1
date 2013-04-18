@@ -314,6 +314,8 @@
           <Property Name="TheoryId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="TheoryName" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DateAdded" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="LastAnalysisDate" Type="datetime" />
           <Property Name="TheoryComment" Type="nvarchar(max)" />
           <Property Name="ArticleLevelEigenfactor" Type="bit" Nullable="false" />
           <Property Name="ImpactFactor" Type="bit" Nullable="false" />
@@ -354,7 +356,7 @@
           <Property Name="SourceId" Type="bigint" Nullable="false" />
           <Property Name="RAMarkedContributing" Type="bit" />
           <Property Name="IsMetaAnalysis" Type="bit" Nullable="false" />
-          <Property Name="TheoryNamePresent" Type="bit" />
+          <Property Name="TheoryNamePresent" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="Author_AuthorsReference_FK1">
           <End Role="Author" Type="ATNModel.Store.Author" Multiplicity="1" />
@@ -1157,6 +1159,8 @@
           <Property Type="Boolean" Name="DataMining" Nullable="false" />
           <Property Type="Boolean" Name="Clustering" Nullable="false" />
           <Property Type="Boolean" Name="TheoryAttributionRatio" Nullable="false" />
+          <Property Type="DateTime" Name="LastAnalysisDate" Precision="3" />
+          <Property Type="DateTime" Name="LastModifiedDate" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="TheoryMembership">
           <Key>
@@ -1510,6 +1514,8 @@
           <EntitySetMapping Name="Theories">
             <EntityTypeMapping TypeName="ATNModel.Theory">
               <MappingFragment StoreEntitySet="Theory">
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="LastAnalysisDate" ColumnName="LastAnalysisDate" />
                 <ScalarProperty Name="TheoryAttributionRatio" ColumnName="TheoryAttributionRatio" />
                 <ScalarProperty Name="Clustering" ColumnName="Clustering" />
                 <ScalarProperty Name="DataMining" ColumnName="DataMining" />
