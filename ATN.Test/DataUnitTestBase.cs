@@ -128,7 +128,6 @@ namespace ATN.Test
             else
             {
                 c.TheoryId = TheoryToUse.TheoryId;
-
             }
 
             if (Attach)

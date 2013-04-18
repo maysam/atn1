@@ -171,7 +171,7 @@ namespace ATN.Test
             //We have to do this to create all of the correct values
             Analysis.InitializeTheoryAnalysis(BoundTheory, SourceTree);
             Runner.AnalyzeTheory(UnusedCrawl, BoundTheory.TheoryId);
-            List<ExtendedSource> ExtendedSources = Theories.GetAllExtendedSourcesForTheory(BoundTheory.TheoryId);
+            List<ExtendedSource> ExtendedSources = Theories.GetAllExtendedSourcesForTheory(BoundTheory.TheoryId, 0, Int32.MaxValue);
 
             bool VerifiedCanonical = false;
             bool VerifiedFirstLevel = false;
