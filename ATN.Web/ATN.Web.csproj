@@ -185,6 +185,7 @@
     <Content Include="Images\ATN2.jpg" />
     <Content Include="Images\ATN3.jpg" />
     <Content Include="Images\bullet.png" />
+    <Content Include="Images\HBPLogo.png" />
     <Content Include="Images\heroAccent.png" />
     <Content Include="Images\orderedList0.png" />
     <Content Include="Images\orderedList1.png" />
@@ -371,7 +372,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>37031</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:1329/</IISUrl>
+          <IISUrl>http://localhost:1328/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

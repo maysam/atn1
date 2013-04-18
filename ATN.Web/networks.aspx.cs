@@ -47,9 +47,6 @@ namespace ATN.Web
                 Common.Sort<Theory>(allTheories, Common.QueryStrings.TheoryName + " " + Common.Symbols.Des);
             }
 
-            //Hide Visualization column
-            grdNetworks.Columns[0].Visible = false;
-
             //set the grid
             grdNetworks.DataSource = allTheories;
             grdNetworks.DataBind();
@@ -73,7 +70,7 @@ namespace ATN.Web
 
                 ImageButton ImgVisualizationLink = e.Row.Cells[0].Controls[1] as ImageButton;
                 //ImgVisualizationLink.OnClientClick
-                //ImgVisualizationLink.ImageUrl = "/Images/visualizationButton.gif";
+                ImgVisualizationLink.ImageUrl = "~/Images/HBPLogo.png";
 
                 LinkButton lnkTheoryNameHeader = e.Row.Cells[1].Controls[1] as LinkButton;
                 lnkTheoryNameHeader.Text = theory.TheoryName;

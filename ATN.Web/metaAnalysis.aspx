@@ -85,7 +85,7 @@
             <asp:TemplateField>
                 <HeaderTemplate>
                     <asp:LinkButton ID="lnkPredictionHeader" runat="server" Text="Machine Learning Prediction" />
-                    <asp:Image ID="imgPredictionHeader" runat="server" Visible="false" />
+                    <asp:Image ID="imgpredictionProbabilityHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblPrediction" runat="server" />
