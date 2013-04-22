@@ -18,6 +18,7 @@ namespace ATN.Data
         public double? TAR { get; set; }
         public double? predictionProbability { get; set; }
         public bool? isContributingPrediction { get; set; }
+        public bool TheoryNamePresent { get; set; }
         public short Depth { get; set; }
 
         public ExtendedSource()

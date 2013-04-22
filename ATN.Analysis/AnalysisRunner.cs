@@ -106,6 +106,7 @@ namespace ATN.Analysis
                         NumContributing = es.NumContributing,
                         SourceId = es.SourceId,
                         TAR = swr.TheoryAttributionRatio,
+                        TheoryNamePresent = es.TheoryNamePresent,
                         Year = es.Year,
                         Title = es.Title
                     }).ToArray();

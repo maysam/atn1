@@ -24,7 +24,6 @@ namespace ATN.Data
         public short Depth { get; set; }
         public double? TheoryAttributionRatio { get; set; }
         public double? ArticleLevelEigenFactor { get; set; }
-        public bool? TheoryNamePresent { get; set; }
         public double? PredictionProbability { get; set; }
         public bool? IsContributingPrediction { get; set; }
         public List<long> References { get; set; }
