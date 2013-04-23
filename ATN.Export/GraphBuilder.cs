@@ -47,11 +47,16 @@ namespace ATN.Export
 
         public Graph GetGraphForTheory(int TheoryId, bool ImpactFactorCutoff, bool AEFCutoff, bool TARCutoff, bool MachineLearningCutoff, bool YearCutoff)
         {
-            const int nSigma = 6;
+            const int nSigma = 2;
             Graph ExportGraph = new Graph();
 
             ExtendedSource[] AllSources = _theories.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue).ToArray();
             Dictionary<long, SourceWithReferences> SourceTree = _theories.GetSourceTreeForTheory(TheoryId);
+            foreach (var ExtendedSource in AllSources)
+            {
+                SourceTree[ExtendedSource.SourceId].IsContributingPrediction = ExtendedSource.isContributingPrediction;
+                SourceTree[ExtendedSource.SourceId].PredictionProbability = ExtendedSource.predictionProbability;
+            }
 
             if (ImpactFactorCutoff)
             {
@@ -153,7 +158,7 @@ namespace ATN.Export
             {
                 foreach (SourceWithReferences Source in SourceTree.Values.ToArray())
                 {
-                    if (Source.IsContributingPrediction.HasValue && !Source.IsContributingPrediction.Value && Source.PredictionProbability.HasValue && Source.PredictionProbability.Value != 1.0f)
+                    if (!Source.IsContributingPrediction.HasValue || !Source.IsContributingPrediction.Value || !Source.PredictionProbability.HasValue || Source.PredictionProbability.Value < 0.92d)
                     {
                         SourceTree.Remove(Source.SourceId);
                     }
@@ -172,6 +177,27 @@ namespace ATN.Export
             if(MinYear == 0)
             {
                 MinYear = Int32.MaxValue;
+            }
+
+            foreach (var Source in SourceTree.Values.ToArray())
+            {
+                if (Source.References.Count > 0)
+                {
+                    continue;
+                }
+                bool HasAtLeastOne = false;
+                foreach (var ReferenceSource in SourceTree.Values)
+                {
+                    if (ReferenceSource.References.Contains(Source.SourceId))
+                    {
+                        HasAtLeastOne = true;
+                        break;
+                    }
+                }
+                if (!HasAtLeastOne)
+                {
+                    SourceTree.Remove(Source.SourceId);
+                }
             }
 
             foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { Year = src.Year, Title = src.Title, Source = st}))

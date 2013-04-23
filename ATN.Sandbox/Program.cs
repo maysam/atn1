@@ -30,18 +30,19 @@ namespace ATN.Analysis
             //ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
             //Importer.ImportTheory(2, fs);
 
-            int TheoryId = 2;
-            AnalysisRunner ar = new AnalysisRunner();
-            CrawlerProgress cp = new CrawlerProgress();
-            Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
-            ar.AnalyzeTheory(c, TheoryId);
-
             //int TheoryId = 2;
+            //AnalysisRunner ar = new AnalysisRunner();
+            //CrawlerProgress cp = new CrawlerProgress();
+            //Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
+            //ar.AnalyzeTheory(c, TheoryId);
 
-            //GraphBuilder gb = new GraphBuilder();
+            int TheoryId = 2;
+
+            GraphBuilder gb = new GraphBuilder();
             //Graph UnprunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, false, false);
-            //Graph PrunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, true, true);
-
+            Graph PrunedGraph = gb.GetGraphForTheory(TheoryId, true, true, true, true, true);
+            int x = 0;
+            //int x = 0;
             //FileStream UnprunedStream = File.Open(TheoryId.ToString() + "UnprunnedGraph.xml", FileMode.Create);
             //XGMMLExporter.Export(UnprunedGraph.Nodes.ToArray(), UnprunedGraph.Edges.ToArray(), UnprunedStream);
 

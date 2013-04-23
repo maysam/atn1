@@ -96,6 +96,11 @@ namespace ATN.Data
             return Context.Theories.Single(t => t.TheoryId == TheoryId);
         }
 
+        public void SaveTheory()
+        {
+            Context.SaveChanges();
+        }
+
         /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>

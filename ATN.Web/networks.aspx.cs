@@ -71,7 +71,7 @@ namespace ATN.Web
 
                 ImageButton ImgVisualizationLink = e.Row.Cells[0].Controls[1] as ImageButton;
 
-                string BaseAttributes = "channelmode=no,directories=no,resizable=yes,scrollbars=yes,location=yes,menubar=yes,status=no,toolbar=no";
+                string BaseAttributes = "channelmode=no,directories=no,resizable=no,scrollbars=no,location=no,menubar=no,status=no,toolbar=no,width=640,height=46";
                 ImgVisualizationLink.Attributes.Add("onclick", "window.open('ExportVisualization.ashx?TheoryId=" + theory.TheoryId.ToString() + "','_blank','" + BaseAttributes + "',false);");
                 ImgVisualizationLink.ImageUrl = "/Images/HBPLogo.png";
                 ImgVisualizationLink.Visible = true;
@@ -85,23 +85,19 @@ namespace ATN.Web
 
                 Label lblLastRun = e.Row.Cells[3].Controls[1] as Label;
                 lblLastRun.Text = lastCrawl.GetLastCrawlDate(theory.TheoryId).ToString();
-
-                Label lblLastEigenfactor = e.Row.Cells[4].Controls[1] as Label;
-                lblLastEigenfactor.Text = theory.LastAnalysisDate.ToString();
-
-                Label lblLastMachineLearning = e.Row.Cells[5].Controls[1] as Label;
-
-                Label lblStatus = e.Row.Cells[6].Controls[1] as Label;
                 
-                Label lblSecondLevel = e.Row.Cells[7].Controls[1] as Label;
-                lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheory(theory.TheoryId).Length.ToString();
+                Label lblSecondLevel = e.Row.Cells[4].Controls[1] as Label;
+                var AllSourcesForTheory = dataRetriever.GetAllExtendedSourcesForTheory(theory.TheoryId, 0, Int32.MaxValue);
+                lblSecondLevel.Text = AllSourcesForTheory.Count(s => s.Depth == 1).ToString();
                 
-                Label lblThirdLevel = e.Row.Cells[8].Controls[1] as Label;
+                Label lblThirdLevel = e.Row.Cells[5].Controls[1] as Label;
+                lblThirdLevel.Text = AllSourcesForTheory.Count(s => s.Depth == 2).ToString();
 
-                Label lblTheoryContributing  = e.Row.Cells[9].Controls[1] as Label;
+                Label lblTheoryContributing  = e.Row.Cells[6].Controls[1] as Label;
+                lblTheoryContributing.Text = AllSourcesForTheory.Count(s => s.Contributing.HasValue && s.Contributing.Value).ToString();
                 //lblTheoryContributing.Text = 
 
-                LinkButton lnkEdit = e.Row.Cells[10].Controls[1] as LinkButton;
+                LinkButton lnkEdit = e.Row.Cells[7].Controls[1] as LinkButton;
                 lnkEdit.PostBackUrl = Common.Pages.Launcher + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + theory.TheoryId.ToString();
                 #endregion
             }
@@ -147,22 +143,13 @@ namespace ATN.Web
                 LinkButton lnkLastRunHeader = e.Row.Cells[3].Controls[1] as LinkButton;
                 //lnkLastRunHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastRun;
 
-                LinkButton lnkLastEigenfactorHeader = e.Row.Cells[4].Controls[1] as LinkButton;
-                //lnkLastEigenfactorHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastEigenfactor;
-
-                LinkButton lnkLastMachineLearningHeader = e.Row.Cells[5].Controls[1] as LinkButton;
-                //lnkLastMachineLearningHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastMachineLearning;
-
-                LinkButton lnkStatusHeader = e.Row.Cells[6].Controls[1] as LinkButton;
-                //lnkStatusHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Status;
-
-                LinkButton lnkSecondLevelHeader = e.Row.Cells[7].Controls[1] as LinkButton;
+                LinkButton lnkSecondLevelHeader = e.Row.Cells[4].Controls[1] as LinkButton;
                 //lnkSecondLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.SecondLevel;
 
-                LinkButton lnkThirdLevelHeader = e.Row.Cells[8].Controls[1] as LinkButton;
+                LinkButton lnkThirdLevelHeader = e.Row.Cells[5].Controls[1] as LinkButton;
                 //lnkThirdLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.ThirdLevel;
 
-                LinkButton lnkTheoryContributingHeader = e.Row.Cells[9].Controls[1] as LinkButton;
+                LinkButton lnkTheoryContributingHeader = e.Row.Cells[6].Controls[1] as LinkButton;
                 //lnkTheoryContributingHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.TheoryContributing;
 
             }

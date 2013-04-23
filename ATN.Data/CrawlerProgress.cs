@@ -42,7 +42,12 @@ namespace ATN.Data
         /// <param name="Crawl">The Crawl to be set as having changed</param>
         public void SetCrawlerStateChanged(Crawl Crawl)
         {
-            Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = true;
+            Crawl CrawlToSetChangedState = Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId);
+            CrawlToSetChangedState.HasChanged = true;
+
+            //Remove this
+            CrawlToSetChangedState.DateCrawled = DateTime.Now;
+
             Context.SaveChanges();
         }
 
@@ -52,7 +57,13 @@ namespace ATN.Data
         /// <param name="Crawl">The Crawl to be set as having not changed</param>
         public void SetCrawlerStateUnchanged(Crawl Crawl)
         {
-            Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId).HasChanged = false;
+            Crawl CrawlToSetChangedState = Context.Crawls.Single(c => c.CrawlId == Crawl.CrawlId);
+            CrawlToSetChangedState.HasChanged = false;
+
+            //Remove this
+            CrawlToSetChangedState.DateCrawled = DateTime.Now;
+
+
             Context.SaveChanges();
         }
 

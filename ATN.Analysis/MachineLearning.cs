@@ -12,29 +12,8 @@ namespace ATN.Analysis
 {
     public class MachineLearning
     {
+        private static readonly string CurrentDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().GetName().CodeBase).Replace(@"file:\", "");
 
-        public static void GenerateWekaTrainBatchFile(string decision_tree_path, string training_data_path, Stream BatStream)
-        {
-            StreamWriter BatDestination = new System.IO.StreamWriter(BatStream, Encoding.ASCII);
-
-            string weka_command = "java -cp weka.jar weka.classifiers.trees.J48 -C 0.25 -M 1 -x 4 -t \"" +
-                training_data_path + "\" -d \"" + decision_tree_path + "\"\n";
-
-            BatDestination.WriteLine(weka_command);
-            BatDestination.Close();
-        }
-
-        public static void GenerateWekaClassificationBatchFile(string decision_tree_path, string test_data_path, string classification_output_path, Stream BatStream)
-        {
-            StreamWriter BatDestination = new System.IO.StreamWriter(BatStream, Encoding.ASCII);
-
-            string weka_command = "java -cp weka.jar weka.classifiers.trees.J48 -l \"" +
-                decision_tree_path + "\" -T \"" + test_data_path + "\" -p 1-5 > " +
-                "\"" + classification_output_path + "\"\n";
-
-            BatDestination.WriteLine(weka_command);
-            BatDestination.Close();
-        }
         /// <summary>
         /// This method takes the train ARFF file exported
         /// by the corresponding methods in ATN.Export, and
@@ -46,12 +25,18 @@ namespace ATN.Analysis
             ProcessStartInfo StartInfo = new ProcessStartInfo();
             StartInfo.UseShellExecute = false;
             StartInfo.CreateNoWindow = false;
-            StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+            StartInfo.RedirectStandardOutput = true;
+            StartInfo.RedirectStandardError = true;
+            StartInfo.WorkingDirectory = CurrentDirectory;
             StartInfo.FileName = "java.exe";
             StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -C 0.45 -M 1 -x 4 -t \"{0}\" -d \"{1}\"", training_data_path, decision_tree_path);
 
             using (Process batProcess = Process.Start(StartInfo))
             {
+                string stdout = batProcess.StandardOutput.ReadToEnd().Replace("\n", "\r\n");
+                string stderr = batProcess.StandardError.ReadToEnd().Replace("\n", "\r\n");
+                Trace.Write(stdout);
+                Trace.Write(stderr);
                 batProcess.WaitForExit(5000);
                 batProcess.Close();
             }
@@ -72,7 +57,7 @@ namespace ATN.Analysis
             StartInfo.CreateNoWindow = false;
             StartInfo.RedirectStandardOutput = true;
             StartInfo.RedirectStandardError = true;
-            StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+            StartInfo.WorkingDirectory = CurrentDirectory;
             StartInfo.FileName = "java.exe";
             StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 1-6", decision_tree_path, test_data_path);
 
@@ -134,10 +119,11 @@ namespace ATN.Analysis
 
         public static Dictionary<long, Prediction> RunML(ExtendedSource[] TrainSources, ExtendedSource[] ClassifySources, int TheoryId)
         {
-            string DecisionTree = Environment.CurrentDirectory + "\\" + TheoryId + "-model.dat";
-            string TrainArff = Environment.CurrentDirectory + "\\" + TheoryId + "-train.arff";
-            string ClassifyArff = Environment.CurrentDirectory + "\\" + TheoryId + "-classify.arff";
-            string ClassifyOutput = Environment.CurrentDirectory + "\\" + TheoryId + "-classified.txt";
+
+            string DecisionTree = CurrentDirectory + "\\" + TheoryId + "-model.dat";
+            string TrainArff = CurrentDirectory + "\\" + TheoryId + "-train.arff";
+            string ClassifyArff = CurrentDirectory + "\\" + TheoryId + "-classify.arff";
+            string ClassifyOutput = CurrentDirectory + "\\" + TheoryId + "-classified.txt";
 
             Theories t = new Theories();
             FileStream TrainStream = File.Open(TrainArff, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
@@ -151,6 +137,11 @@ namespace ATN.Analysis
             MachineLearning.GenerateDecisionTree(TrainArff, DecisionTree);
             MachineLearning.ClassifyData(DecisionTree, ClassifyArff, ClassifyOutput);
             Dictionary<long, Prediction> Classifications = MachineLearning.ParseClassificationOutput(ClassifyOutput, TheoryId, ClassifySources);
+
+            File.Delete(DecisionTree);
+            File.Delete(TrainArff);
+            File.Delete(ClassifyArff);
+            File.Delete(ClassifyOutput);
 
             return Classifications;
         }

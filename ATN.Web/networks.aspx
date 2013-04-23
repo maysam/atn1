@@ -6,7 +6,7 @@
             <Columns>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:Label ID="lblVisualizationHeader" runat="server" Text="Visualization" />
+                        <asp:Label ID="lblVisualizationHeader" runat="server" Text="Visualize" />
                     </HeaderTemplate>
                     <ItemTemplate>
                         <asp:ImageButton ID="ImgVisualizationLink" runat="server" visible="false"/>
@@ -44,33 +44,6 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:LinkButton ID="lnkLastEigenfactorHeader" runat="server" Text="Eigenfactor Score" />
-                        <asp:Image ID="imgLastEigenfactorHeader" runat="server" Visible="false" ImageAlign="Left" />
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                        <asp:Label ID="lblLastEigenfactor" runat="server" />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:TemplateField>
-                    <HeaderTemplate>
-                        <asp:LinkButton ID="lnkLastMachineLearningHeader" runat="server" Text="Last Machine Learning" />
-                        <asp:Image ID="imgLastMachineLearningHeader" runat="server" Visible="false" ImageAlign="Left" />
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                        <asp:Label ID="lblLastMachineLearning" runat="server" />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:TemplateField>
-                    <HeaderTemplate>
-                        <asp:LinkButton ID="lnkStatusHeader" runat="server" Text="Status" />
-                        <asp:Image ID="imgStatusHeader" runat="server" Visible="false" ImageAlign="Left" />
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                        <asp:Label ID="lblStatus" runat="server" />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:TemplateField>
-                    <HeaderTemplate>
                         <asp:LinkButton ID="lnkSecondLevelHeader" runat="server" Text="Size of 2nd Level Network" />
                         <asp:Image ID="imgSecondLevelHeader" runat="server" Visible="false" ImageAlign="Left" />
                     </HeaderTemplate>
@@ -103,5 +76,4 @@
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
-    
 </asp:Content>
