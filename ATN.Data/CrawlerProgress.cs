@@ -56,6 +56,22 @@ namespace ATN.Data
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Returns the Crawler status using a theory Id
+        /// </summary>
+        /// <param name="theoryId">The theory Id to look up</param>
+        /// <returns>The crawler's status</returns>
+        public bool? GetCrawlerState(int theoryId)
+        {
+            try
+            {
+                return Context.Crawls.Single(t => t.TheoryId == theoryId).HasChanged;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
 
         public Crawl[] GetCrawlsWithoutAnalysisRuns(Crawl[] Except)
         {
