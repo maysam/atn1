@@ -54,6 +54,7 @@ namespace ATN.Web
 
         }
 
+
         /// <summary>
         /// Sets up each row in the gridview
         /// </summary>
@@ -73,6 +74,7 @@ namespace ATN.Web
                 string BaseAttributes = "channelmode=no,directories=no,resizable=yes,scrollbars=yes,location=yes,menubar=yes,status=no,toolbar=no";
                 ImgVisualizationLink.Attributes.Add("onclick", "window.open('ExportVisualization.ashx?TheoryId=" + theory.TheoryId.ToString() + "','_blank','" + BaseAttributes + "',false);");
                 ImgVisualizationLink.ImageUrl = "/Images/HBPLogo.png";
+                ImgVisualizationLink.Visible = true;
 
                 LinkButton lnkTheoryNameHeader = e.Row.Cells[1].Controls[1] as LinkButton;
                 lnkTheoryNameHeader.Text = theory.TheoryName;

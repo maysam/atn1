@@ -160,7 +160,15 @@ namespace ATN.Export
                 }
             }
 
-            int MinYear = AllSources.Where(s => s.Depth == 0 && s.Year != 0).Min(s => s.Year);
+            int MinYear;
+            if (AllSources.Length > 0)
+            {
+                MinYear = AllSources.Where(s => s.Depth == 0 && s.Year != 0).Min(s => s.Year);
+            }
+            else
+            {
+                MinYear = Int32.MaxValue;
+            }
             if(MinYear == 0)
             {
                 MinYear = Int32.MaxValue;
