@@ -176,10 +176,11 @@ namespace ATN.Data
                     tm.ImpactFactor as ImpactFactor,
                     tm.PredictionProbability as PredictionProbability,
                     tm.isContributingPrediction as IsContributingPrediction,
+                    tms.TheoryNamePresent as TheoryNamePresent,
 	                (CASE WHEN tm.Depth IS NULL THEN CAST(3 as smallint) ELSE tm.Depth END) as Depth,
 	                ROW_NUMBER() " + (OrderByRandom ? "OVER(ORDER BY newid())" : "OVER(ORDER BY tm.Depth ASC)") + @" As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0}
                 )
-                SELECT SourceId, MasID, Title, [Year], Authors,Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, TAR, ImpactFactor, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
+                SELECT SourceId, MasID, Title, [Year], Authors, Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, TAR, ImpactFactor, PredictionProbability, IsContributingPrediction, TheoryNamePresent, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
             TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
         }
 

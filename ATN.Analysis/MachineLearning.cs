@@ -46,22 +46,14 @@ namespace ATN.Analysis
             ProcessStartInfo StartInfo = new ProcessStartInfo();
             StartInfo.UseShellExecute = false;
             StartInfo.CreateNoWindow = false;
-            //StartInfo.RedirectStandardOutput = true;
-            //StartInfo.RedirectStandardError = true;
             StartInfo.WorkingDirectory = Environment.CurrentDirectory;
             StartInfo.FileName = "java.exe";
-            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -C 0.25 -M 1 -x 4 -t \"{0}\" -d \"{1}\"", training_data_path, decision_tree_path);
+            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -C 0.45 -M 1 -x 4 -t \"{0}\" -d \"{1}\"", training_data_path, decision_tree_path);
 
             using (Process batProcess = Process.Start(StartInfo))
             {
-                //System.Threading.Thread.Sleep(5000);
                 batProcess.WaitForExit(5000);
-                //string stdout = batProcess.StandardOutput.ReadToEnd();
-                //string stderr = batProcess.StandardError.ReadToEnd();
                 batProcess.Close();
-                //Console.Write(stdout);
-                //Console.Write(stderr);
-                //Console.Write(stdout);
             }
         }
 
@@ -75,10 +67,6 @@ namespace ATN.Analysis
         /// </summary>
         public static void ClassifyData(string decision_tree_path, string test_data_path, string classification_output_path)
         {
-            //StreamWriter ClassificationDestination = new System.IO.StreamWriter(ClassificationStream, Encoding.ASCII);
-
-            //MemoryStream ms = new MemoryStream();
-            //ProcessStartInfo StartInfo = new ProcessStartInfo();
             ProcessStartInfo StartInfo = new ProcessStartInfo();
             StartInfo.UseShellExecute = false;
             StartInfo.CreateNoWindow = false;
@@ -86,28 +74,19 @@ namespace ATN.Analysis
             StartInfo.RedirectStandardError = true;
             StartInfo.WorkingDirectory = Environment.CurrentDirectory;
             StartInfo.FileName = "java.exe";
-            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 1-5", decision_tree_path, test_data_path);
+            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -l \"{0}\" -T \"{1}\" -p 1-6", decision_tree_path, test_data_path);
 
-            //try
-            //{
-                using (Process batProcess = Process.Start(StartInfo))
-                {
-                    batProcess.WaitForExit(5000);
-                    string stdout = batProcess.StandardOutput.ReadToEnd();
-                    string stderr = batProcess.StandardError.ReadToEnd();
-                    batProcess.Close();
-                    //Console.Write(stdout);
-                    //Console.Write(stderr);
-                    Stream s = File.OpenWrite(classification_output_path);
-                    StreamWriter sw = new StreamWriter(s);
-                    sw.Write(stdout);
-                    sw.Close();
-                }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.Write("Exception thrown: {0}", e);
-            //}
+            using (Process batProcess = Process.Start(StartInfo))
+            {
+                batProcess.WaitForExit(5000);
+                string stdout = batProcess.StandardOutput.ReadToEnd();
+                string stderr = batProcess.StandardError.ReadToEnd();
+                batProcess.Close();
+                Stream s = File.OpenWrite(classification_output_path);
+                StreamWriter sw = new StreamWriter(s);
+                sw.Write(stdout);
+                sw.Close();
+            }
         }
 
         public static Dictionary<long, Prediction> ParseClassificationOutput(string classification_output_path, int TheoryId, ExtendedSource[] ClassifySources)
