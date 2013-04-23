@@ -125,7 +125,7 @@ namespace ATN.Web
                 //grdFirstLevelSources.DataBind();
             }
             else if (postBackControl == "lnkAuthorsHeader" || postBackControl == "lnkTitleHeader" || postBackControl == "lnkSourceIdHeader" || postBackControl == "lnkYearHeader" || 
-                     postBackControl == "lnkAEFHeader" || postBackControl == "lnkDepthHeader" || postBackControl == "lnkJournalHeader")
+                     postBackControl == "lnkAEFHeader" || postBackControl == "lnkDepthHeader" || postBackControl == "lnkJournalHeader" || postBackControl == "lnkPredictionHeader")
             {
                 save_results();
                 grdFirstLevelSources.DataSource = sources;
@@ -201,6 +201,9 @@ namespace ATN.Web
 
                 LinkButton lnkJournalHeader = e.Row.Cells[7].Controls[1] as LinkButton;
                 lnkJournalHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Journal;
+
+                LinkButton lnkPredictionHeader = e.Row.Cells[8].Controls[1] as LinkButton;
+                lnkPredictionHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.PredictionProbability;
             }
             else if (e.Row.RowType == DataControlRowType.DataRow)
             {

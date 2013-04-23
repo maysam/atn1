@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Theory Networks" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="networks.aspx.cs" Inherits="ATN.Web.networks" %>
+﻿<%@ Page Title="Theory Networks" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="networks.aspx.cs" Inherits="ATN.Web.networks" EnableEventValidation="false" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <h1>Theory Networks Overview</h1>
@@ -10,6 +10,7 @@
                     </HeaderTemplate>
                     <ItemTemplate>
                         <asp:ImageButton ID="ImgVisualizationLink" runat="server" visible="false"/>
+                        <asp:Literal ID="ltrVisualizationLink" runat="server" Visible="true" />
                     </ItemTemplate>
                 </asp:TemplateField>
                 <asp:TemplateField>
