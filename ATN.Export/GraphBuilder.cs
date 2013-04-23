@@ -153,7 +153,7 @@ namespace ATN.Export
             {
                 foreach (SourceWithReferences Source in SourceTree.Values.ToArray())
                 {
-                    if (Source.IsContributingPrediction.HasValue && !Source.IsContributingPrediction.Value)
+                    if (Source.IsContributingPrediction.HasValue && !Source.IsContributingPrediction.Value && Source.PredictionProbability.HasValue && Source.PredictionProbability.Value != 1.0f)
                     {
                         SourceTree.Remove(Source.SourceId);
                     }
