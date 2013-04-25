@@ -33,13 +33,18 @@ namespace ATN.Web
             string postBackControl = Common.GetPostBackControlId(Page);
 
             //show the papers contributing to the theory                
-            if (postBackControl != "btnRandomize")
+            if (postBackControl == "btnRandomize")
             {
-                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, true);
+            }
+            else if (postBackControl == "btnFindSource")
+            {
+                string metaAnalysis = Page.Request.Form["ctl00$MainContent$txtFindSource"];
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, false, metaAnalysis);
             }
             else
             {
-                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, true);
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
             }
 
             theoryRetriever = sourceRetriever.GetTheory(theoryId);
@@ -100,7 +105,7 @@ namespace ATN.Web
                 grdFirstLevelSources.DataBind();
             }
             //postback to same page, use viewstate to save results
-            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit" || postBackControl == "btnRandomize")
+            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit" || postBackControl == "btnRandomize" || postBackControl == "btnFindSource")
             {
                 save_results();
                 grdFirstLevelSources.DataSource = sources;

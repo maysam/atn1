@@ -3,6 +3,10 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Label ID="lblNetworkName" runat="server" /></h2>
     <br />
+    <strong><asp:Label ID="lblFindSource" runat="server" Text="Search for meta analysis by ID or Title" /></strong>
+    <br />
+    <asp:TextBox ID="txtFindSource" runat="server" /><asp:Button ID="btnFindSource" runat="server" Text="Search" />
+    <br />
     <asp:Button ID="btnRandomize" runat="server" OnClick="btnRandomize_Click" Text="Random Sample" />
     <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" EnableViewState="true">
         <Columns>
