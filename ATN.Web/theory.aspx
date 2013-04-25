@@ -20,7 +20,7 @@
                     <asp:Image ID="imgTitleHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:LinkButton ID="lnkTitle" runat="server" OnClick="lnkTitle_Click"/>
+                    <asp:LinkButton ID="lnkTitle" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
@@ -95,7 +95,7 @@
 
     <br />
     <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" />
-    <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClick="btnSubmit_Click" />
+    <asp:Button ID="btnSubmit" runat="server" Text="Save" />
     <asp:Button ID="btnNext" runat="server" Text="Next Page" />
 
 </asp:Content>

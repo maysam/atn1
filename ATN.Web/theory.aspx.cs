@@ -15,6 +15,11 @@ namespace ATN.Web
         //The page number
         int lastPageIndex;
 
+        /// <summary>
+        /// Retrieves data, populatees grid, sets values for conttrols, postback handlers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
@@ -36,12 +41,26 @@ namespace ATN.Web
             {
                 sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, true);
             }
-                
-            theoryRetriever = sourceRetriever.GetTheory(theoryId);
-            
-            //set the network label
-            lblNetworkName.Text = theoryRetriever.TheoryName;
 
+            theoryRetriever = sourceRetriever.GetTheory(theoryId);
+            //set the network label
+            if (theoryRetriever.TheoryName != null)
+            {
+                if (sources.Count == 0)
+                {
+                    lblNetworkName.Text = "There are no citations available for " + theoryRetriever.TheoryName;
+                }
+                else
+                {
+                    lblNetworkName.Text = theoryRetriever.TheoryName;
+                }
+            }
+            else
+            {
+                lblNetworkName.Text = "Theory does not exist";
+            }
+
+            //set the paging and submit buttons
             //first page
             if (lastPageIndex == 0)
             {
@@ -101,6 +120,11 @@ namespace ATN.Web
 
         }
 
+        /// <summary>
+        /// Binds data to each row of the grid
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">Grid view row object</param>
         protected void grdFirstLevelSources_RowDataBound(object sender, GridViewRowEventArgs e)
         {            
             
@@ -195,16 +219,9 @@ namespace ATN.Web
             }
         }
 
-        protected void btnSubmit_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void lnkTitle_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// Saves the checked sources as meta analysis
+        /// </summary>
         protected void save_results()
         {
             Theories dataSaver = new Theories();
@@ -225,6 +242,11 @@ namespace ATN.Web
 
         }
 
+        /// <summary>
+        /// requests random set of sources for the given theory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void btnRandomize_Click(object sender, EventArgs e)
         {
             Theories sourceCounter = new Theories();

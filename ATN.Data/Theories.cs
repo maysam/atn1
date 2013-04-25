@@ -93,7 +93,14 @@ namespace ATN.Data
         /// <returns>The requested theory</returns>
         public Theory GetTheory(int TheoryId)
         {
-            return Context.Theories.Single(t => t.TheoryId == TheoryId);
+            try
+            {
+                return Context.Theories.Single(t => t.TheoryId == TheoryId);
+            }
+            catch(Exception e)
+            {
+                return new Theory();
+            }
         }
 
         /// <summary>
