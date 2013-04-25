@@ -11,6 +11,9 @@ namespace ATN.Web
 {
     public static class Common
     {
+        /// <summary>
+        /// constant string to build url arguments with
+        /// </summary>
         public struct QueryStrings
         {
             public const string AEF = "AEF";
@@ -40,6 +43,9 @@ namespace ATN.Web
             public const string Year = "Year";
         }
 
+        /// <summary>
+        /// constant strings to build url strings with
+        /// </summary>
         public struct Symbols
         {
             public const string Amp = "&";
@@ -55,6 +61,9 @@ namespace ATN.Web
             public const string Zero = "0";
         }
 
+        /// <summary>
+        /// constant strings of the page names for url building
+        /// </summary>
         public struct Pages
         {
             public const string Help = "help.aspx";
@@ -65,6 +74,9 @@ namespace ATN.Web
             
         }
 
+        /// <summary>
+        /// constant data to use on the pages
+        /// </summary>
         public struct Data
         {
             public const int PageSize = 200;
@@ -135,6 +147,9 @@ namespace ATN.Web
             list.Sort(comparers[0].Compare);
         }
 
+        /// <summary>
+        /// Compares various types, used in sorting
+        /// </summary>
         public class GenericComparer
         {
             public List<GenericComparer> comparers { get; set; }
@@ -194,7 +209,7 @@ namespace ATN.Web
 
         /// <summary>
         /// Gets the ID of the post back control.
-        /// See: http://geekswithblogs.net/mahesh/archive/2006/06/27/83264.aspx
+        /// Credit to: http://geekswithblogs.net/mahesh/archive/2006/06/27/83264.aspx
         /// </summary>
         /// <param name = "page">The page.</param>
         /// <returns></returns>

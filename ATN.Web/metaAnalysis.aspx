@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="metaAnalysis.aspx.cs" Inherits="ATN.Web.metaAnalysis" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <h2><asp:Label ID="lblNetworkName" runat="server" /></h2><h2><asp:LinkButton ID="lnkNetworkName" runat="server" OnClick="lnkNetworkName_OnClick"/></h2>
+    <h2><asp:Label ID="lblNetworkName" runat="server" /></h2><h2><asp:LinkButton ID="lnkNetworkName" runat="server" /></h2>
     <h3><asp:Label ID="lblMetaAnalysisName" runat="server" /></h3>
     <br />
     <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" ShowFooter="false">
@@ -96,8 +96,8 @@
     </asp:GridView>
 
     <br />
-    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" OnClick="btnPrevious_OnClick" />
-    <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClick="btnSubmit_OnClick" />
-    <asp:Button ID="btnNext" runat="server" Text="Next Page" OnClick="btnNext_OnClick" />
+    <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" />
+    <asp:Button ID="btnSubmit" runat="server" Text="Save" />
+    <asp:Button ID="btnNext" runat="server" Text="Next Page" />
 
 </asp:Content>

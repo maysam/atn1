@@ -10,9 +10,17 @@ namespace ATN.Web
 {
     public partial class networks : System.Web.UI.Page
     {
+        /// <summary>
+        /// global strings used in multiple functions
+        /// </summary>
         string sortCol = string.Empty;
         string sortOrder = string.Empty;
 
+        /// <summary>
+        /// retrieves url arguments, sets values, binds grid data, sorts data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             sortCol = (Request.QueryString[Common.QueryStrings.SortCol] != null) ? 
@@ -21,17 +29,6 @@ namespace ATN.Web
                          Request.QueryString[Common.QueryStrings.SortOrder] : null;
 
             Theories theoryCaller = new Theories();
-
-            //test data
-            //Theory theory1 = new Theory();
-            //theory1.TheoryId = 1;
-            //theory1.TheoryName = "Theory 1";
-            //theory1.DateAdded = DateTime.Now;
-            //Theory theory2 = new Theory();
-            //theory2.TheoryId = 1;
-            //theory2.TheoryName = "Theory 2";
-            //theory2.DateAdded = DateTime.Now;
-            //Theory[] allTheories = new Theory[2] { theory1, theory2 };
 
             List<Theory> allTheories;
             allTheories = theoryCaller.GetTheoriesAsList();
