@@ -3,6 +3,10 @@
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Label ID="lblNetworkName" runat="server" /></h2>
     <br />
+    <strong><asp:Label ID="lblFindSource" runat="server" Text="Search for meta analysis by ID or Title" /></strong>
+    <br />
+    <asp:TextBox ID="txtFindSource" runat="server" /><asp:Button ID="btnFindSource" runat="server" Text="Search" />
+    <br />
     <asp:Button ID="btnRandomize" runat="server" OnClick="btnRandomize_Click" Text="Random Sample" />
     <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" EnableViewState="true">
         <Columns>
@@ -20,7 +24,7 @@
                     <asp:Image ID="imgTitleHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:LinkButton ID="lnkTitle" runat="server" OnClick="lnkTitle_Click"/>
+                    <asp:LinkButton ID="lnkTitle" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
@@ -95,7 +99,7 @@
 
     <br />
     <asp:Button ID="btnPrevious" runat="server" Text="Previous Page" />
-    <asp:Button ID="btnSubmit" runat="server" Text="Save" OnClick="btnSubmit_Click" />
+    <asp:Button ID="btnSubmit" runat="server" Text="Save" />
     <asp:Button ID="btnNext" runat="server" Text="Next Page" />
 
 </asp:Content>

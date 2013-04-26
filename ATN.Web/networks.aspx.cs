@@ -10,9 +10,17 @@ namespace ATN.Web
 {
     public partial class networks : System.Web.UI.Page
     {
+        /// <summary>
+        /// global strings used in multiple functions
+        /// </summary>
         string sortCol = string.Empty;
         string sortOrder = string.Empty;
 
+        /// <summary>
+        /// retrieves url arguments, sets values, binds grid data, sorts data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             sortCol = (Request.QueryString[Common.QueryStrings.SortCol] != null) ? 
@@ -21,17 +29,6 @@ namespace ATN.Web
                          Request.QueryString[Common.QueryStrings.SortOrder] : null;
 
             Theories theoryCaller = new Theories();
-
-            //test data
-            //Theory theory1 = new Theory();
-            //theory1.TheoryId = 1;
-            //theory1.TheoryName = "Theory 1";
-            //theory1.DateAdded = DateTime.Now;
-            //Theory theory2 = new Theory();
-            //theory2.TheoryId = 1;
-            //theory2.TheoryName = "Theory 2";
-            //theory2.DateAdded = DateTime.Now;
-            //Theory[] allTheories = new Theory[2] { theory1, theory2 };
 
             List<Theory> allTheories;
             allTheories = theoryCaller.GetTheoriesAsList();
@@ -86,22 +83,34 @@ namespace ATN.Web
                 Label lblLastRun = e.Row.Cells[3].Controls[1] as Label;
                 lblLastRun.Text = lastCrawl.GetLastCrawlDate(theory.TheoryId).ToString();
 
-                Label lblLastEigenfactor = e.Row.Cells[4].Controls[1] as Label;
-                lblLastEigenfactor.Text = theory.LastAnalysisDate.ToString();
+                Label lblLastMachineLearning = e.Row.Cells[4].Controls[1] as Label;
+                lblLastMachineLearning.Text = theory.LastAnalysisDate.ToString();
 
-                Label lblLastMachineLearning = e.Row.Cells[5].Controls[1] as Label;
-
-                Label lblStatus = e.Row.Cells[6].Controls[1] as Label;
-                
-                Label lblSecondLevel = e.Row.Cells[7].Controls[1] as Label;
+                Label lblStatus = e.Row.Cells[5].Controls[1] as Label;
+                if(lastCrawl.GetCrawlerState(theory.TheoryId) == true)
+                {
+                    lblStatus.Text = "Changed";
+                }
+                else if (lastCrawl.GetCrawlerState(theory.TheoryId) == false)
+                {
+                    lblStatus.Text = "Unchanged";
+                }
+                else
+                {
+                    lblStatus.Text = "";
+                }
+               
+                Label lblSecondLevel = e.Row.Cells[6].Controls[1] as Label;
                 lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheory(theory.TheoryId).Length.ToString();
                 
-                Label lblThirdLevel = e.Row.Cells[8].Controls[1] as Label;
+                Label lblThirdLevel = e.Row.Cells[7].Controls[1] as Label;
+                lblThirdLevel.Text = dataRetriever.GetAllExtendedSourcesForTheory(theory.TheoryId, 0, 1000000).Where(s => s.Depth == 2).Count().ToString();
 
-                Label lblTheoryContributing  = e.Row.Cells[9].Controls[1] as Label;
-                //lblTheoryContributing.Text = 
+                Label lblTheoryContributing  = e.Row.Cells[8].Controls[1] as Label;
+                lblTheoryContributing.Text = dataRetriever.GetAllExtendedSourcesForTheory(theory.TheoryId, 0, 1000000).Where(s => s.isContributingPrediction == true).Count().ToString();
+                
 
-                LinkButton lnkEdit = e.Row.Cells[10].Controls[1] as LinkButton;
+                LinkButton lnkEdit = e.Row.Cells[9].Controls[1] as LinkButton;
                 lnkEdit.PostBackUrl = Common.Pages.Launcher + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + theory.TheoryId.ToString();
                 #endregion
             }
@@ -147,22 +156,19 @@ namespace ATN.Web
                 LinkButton lnkLastRunHeader = e.Row.Cells[3].Controls[1] as LinkButton;
                 //lnkLastRunHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastRun;
 
-                LinkButton lnkLastEigenfactorHeader = e.Row.Cells[4].Controls[1] as LinkButton;
-                //lnkLastEigenfactorHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastEigenfactor;
-
-                LinkButton lnkLastMachineLearningHeader = e.Row.Cells[5].Controls[1] as LinkButton;
+                LinkButton lnkLastMachineLearningHeader = e.Row.Cells[4].Controls[1] as LinkButton;
                 //lnkLastMachineLearningHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastMachineLearning;
 
-                LinkButton lnkStatusHeader = e.Row.Cells[6].Controls[1] as LinkButton;
+                LinkButton lnkStatusHeader = e.Row.Cells[5].Controls[1] as LinkButton;
                 //lnkStatusHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Status;
 
-                LinkButton lnkSecondLevelHeader = e.Row.Cells[7].Controls[1] as LinkButton;
+                LinkButton lnkSecondLevelHeader = e.Row.Cells[6].Controls[1] as LinkButton;
                 //lnkSecondLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.SecondLevel;
 
-                LinkButton lnkThirdLevelHeader = e.Row.Cells[8].Controls[1] as LinkButton;
+                LinkButton lnkThirdLevelHeader = e.Row.Cells[7].Controls[1] as LinkButton;
                 //lnkThirdLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.ThirdLevel;
 
-                LinkButton lnkTheoryContributingHeader = e.Row.Cells[9].Controls[1] as LinkButton;
+                LinkButton lnkTheoryContributingHeader = e.Row.Cells[8].Controls[1] as LinkButton;
                 //lnkTheoryContributingHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.TheoryContributing;
 
             }

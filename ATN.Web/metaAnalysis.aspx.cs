@@ -20,11 +20,11 @@ namespace ATN.Web
         string sortCol = string.Empty;
         string sortOrder = string.Empty;
 
-        protected void Page_Init(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// retrieves url parameters, retrieves data, populates grid values, sets button values, and handles postback controls
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
@@ -142,6 +142,11 @@ namespace ATN.Web
             #endregion
         }
 
+        /// <summary>
+        /// Bind data to grid view rows
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">The row control</param>
         protected void grdFirstLevelSources_RowDataBound(object sender, GridViewRowEventArgs e)
         {
 
@@ -290,36 +295,9 @@ namespace ATN.Web
             }
         }
 
-        protected void btnPrevious_OnClick(object sender, EventArgs e)
-        {
-            //save_results();
-        }
-
-        protected void btnNext_OnClick(object sender, EventArgs e)
-        {
-            //save_results();
-        }
-
-        protected void btnSubmit_OnClick(object sender, EventArgs e)
-        {
-            //save changes            
-            //save_results();
-        }
-
-        protected void lnkTitle_OnClick(object sender, EventArgs e)
-        {
-            //save changes
-            //save_results();
-        }
-
-        protected void lnkNetworkName_OnClick(object sender, EventArgs e)
-        {
-            Response.Redirect(Common.Pages.MetaAnalysis + Common.Symbols.Question + 
-                Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
-                Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp + 
-                Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
-        }
-
+        /// <summary>
+        /// save the values of the meta analysis checkboxes
+        /// </summary>
         protected void save_results()
         {
             Theories dataSaver = new Theories();

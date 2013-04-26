@@ -22,6 +22,33 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.Label lblNetworkName;
         
         /// <summary>
+        /// lblFindSource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblFindSource;
+        
+        /// <summary>
+        /// txtFindSource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtFindSource;
+        
+        /// <summary>
+        /// btnFindSource control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnFindSource;
+        
+        /// <summary>
         /// btnRandomize control.
         /// </summary>
         /// <remarks>

@@ -15,6 +15,11 @@ namespace ATN.Web
         //The page number
         int lastPageIndex;
 
+        /// <summary>
+        /// Retrieves data, populatees grid, sets values for conttrols, postback handlers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
@@ -28,20 +33,39 @@ namespace ATN.Web
             string postBackControl = Common.GetPostBackControlId(Page);
 
             //show the papers contributing to the theory                
-            if (postBackControl != "btnRandomize")
-            {
-                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
-            }
-            else
+            if (postBackControl == "btnRandomize")
             {
                 sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, true);
             }
-                
-            theoryRetriever = sourceRetriever.GetTheory(theoryId);
-            
-            //set the network label
-            lblNetworkName.Text = theoryRetriever.TheoryName;
+            else if (postBackControl == "btnFindSource")
+            {
+                string metaAnalysis = Page.Request.Form["ctl00$MainContent$txtFindSource"];
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize, false, metaAnalysis);
+            }
+            else
+            {
+                sources = sourceRetriever.GetAllExtendedSourcesForTheory(theoryId, lastPageIndex, Common.Data.PageSize);
+            }
 
+            theoryRetriever = sourceRetriever.GetTheory(theoryId);
+            //set the network label
+            if (theoryRetriever.TheoryName != null)
+            {
+                if (sources.Count == 0)
+                {
+                    lblNetworkName.Text = "There are no citations available for " + theoryRetriever.TheoryName;
+                }
+                else
+                {
+                    lblNetworkName.Text = theoryRetriever.TheoryName;
+                }
+            }
+            else
+            {
+                lblNetworkName.Text = "Theory does not exist";
+            }
+
+            //set the paging and submit buttons
             //first page
             if (lastPageIndex == 0)
             {
@@ -81,7 +105,7 @@ namespace ATN.Web
                 grdFirstLevelSources.DataBind();
             }
             //postback to same page, use viewstate to save results
-            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit" || postBackControl == "btnRandomize")
+            else if (postBackControl == "btnNext" || postBackControl == "btnPrevious" || postBackControl == "btnSubmit" || postBackControl == "btnRandomize" || postBackControl == "btnFindSource")
             {
                 save_results();
                 grdFirstLevelSources.DataSource = sources;
@@ -101,6 +125,11 @@ namespace ATN.Web
 
         }
 
+        /// <summary>
+        /// Binds data to each row of the grid
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">Grid view row object</param>
         protected void grdFirstLevelSources_RowDataBound(object sender, GridViewRowEventArgs e)
         {            
             
@@ -195,16 +224,9 @@ namespace ATN.Web
             }
         }
 
-        protected void btnSubmit_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void lnkTitle_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// Saves the checked sources as meta analysis
+        /// </summary>
         protected void save_results()
         {
             Theories dataSaver = new Theories();
@@ -225,6 +247,11 @@ namespace ATN.Web
 
         }
 
+        /// <summary>
+        /// requests random set of sources for the given theory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void btnRandomize_Click(object sender, EventArgs e)
         {
             Theories sourceCounter = new Theories();

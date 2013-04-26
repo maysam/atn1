@@ -93,7 +93,14 @@ namespace ATN.Data
         /// <returns>The requested theory</returns>
         public Theory GetTheory(int TheoryId)
         {
-            return Context.Theories.Single(t => t.TheoryId == TheoryId);
+            try
+            {
+                return Context.Theories.Single(t => t.TheoryId == TheoryId);
+            }
+            catch(Exception e)
+            {
+                return new Theory();
+            }
         }
 
         /// <summary>
@@ -154,7 +161,7 @@ namespace ATN.Data
         /// <param name="PageSize">The size of pages</param>
         /// <param name="OrderByRandom">Whether to select a random sample of sources; note that when this is true subsequent page indexes may contain sources seen in previous pages</param>
         /// <returns>An array of extended sources which are members of the given theory</returns>
-        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex, int PageSize, bool OrderByRandom = false)
+        public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex, int PageSize, bool OrderByRandom = false, string search = null)
         {
             return Context.ExecuteStoreQuery<ExtendedSource>(
                 @"WITH TestTable as (
