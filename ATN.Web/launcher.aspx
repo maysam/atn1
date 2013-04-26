@@ -59,7 +59,7 @@
          <asp:CheckBox ID="TAR" runat="server" TextAlign="Left" Text="TAR" Enabled="False" ForeColor="Silver"  />
          <asp:CheckBox ID="DataMining" runat="server" TextAlign="Left" Text="Data Mining"  />
 
-         <asp:CheckBox ID="Clustring" runat="server" TextAlign="Left" Text="Clustring"  />
+         <asp:CheckBox ID="Clustring" runat="server" TextAlign="Left" Text="Clustering"  />
         <br />
      
 

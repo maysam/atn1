@@ -7,6 +7,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using ATN.Data;
 using ATN.Crawler;
+using System.IO;
 
 namespace ATN.Web
 {
@@ -14,7 +15,34 @@ namespace ATN.Web
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!Page.IsPostBack)
+            int TheoryId;
+            if (Int32.TryParse(Request["TheoryId"], out TheoryId) && !IsPostBack)
+            {
+                DataSourceGrid.Visible = false;
+                btnNewSource.Visible = false;
+
+                Theories t = new Theories();
+                Theory TheoryToGet = t.GetTheory(TheoryId);
+                Crawl TheoryCrawl = TheoryToGet.Crawl.SingleOrDefault();
+                txtNetworkName.Text = TheoryToGet.TheoryName;
+                txtNetworkComments.Text = TheoryToGet.TheoryComment;
+
+                if (TheoryCrawl.CrawlIntervalDays.HasValue)
+                {
+                    crawlperiod.SelectedValue = TheoryCrawl.CrawlIntervalDays.Value.ToString();
+                }
+
+
+
+                AEF.Checked = TheoryToGet.ArticleLevelEigenfactor;
+                ImpactFactor.Checked = TheoryToGet.TheoryAttributionRatio;
+                TAR.Checked = TheoryToGet.TheoryAttributionRatio;
+                DataMining.Checked = TheoryToGet.DataMining;
+                Clustring.Checked = TheoryToGet.Clustering;
+
+                btnSubmit1.Text = "Update Crawl";
+            }
+            else if (!Page.IsPostBack)
             {
                 Set_Initial_Data_Source_Row();
             }
@@ -147,53 +175,88 @@ namespace ATN.Web
         /// <param name="e"></param>
         protected void btnSubmit_LaunchCrawler(object sender, CommandEventArgs e)
         {
-            string TheoryName;
-            string TheoryComment;
-            TheoryName = txtNetworkName.Text;
-            TheoryComment = txtNetworkComments.Text;
-            CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[DataSourceGrid.Rows.Count];
-            
 
-           
-           // string txtMSAcademicSearchIdTemp;
-            //string [] txtMSAcademicSearchIdTemp2 = new string[DataSourceGrid.Columns.Count];
-            //TextBox txtMSAcademicSearchIdTemp2;
-
-            
-            string tempsingleLine;
-           
-
-            int CrawlIntervalInDays=0;
-            string CrawlIntervalstringValue= crawlperiod.SelectedValue;
-
-            int numberOfIds ;
-            
-            string[][] AllPapersIDs = new string[DataSourceGrid.Rows.Count][];
-            //string[] OnePaperMsAcademicSearchIds2 = new string[DataSourceGrid.Columns.Count];
-
-
-            //string[][] AllPapersMsAcademicSearchIds = new string[DataSourceGrid.Rows.Count][DataSourceGrid.GridViewColumnsGenerator.Count];
-            
-
-            //set initial array size for first row
-
-            TextBox txtMSAcademicSearchIdTemp;
-            
-           
-            //AllPapersIDs[0] = OnePaperMsAcademicSearchIds;
-           
-        
-            //header row makes iterator 1, footer row makes iterator only go up to count - 1
-            for (int itr = 1; itr < DataSourceGrid.Rows.Count; itr++)
+            int TheoryId;
+            if (Int32.TryParse(Request["TheoryId"], out TheoryId))
             {
-               // for (int itr1 = 0; itr1 < DataSourceGrid.Columns.Count; itr1++)
-                //{
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        File.Delete(@"C:\Program Files\A Theory Network\Processing\Processing.log");
+                        break;
+                    }
+                    catch (IOException) { }
+                }
+                Theories t = new Theories();
+                Theory TheoryToGet = t.GetTheory(TheoryId);
+                Crawl TheoryCrawl = TheoryToGet.Crawl.SingleOrDefault();
+                TheoryToGet.TheoryName = txtNetworkName.Text;
+                TheoryToGet.TheoryComment = txtNetworkComments.Text;
+
+                if (TheoryCrawl.CrawlIntervalDays.HasValue)
+                {
+                    TheoryCrawl.DateCrawled = DateTime.Now.AddMonths(-1);
+                    TheoryCrawl.CrawlIntervalDays = Int32.Parse(crawlperiod.SelectedValue);
+                }
+
+                TheoryToGet.ArticleLevelEigenfactor = AEF.Checked;
+                TheoryToGet.TheoryAttributionRatio = ImpactFactor.Checked;
+                TheoryToGet.TheoryAttributionRatio = TAR.Checked;
+                TheoryToGet.DataMining = DataMining.Checked;
+                TheoryToGet.Clustering = Clustring.Checked;
+
+                t.SaveTheory();
+            }
+            else
+            {
+                string TheoryName;
+                string TheoryComment;
+                TheoryName = txtNetworkName.Text;
+                TheoryComment = txtNetworkComments.Text;
+                CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[DataSourceGrid.Rows.Count];
+
+
+
+                // string txtMSAcademicSearchIdTemp;
+                //string [] txtMSAcademicSearchIdTemp2 = new string[DataSourceGrid.Columns.Count];
+                //TextBox txtMSAcademicSearchIdTemp2;
+
+
+                string tempsingleLine;
+
+
+                int CrawlIntervalInDays = 0;
+                string CrawlIntervalstringValue = crawlperiod.SelectedValue;
+
+                int numberOfIds;
+
+                string[][] AllPapersIDs = new string[DataSourceGrid.Rows.Count][];
+                //string[] OnePaperMsAcademicSearchIds2 = new string[DataSourceGrid.Columns.Count];
+
+
+                //string[][] AllPapersMsAcademicSearchIds = new string[DataSourceGrid.Rows.Count][DataSourceGrid.GridViewColumnsGenerator.Count];
+
+
+                //set initial array size for first row
+
+                TextBox txtMSAcademicSearchIdTemp;
+
+
+                //AllPapersIDs[0] = OnePaperMsAcademicSearchIds;
+
+
+                //header row makes iterator 1, footer row makes iterator only go up to count - 1
+                for (int itr = 1; itr < DataSourceGrid.Rows.Count; itr++)
+                {
+                    // for (int itr1 = 0; itr1 < DataSourceGrid.Columns.Count; itr1++)
+                    //{
                     //txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[itr1].Text; 
-                   // txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[itr1].FindControl("txtMasId1") as TextBox;
-                   // txtMSAcademicSearchIdTemp2 = DataSourceGrid.Rows[itr].Cells[itr1].FindControl("txtMasId2") as TextBox;
+                    // txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[itr1].FindControl("txtMasId1") as TextBox;
+                    // txtMSAcademicSearchIdTemp2 = DataSourceGrid.Rows[itr].Cells[itr1].FindControl("txtMasId2") as TextBox;
 
 
-                     txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[0].FindControl("txtMasId1") as TextBox;
+                    txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[0].FindControl("txtMasId1") as TextBox;
                     //txtMSAcademicSearchIdTemp2 = DataSourceGrid.Rows[itr].Cells[1].FindControl("txtMasId2") as TextBox;
 
                     //OnePaperMsAcademicSearchIds[itr1] = txtMSAcademicSearchIdTemp;
@@ -201,64 +264,65 @@ namespace ATN.Web
                     //OnePaperMsAcademicSearchIds[itr1] = txtMSAcademicSearchIdTemp.Text;
 
 
-                     numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length;
-                     string[] OnePaperMsAcademicSearchIds = new string[numberOfIds];
-            
+                    numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length;
+                    string[] OnePaperMsAcademicSearchIds = new string[numberOfIds];
+
 
                     tempsingleLine = txtMSAcademicSearchIdTemp.Text;
-           
+
                     OnePaperMsAcademicSearchIds = tempsingleLine.Split(',');
 
-                 //OnePaperMsAcademicSearchIds[1] = txtMSAcademicSearchIdTemp2.Text;
-                   
-               // }
+                    //OnePaperMsAcademicSearchIds[1] = txtMSAcademicSearchIdTemp2.Text;
+
+                    // }
 
 
-                //AllPapersIDs[itr] = new string[DataSourceGrid.Columns.Count];
-                AllPapersIDs[itr]= OnePaperMsAcademicSearchIds;
-            }
+                    //AllPapersIDs[itr] = new string[DataSourceGrid.Columns.Count];
+                    AllPapersIDs[itr] = OnePaperMsAcademicSearchIds;
+                }
 
 
 
-            
+
                 CrawlIntervalInDays = int.Parse(CrawlIntervalstringValue);
 
-               
 
-            //prepare the datasource and specifications for the crawl
 
-                    //create an array of all CanonicalDataSources
-            for (int itr = 0; itr < DataSourceGrid.Rows.Count; itr++)
-            {
+                //prepare the datasource and specifications for the crawl
 
-                AllSourcesArray[itr] = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AllPapersIDs[itr]);
+                //create an array of all CanonicalDataSources
+                for (int itr = 0; itr < DataSourceGrid.Rows.Count; itr++)
+                {
+
+                    AllSourcesArray[itr] = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AllPapersIDs[itr]);
+                }
+                //CanonicalDataSource MASIds = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds);
+                //CanonicalDataSource MASIds2 = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds2);
+
+
+                NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName, TheoryComment, AEF.Checked, ImpactFactor.Checked, TAR.Checked, DataMining.Checked, Clustring.Checked, AllSourcesArray);
+
+
+                //start a new crawl
+                CrawlRunner NewCrawler = new CrawlRunner();
+                NewCrawler.StartNewCrawl(CrawlSpecifier, CrawlIntervalInDays);
+
+                //pop an alert box to test if information is being passed correctly
+
+                //string crawlerString;
+                //crawlerString = "alert('" +
+                //        txtNetworkName.Text + "\\n" +
+                //        txtNetworkComments.Text + "\\n" +
+                //        "paper name     MS Academic Search ID \\n";
+
+                //for (int itr = 0; itr < paperNames.Count(); itr++)
+                //{
+                //    crawlerString += paperNames[itr] + "    " + msAcademicSearchIds[itr] + "\\n";
+                //}
+                //crawlerString += "');";
+
+                //ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
             }
-            //CanonicalDataSource MASIds = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds);
-            //CanonicalDataSource MASIds2 = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds2);
-
-
-            NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName, TheoryComment, AEF.Checked, ImpactFactor.Checked, TAR.Checked, DataMining.Checked, Clustring.Checked, AllSourcesArray);
-            
-            
-            //start a new crawl
-            CrawlRunner NewCrawler = new CrawlRunner();
-            NewCrawler.StartNewCrawl(CrawlSpecifier, CrawlIntervalInDays);
-
-            //pop an alert box to test if information is being passed correctly
-
-            //string crawlerString;
-            //crawlerString = "alert('" +
-            //        txtNetworkName.Text + "\\n" +
-            //        txtNetworkComments.Text + "\\n" +
-            //        "paper name     MS Academic Search ID \\n";
-
-            //for (int itr = 0; itr < paperNames.Count(); itr++)
-            //{
-            //    crawlerString += paperNames[itr] + "    " + msAcademicSearchIds[itr] + "\\n";
-            //}
-            //crawlerString += "');";
-
-            //ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
         }
 
         protected void ImpactFactor_CheckedChanged(object sender, EventArgs e)

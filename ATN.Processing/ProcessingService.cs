@@ -36,11 +36,17 @@ namespace ATN.Processing
 
                         if (ChangedCrawls.Length > 0)
                         {
+                            Trace.WriteLine("===========================================================================");
+                            Trace.WriteLine(string.Format("Analysis batch beginning {0}", DateTime.Now));
+
                             AnalysisRunner ar = new AnalysisRunner();
                             for(int i = 0; i < ChangedCrawls.Length; i++)
                             {
                                 ar.AnalyzeTheory(ChangedCrawls[i].Crawl, ChangedCrawls[i].TheoryId);
                             }
+
+                            Trace.WriteLine(string.Format("Analysis batch complete"));
+                            Trace.WriteLine("===========================================================================");
                         }
                     }
                     catch (Exception e)

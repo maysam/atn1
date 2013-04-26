@@ -20,7 +20,7 @@ namespace ATN.Web
             {
                 GraphBuilder gb = new GraphBuilder();
                 context.Response.ContentType = "text/xml";
-                Graph ExportGraph = gb.GetGraphForTheory(TheoryId, true, true, true, true, true);
+                Graph ExportGraph = gb.GetGraphForTheory(TheoryId, false, false, false, true, true);
                 MemoryStream ExportStream = new MemoryStream();
                 XGMMLExporter.Export(ExportGraph.Nodes.ToArray(), ExportGraph.Edges.ToArray(), ExportStream);
                 context.Response.AddHeader("Content-Length", ExportStream.Length.ToString());

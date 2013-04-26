@@ -103,6 +103,11 @@ namespace ATN.Data
             }
         }
 
+        public void SaveTheory()
+        {
+            Context.SaveChanges();
+        }
+
         /// <summary>
         /// Retrieves the sources which cite the canonical papers for a given theory
         /// </summary>
@@ -246,6 +251,22 @@ namespace ATN.Data
                         if (!SourceIdCitedBy[sic.SourceId].References.Contains(sic.CitesSourceId.Value))
                         {
                             SourceIdCitedBy[sic.SourceId].AddReference(sic.CitesSourceId.Value);
+                        }
+                    }
+                }
+            }
+            foreach (SourceIdCitedByWithDepth sic in SourcesCited)
+            {
+                if (sic.CitesSourceId.HasValue)
+                {
+                    if (sic.SourceId != sic.CitesSourceId.Value)
+                    {
+                        //This is necessary to avoid instances where a source may be considered 1st level to the canonical source
+                        //but may also be considered 2nd level to a separate 1st level source. As the passed table is sorted by
+                        //depth the first added source is always the correct depth
+                        if (!SourceIdCitedBy[sic.CitesSourceId.Value].Citations.Contains(sic.SourceId))
+                        {
+                            SourceIdCitedBy[sic.CitesSourceId.Value].AddCitation(sic.SourceId);
                         }
                     }
                 }
