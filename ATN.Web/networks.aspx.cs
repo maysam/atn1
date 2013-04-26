@@ -68,7 +68,7 @@ namespace ATN.Web
 
                 ImageButton ImgVisualizationLink = e.Row.Cells[0].Controls[1] as ImageButton;
 
-                string BaseAttributes = "channelmode=no,directories=no,resizable=yes,scrollbars=yes,location=yes,menubar=yes,status=no,toolbar=no";
+                string BaseAttributes = "channelmode=no,directories=no,resizable=no,scrollbars=no,location=no,menubar=no,status=no,toolbar=no,width=600,height=100";
                 ImgVisualizationLink.Attributes.Add("onclick", "window.open('ExportVisualization.ashx?TheoryId=" + theory.TheoryId.ToString() + "','_blank','" + BaseAttributes + "',false);");
                 ImgVisualizationLink.ImageUrl = "/Images/HBPLogo.png";
                 ImgVisualizationLink.Visible = true;
