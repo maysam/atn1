@@ -40,14 +40,13 @@ namespace ATN.Analysis
 
             GraphBuilder gb = new GraphBuilder();
             //Graph UnprunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, false, false);
-            Graph PrunedGraph = gb.GetGraphForTheory(TheoryId, true, true, true, true, true);
-            int x = 0;
+            Graph PrunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, true, true);
             //int x = 0;
             //FileStream UnprunedStream = File.Open(TheoryId.ToString() + "UnprunnedGraph.xml", FileMode.Create);
             //XGMMLExporter.Export(UnprunedGraph.Nodes.ToArray(), UnprunedGraph.Edges.ToArray(), UnprunedStream);
 
-            //FileStream PrunedStream = File.Open(TheoryId.ToString() + "PrunnedGraph.xml", FileMode.Create);
-            //XGMMLExporter.Export(PrunedGraph.Nodes.ToArray(), PrunedGraph.Edges.ToArray(), PrunedStream);
+            FileStream PrunedStream = File.Open(TheoryId.ToString() + "PrunnedGraph.xml", FileMode.Create);
+            XGMMLExporter.Export(PrunedGraph.Nodes.ToArray(), PrunedGraph.Edges.ToArray(), PrunedStream);
         }
     }
 }

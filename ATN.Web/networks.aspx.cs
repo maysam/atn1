@@ -94,7 +94,9 @@ namespace ATN.Web
                 lblThirdLevel.Text = AllSourcesForTheory.Count(s => s.Depth == 2).ToString();
 
                 Label lblTheoryContributing  = e.Row.Cells[6].Controls[1] as Label;
-                lblTheoryContributing.Text = AllSourcesForTheory.Count(s => s.Contributing.HasValue && s.Contributing.Value).ToString();
+                int TheoryContributingCount = AllSourcesForTheory.Count(s => s.Contributing.HasValue && s.Contributing.Value);
+                //TheoryContributingCount += AllSourcesForTheory.Count(s => !s.Contributing.HasValue && s.isContributingPrediction.HasValue && s.isContributingPrediction.Value);
+                lblTheoryContributing.Text = TheoryContributingCount.ToString();
                 //lblTheoryContributing.Text = 
 
                 LinkButton lnkEdit = e.Row.Cells[7].Controls[1] as LinkButton;

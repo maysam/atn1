@@ -45,6 +45,39 @@ namespace ATN.Export
             return ret;
         }
 
+        public void RemoveFromTree(Dictionary<long, SourceWithReferences> SourceTree, long SourceToRemove)
+        {
+            //List<long> Citations = SourceTree[SourceToRemove].Citations;
+            //List<long> References = SourceTree[SourceToRemove].References;
+
+            //foreach (long Citation in Citations)
+            //{
+            //    if (SourceTree.ContainsKey(Citation))
+            //    {
+            //        SourceTree[Citation].References.RemoveAll(a => a == SourceToRemove);
+            //        foreach (long Reference in References)
+            //        {
+            //            SourceTree[Citation].References.Add(Reference);
+            //        }
+            //    }
+            //}
+
+            //foreach (long Citation in Citations)
+            //{
+            //    if (SourceTree.ContainsKey(Citation))
+            //    {
+            //        foreach (long Reference in References)
+            //        {
+            //            SourceTree[Citation].References.Remove(Citation);
+            //        }
+            //    }
+            //}
+
+            //SourceTree.Remove(SourceToRemove);
+
+            SourceTree[SourceToRemove].Removed = true;
+        }
+
         public Graph GetGraphForTheory(int TheoryId, bool ImpactFactorCutoff, bool AEFCutoff, bool TARCutoff, bool MachineLearningCutoff, bool YearCutoff)
         {
             const int nSigma = 2;
@@ -74,7 +107,7 @@ namespace ATN.Export
                 {
                     if (Source.ImpactFactor.HasValue && Source.ImpactFactor < CumulativeImpactFactorAverage + nSigma * CumulativeImpactFactorDeviation && Source.Depth != 0)
                     {
-                        SourceTree.Remove(Source.SourceId);
+                        RemoveFromTree(SourceTree, Source.SourceId);
                     }
                 }
             }
@@ -94,7 +127,7 @@ namespace ATN.Export
                 {
                     if (Source.ArticleLevelEigenFactor.HasValue && Source.ArticleLevelEigenFactor < CumulativeArticleLevelEigenFactorAverage + nSigma * CumulativeArticleLevelEigenFactorDeviation && Source.Depth != 0)
                     {
-                        SourceTree.Remove(Source.SourceId);
+                        RemoveFromTree(SourceTree, Source.SourceId);
                     }
                 }
             }
@@ -115,7 +148,7 @@ namespace ATN.Export
                 {
                     if (Source.TheoryAttributionRatio.HasValue && Source.TheoryAttributionRatio < CumulativeTheoryAttributionRatioAverage + nSigma * CumulativeTheoryAttributionRatioDeviation && Source.Depth != 0)
                     {
-                        SourceTree.Remove(Source.SourceId);
+                        RemoveFromTree(SourceTree, Source.SourceId);
                     }
                 }
             }
@@ -135,7 +168,7 @@ namespace ATN.Export
             //    {
             //        if (Source.OutFactor < CumulativeOutFactorAverage && Source.Depth != 0)
             //        {
-            //            SourceTree.Remove(Source.SourceId);
+            //            RemoveFromTree(SourceTree, Source.SourceId);
             //        }
             //    }
             //}
@@ -149,7 +182,7 @@ namespace ATN.Export
             //    {
             //        if (Source.Depth > 1)
             //        {
-            //            SourceTree.Remove(Source.SourceId);
+            //            RemoveFromTree(SourceTree, Source.SourceId);
             //        }
             //    }
             //}
@@ -158,9 +191,9 @@ namespace ATN.Export
             {
                 foreach (SourceWithReferences Source in SourceTree.Values.ToArray())
                 {
-                    if (!Source.IsContributingPrediction.HasValue || !Source.IsContributingPrediction.Value || !Source.PredictionProbability.HasValue || Source.PredictionProbability.Value < 0.92d)
+                    if (Source.Depth > 0 && (!Source.IsContributingPrediction.HasValue || !Source.IsContributingPrediction.Value || !Source.PredictionProbability.HasValue || Source.PredictionProbability.Value < 0.95d))
                     {
-                        SourceTree.Remove(Source.SourceId);
+                        RemoveFromTree(SourceTree, Source.SourceId);
                     }
                 }
             }
@@ -179,40 +212,35 @@ namespace ATN.Export
                 MinYear = Int32.MaxValue;
             }
 
-            foreach (var Source in SourceTree.Values.ToArray())
+            if (YearCutoff)
             {
-                if (Source.References.Count > 0)
+                foreach (var Source in SourceTree.Values.ToArray())
                 {
-                    continue;
-                }
-                bool HasAtLeastOne = false;
-                foreach (var ReferenceSource in SourceTree.Values)
-                {
-                    if (ReferenceSource.References.Contains(Source.SourceId))
+                    if (Source.Year < MinYear)
                     {
-                        HasAtLeastOne = true;
-                        break;
+                        RemoveFromTree(SourceTree, Source.SourceId);
                     }
-                }
-                if (!HasAtLeastOne)
-                {
-                    SourceTree.Remove(Source.SourceId);
                 }
             }
 
-            foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { Year = src.Year, Title = src.Title, Source = st}))
+            foreach (var Source in SourceTree.Values.ToArray())
             {
-                if (!YearCutoff || (YearCutoff && Source.Year >= MinYear))
+                if (Source.References.Count == 0 && Source.Citations.Count == 0 && Source.Removed)
                 {
-                    ExportGraph.Nodes.Add(new SourceNode(Source.Source.SourceId, Source.Title, Source.Source.ImpactFactor,
-                        Source.Year, Source.Source.ArticleLevelEigenFactor, Source.Source.TheoryAttributionRatio, Source.Source.PredictionProbability,
-                        Source.Source.IsContributingPrediction, Source.Source.Depth));
-                    foreach (long Reference in Source.Source.References)
+                    RemoveFromTree(SourceTree, Source.SourceId);
+                }
+            }
+
+            foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { Removed = st.Removed, Year = src.Year, Title = src.Title, Source = st}).Where(s => !s.Removed))
+            {
+                ExportGraph.Nodes.Add(new SourceNode(Source.Source.SourceId, Source.Title, Source.Source.ImpactFactor,
+                    Source.Year, Source.Source.ArticleLevelEigenFactor, Source.Source.TheoryAttributionRatio, Source.Source.PredictionProbability,
+                    Source.Source.IsContributingPrediction, Source.Source.Depth));
+                foreach (long Reference in Source.Source.References)
+                {
+                    if (SourceTree.ContainsKey(Reference) && !SourceTree[Reference].Removed)
                     {
-                        if (SourceTree.ContainsKey(Reference))
-                        {
-                            ExportGraph.Edges.Add(new SourceEdge(Source.Source.SourceId, Reference));
-                        }
+                        ExportGraph.Edges.Add(new SourceEdge(Source.Source.SourceId, Reference));
                     }
                 }
             }

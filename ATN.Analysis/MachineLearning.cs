@@ -29,7 +29,7 @@ namespace ATN.Analysis
             StartInfo.RedirectStandardError = true;
             StartInfo.WorkingDirectory = CurrentDirectory;
             StartInfo.FileName = "java.exe";
-            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -C 0.45 -M 1 -x 4 -t \"{0}\" -d \"{1}\"", training_data_path, decision_tree_path);
+            StartInfo.Arguments = string.Format("-cp weka.jar weka.classifiers.trees.J48 -C 0.15 -M 1 -x 4 -t \"{0}\" -d \"{1}\"", training_data_path, decision_tree_path);
 
             using (Process batProcess = Process.Start(StartInfo))
             {
