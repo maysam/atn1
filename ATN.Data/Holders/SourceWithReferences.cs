@@ -29,8 +29,6 @@ namespace ATN.Data
         public List<long> References { get; set; }
         public List<long> Citations { get; set; }
         public int? Year { get; set; }
-        public bool IsCited { get; set; }
-        public bool Removed { get; set; }
         public SourceWithReferences(long SourceId, int ImpactFactor, short Depth)
         {
             this.Citations = new List<long>();

@@ -35,13 +35,13 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblContributingHeader" runat="server" Text="Contributing?" />
+                    <asp:Label ID="lblContributingHeader" runat="server" Text="Contributing?" CssClass="ContributingHeader"/>
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:RadioButtonList ID="rblContributing" runat="server" RepeatDirection="Vertical" TextAlign="Right"> 
+                    <asp:RadioButtonList ID="rblContributing" runat="server" RepeatDirection="Vertical" TextAlign="Right" CssClass="MetaAnalysisRadio"> 
                         <asp:ListItem Text="Yes" Value="Yes"/>
                         <asp:ListItem Text="No" Value="No" />
-                        <asp:ListItem Text="Unknown" Value="Unknown" />
+                        <asp:ListItem Text="?" Value="Unknown" />
                     </asp:RadioButtonList>
                     <asp:HiddenField ID="hdnSourceId" runat="server" />
                 </ItemTemplate>

@@ -732,3 +732,9 @@ tr.pager td {
         }
 }
 /* END: Mobile Styles */
+
+.MetaAnalysisRadio label
+{
+    display:inline-block;
+    margin-left:10px;
+}

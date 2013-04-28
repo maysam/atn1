@@ -47,35 +47,7 @@ namespace ATN.Export
 
         public void RemoveFromTree(Dictionary<long, SourceWithReferences> SourceTree, long SourceToRemove)
         {
-            //List<long> Citations = SourceTree[SourceToRemove].Citations;
-            //List<long> References = SourceTree[SourceToRemove].References;
-
-            //foreach (long Citation in Citations)
-            //{
-            //    if (SourceTree.ContainsKey(Citation))
-            //    {
-            //        SourceTree[Citation].References.RemoveAll(a => a == SourceToRemove);
-            //        foreach (long Reference in References)
-            //        {
-            //            SourceTree[Citation].References.Add(Reference);
-            //        }
-            //    }
-            //}
-
-            //foreach (long Citation in Citations)
-            //{
-            //    if (SourceTree.ContainsKey(Citation))
-            //    {
-            //        foreach (long Reference in References)
-            //        {
-            //            SourceTree[Citation].References.Remove(Citation);
-            //        }
-            //    }
-            //}
-
-            //SourceTree.Remove(SourceToRemove);
-
-            SourceTree[SourceToRemove].Removed = true;
+            SourceTree.Remove(SourceToRemove);
         }
 
         public Graph GetGraphForTheory(int TheoryId, bool ImpactFactorCutoff, bool AEFCutoff, bool TARCutoff, bool MachineLearningCutoff, bool YearCutoff)
@@ -189,11 +161,17 @@ namespace ATN.Export
 
             if (MachineLearningCutoff)
             {
-                foreach (SourceWithReferences Source in SourceTree.Values.ToArray())
+                foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new {SWR = st, ExtendedSource = src}).ToArray())
                 {
-                    if (Source.Depth > 0 && (!Source.IsContributingPrediction.HasValue || !Source.IsContributingPrediction.Value || !Source.PredictionProbability.HasValue || Source.PredictionProbability.Value < 0.95d))
+                    if (
+                        Source.SWR.Depth > 0 &&
+                        (
+                            !Source.SWR.IsContributingPrediction.HasValue ||
+                            !Source.SWR.IsContributingPrediction.Value ||
+                            !Source.SWR.PredictionProbability.HasValue ||
+                            Source.SWR.PredictionProbability.Value < 0.95d))
                     {
-                        RemoveFromTree(SourceTree, Source.SourceId);
+                        RemoveFromTree(SourceTree, Source.SWR.SourceId);
                     }
                 }
             }
@@ -225,20 +203,20 @@ namespace ATN.Export
 
             foreach (var Source in SourceTree.Values.ToArray())
             {
-                if (Source.References.Count == 0 && Source.Citations.Count == 0 && Source.Removed)
+                if (Source.References.Count == 0 && Source.Citations.Count == 0)
                 {
                     RemoveFromTree(SourceTree, Source.SourceId);
                 }
             }
 
-            foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { Removed = st.Removed, Year = src.Year, Title = src.Title, Source = st}).Where(s => !s.Removed))
+            foreach (var Source in SourceTree.Values.Join(AllSources, st => st.SourceId, src => src.SourceId, (st, src) => new { AlreadyContributing = src.Contributing, Year = src.Year, Title = src.Title, Source = st}))
             {
                 ExportGraph.Nodes.Add(new SourceNode(Source.Source.SourceId, Source.Title, Source.Source.ImpactFactor,
                     Source.Year, Source.Source.ArticleLevelEigenFactor, Source.Source.TheoryAttributionRatio, Source.Source.PredictionProbability,
                     Source.Source.IsContributingPrediction, Source.Source.Depth));
                 foreach (long Reference in Source.Source.References)
                 {
-                    if (SourceTree.ContainsKey(Reference) && !SourceTree[Reference].Removed)
+                    if (SourceTree.ContainsKey(Reference))
                     {
                         ExportGraph.Edges.Add(new SourceEdge(Source.Source.SourceId, Reference));
                     }
