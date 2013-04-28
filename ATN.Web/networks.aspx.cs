@@ -23,14 +23,15 @@ namespace ATN.Web
         /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
+            //retrieve arguments from url
             sortCol = (Request.QueryString[Common.QueryStrings.SortCol] != null) ? 
                        Request.QueryString[Common.QueryStrings.SortCol] : null;
             sortOrder = (Request.QueryString[Common.QueryStrings.SortOrder] != null) ?
                          Request.QueryString[Common.QueryStrings.SortOrder] : null;
 
             Theories theoryCaller = new Theories();
-
             List<Theory> allTheories;
+
             allTheories = theoryCaller.GetTheoriesAsList();
             //sort the partStepList if necessary
             if (sortCol != null)
@@ -67,7 +68,7 @@ namespace ATN.Web
                 CrawlerProgress lastCrawl = new CrawlerProgress();
 
                 ImageButton ImgVisualizationLink = e.Row.Cells[0].Controls[1] as ImageButton;
-
+                //visualization file download code
                 string BaseAttributes = "channelmode=no,directories=no,resizable=no,scrollbars=no,location=no,menubar=no,status=no,toolbar=no,width=600,height=100";
                 ImgVisualizationLink.Attributes.Add("onclick", "window.open('ExportVisualization.ashx?TheoryId=" + theory.TheoryId.ToString() + "','_blank','" + BaseAttributes + "',false);");
                 ImgVisualizationLink.ImageUrl = "/Images/HBPLogo.png";
@@ -118,6 +119,7 @@ namespace ATN.Web
             {
                 
                 Image imgSort = new Image();
+                //Find and set sort direction image
                 if (sortCol != null)
                 {
                     foreach (TableCell cell in e.Row.Cells)

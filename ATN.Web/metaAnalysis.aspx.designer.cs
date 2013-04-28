@@ -40,6 +40,15 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.Label lblMetaAnalysisName;
         
         /// <summary>
+        /// btnMarkAsMetaAnalysis control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMarkAsMetaAnalysis;
+        
+        /// <summary>
         /// grdFirstLevelSources control.
         /// </summary>
         /// <remarks>
