@@ -18,6 +18,7 @@ namespace ATN.Web
             int TheoryId;
             if (Int32.TryParse(Request["TheoryId"], out TheoryId) && !IsPostBack)
             {
+                btnForceAnalysis.Visible = true;
                 DataSourceGrid.Visible = false;
                 btnNewSource.Visible = false;
 
@@ -368,11 +369,19 @@ namespace ATN.Web
 
         }
 
-       
+        protected void btnForceAnalysis_Command(object sender, CommandEventArgs e)
+        {
+
         }
 
-       
-       
-        
-
+        protected void btnForceAnalysis_Click(object sender, EventArgs e)
+        {
+            int TheoryId;
+            if (Int32.TryParse(Request["TheoryId"], out TheoryId))
+            {
+                CrawlerProgress cp = new CrawlerProgress();
+                cp.SetTheoryChanged(TheoryId);
+            }
+        }       
     }
+}

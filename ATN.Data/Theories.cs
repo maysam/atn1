@@ -168,28 +168,7 @@ namespace ATN.Data
         /// <returns>An array of extended sources which are members of the given theory</returns>
         public List<ExtendedSource> GetAllExtendedSourcesForTheory(int TheoryId, int PageIndex, int PageSize, bool OrderByRandom = false, string search = null)
         {
-            StringBuilder SearchQueryBuilder = new StringBuilder();
-            if (search != null)
-            {
-                long SourceId;
-                SearchQueryBuilder.Append(" AND ");
-                if (Int64.TryParse(search, out SourceId))
-                {
-                    SearchQueryBuilder.AppendFormat("s.SourceId = {0}", SourceId);
-                }
-                else
-                {
-                    
-                    SearchQueryBuilder.Append("(");
-                    SearchQueryBuilder.AppendFormat("s.DataSourceSpecificId = '{0}'", search);
-                    SearchQueryBuilder.Append(" OR ");
-                    SearchQueryBuilder.AppendFormat("s.ArticleTitle LIKE '%{0}%'", search);
-                        
-                    SearchQueryBuilder.Append(")");
-                }
-            }
-            return Context.ExecuteStoreQuery<ExtendedSource>(
-                @"WITH TestTable as (
+            string Query = @"WITH TestTable as (
 	                SELECT s.SourceId,
                     s.DataSourceSpecificId as MasID,
 	                s.ArticleTitle as Title,
@@ -210,10 +189,27 @@ namespace ATN.Data
                     tm.isContributingPrediction as IsContributingPrediction,
                     tms.TheoryNamePresent as TheoryNamePresent,
 	                (CASE WHEN tm.Depth IS NULL THEN CAST(3 as smallint) ELSE tm.Depth END) as Depth,
-	                ROW_NUMBER() " + (OrderByRandom ? "OVER(ORDER BY newid())" : "OVER(ORDER BY tm.Depth, tm.SourceId ASC)") + @" As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0} " + SearchQueryBuilder.ToString() +  @"
+	                ROW_NUMBER() " + (OrderByRandom ? "OVER(ORDER BY newid())" : "OVER(ORDER BY tm.Depth, tm.SourceId ASC)") + @" As RowNumber FROM Source s LEFT OUTER JOIN TheoryMembershipSignificance tms ON tms.SourceId = s.SourceId LEFT OUTER JOIN Journal j ON s.JournalId = j.JournalId LEFT OUTER JOIN TheoryMembership tm ON tm.TheoryMembershipId = (SELECT TOP 1 TheoryMembershipId FROM TheoryMembership tm WHERE tm.SourceId = tms.SourceId AND tm.TheoryId = tms.TheoryId ORDER BY RunID DESC) WHERE tms.TheoryId = {0} " + (search != null ? "AND (s.SourceId = {3} OR s.DataSourceSpecificId = {4} OR s.ArticleTitle LIKE '%{5}%')" : "") + @"
                 )
-                SELECT SourceId, MasID, Title, [Year], Authors, Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, TAR, ImpactFactor, PredictionProbability, IsContributingPrediction, TheoryNamePresent, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}",
-            TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
+                SELECT SourceId, MasID, Title, [Year], Authors, Journal, Contributing, IsMetaAnalysis, NumContributing, AEF, TAR, ImpactFactor, PredictionProbability, IsContributingPrediction, TheoryNamePresent, Depth FROM TestTable WHERE RowNumber BETWEEN {1} AND {2}";
+
+            if(search != null)
+            {
+                long SourceId;
+                if (Int64.TryParse(search, out SourceId))
+                {
+                    return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize, SourceId, search, search).ToList();
+                }
+                else
+                {
+                    return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize, -1, search, search).ToList();
+                }
+            }
+            else
+            {
+                return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
+            }
+            
         }
 
         /// <summary>

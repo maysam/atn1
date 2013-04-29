@@ -292,6 +292,17 @@ namespace ATN.Data
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Sets a theory as having changed manually, such that an analysis run is forced once crawls are reenumerated
+        /// </summary>
+        /// <param name="TheoryId"></param>
+        public void SetTheoryChanged(int TheoryId)
+        {
+            Crawl CrawlToChange = Context.Crawls.Single(t => t.TheoryId == TheoryId);
+            CrawlToChange.HasChanged = true;
+            Context.SaveChanges();
+        }
+
         public DateTime GetLastCrawlDate(int theoryId)
         {
             try
