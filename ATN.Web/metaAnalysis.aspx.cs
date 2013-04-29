@@ -27,6 +27,7 @@ namespace ATN.Web
         /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
+            //retrieve the arguments from url
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 2;
             metaAnalysisId = (Request.QueryString[Common.QueryStrings.MetaAnalysis] != null) ?
@@ -55,6 +56,12 @@ namespace ATN.Web
                 Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp +
                 Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
 
+            //Mark as metaAnalysis
+            btnMarkAsMetaAnalysis.PostBackUrl = Common.Pages.MetaAnalysis + Common.Symbols.Question +
+                Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
+                Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysisId.ToString() + Common.Symbols.Amp +
+                Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();
+
             //display the meta analysis label
             if (sources.Count != 0)
             {
@@ -63,6 +70,7 @@ namespace ATN.Web
             else
             {
                 lblMetaAnalysisName.Text = "There are no citations available for source ID " + metaAnalysisId.ToString();
+                btnMarkAsMetaAnalysis.Visible = false;
             }
 
             #region end of page navigation and save buttons
@@ -128,6 +136,19 @@ namespace ATN.Web
                      postBackControl == "lnkAEFHeader" || postBackControl == "lnkDepthHeader" || postBackControl == "lnkJournalHeader" || postBackControl == "lnkPredictionHeader")
             {
                 save_results();
+                grdFirstLevelSources.DataSource = sources;
+                grdFirstLevelSources.DataBind();
+            }
+            else if (postBackControl == "btnMarkAsMetaAnalysis")
+            {
+                //save results on page
+                save_results();
+                
+                //mark as meta analysis
+                Theories dataSaver = new Theories();
+                dataSaver.MarkSourceMetaAnalysis(theoryId, metaAnalysisId);
+
+                //populate grid
                 grdFirstLevelSources.DataSource = sources;
                 grdFirstLevelSources.DataBind();
             }

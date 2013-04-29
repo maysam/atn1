@@ -22,6 +22,7 @@ namespace ATN.Web
         /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
+            //retrieve arguments from url
             theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
                 Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 2;
             lastPageIndex = (Request.QueryString[Common.QueryStrings.PageNumber] != null) ?
@@ -66,6 +67,7 @@ namespace ATN.Web
             }
 
             //set the paging and submit buttons
+            //postback is to the same page to save data and then redirects if necessary
             //first page
             if (lastPageIndex == 0)
             {
@@ -92,6 +94,7 @@ namespace ATN.Web
                     Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + pageNumber.ToString();
             }
+            //save button
             btnSubmit.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
                 Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
                 Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString();

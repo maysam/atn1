@@ -2,7 +2,7 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Label ID="lblNetworkName" runat="server" /></h2><h2><asp:LinkButton ID="lnkNetworkName" runat="server" /></h2>
-    <h3><asp:Label ID="lblMetaAnalysisName" runat="server" /></h3>
+    <h3><asp:Label ID="lblMetaAnalysisName" runat="server" /></h3><asp:Button ID="btnMarkAsMetaAnalysis" runat="server" Text="Mark as Meta Analysis" />
     <br />
     <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" ShowFooter="false">
         <Columns>
