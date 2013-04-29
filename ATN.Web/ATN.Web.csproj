@@ -204,6 +204,7 @@
     <Content Include="networks.aspx" />
     <Content Include="packages.config" />
     <Content Include="ExportVisualization.ashx" />
+    <Content Include="AddMissingSource.aspx" />
     <None Include="Properties\PublishProfiles\ATN Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -298,6 +299,13 @@
     </Compile>
     <Compile Include="theory.aspx.designer.cs">
       <DependentUpon>theory.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AddMissingSource.aspx.cs">
+      <DependentUpon>AddMissingSource.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AddMissingSource.aspx.designer.cs">
+      <DependentUpon>AddMissingSource.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
