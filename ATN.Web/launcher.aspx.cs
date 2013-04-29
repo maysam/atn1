@@ -232,7 +232,7 @@ namespace ATN.Web
 
                 int numberOfIds;
 
-                string[][] AllPapersIDs = new string[DataSourceGrid.Rows.Count][];
+                List<string[]> AllPapersIDs = new List<string[]>();
                 //string[] OnePaperMsAcademicSearchIds2 = new string[DataSourceGrid.Columns.Count];
 
 
@@ -248,7 +248,7 @@ namespace ATN.Web
 
 
                 //header row makes iterator 1, footer row makes iterator only go up to count - 1
-                for (int itr = 1; itr < DataSourceGrid.Rows.Count; itr++)
+                for (int itr = 0; itr < DataSourceGrid.Rows.Count; itr++)
                 {
                     // for (int itr1 = 0; itr1 < DataSourceGrid.Columns.Count; itr1++)
                     //{
@@ -279,7 +279,10 @@ namespace ATN.Web
 
 
                     //AllPapersIDs[itr] = new string[DataSourceGrid.Columns.Count];
-                    AllPapersIDs[itr] = OnePaperMsAcademicSearchIds;
+                    if (OnePaperMsAcademicSearchIds.Length > 0)
+                    {
+                        AllPapersIDs.Add(OnePaperMsAcademicSearchIds);
+                    }
                 }
 
 
