@@ -215,7 +215,7 @@ namespace ATN.Web
                 string TheoryComment;
                 TheoryName = txtNetworkName.Text;
                 TheoryComment = txtNetworkComments.Text;
-                CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[DataSourceGrid.Rows.Count];
+                
 
 
 
@@ -279,23 +279,19 @@ namespace ATN.Web
 
 
                     //AllPapersIDs[itr] = new string[DataSourceGrid.Columns.Count];
-                    if (OnePaperMsAcademicSearchIds.Length > 0)
+                    if (tempsingleLine != string.Empty && OnePaperMsAcademicSearchIds.Length > 0)
                     {
                         AllPapersIDs.Add(OnePaperMsAcademicSearchIds);
                     }
                 }
 
-
-
-
                 CrawlIntervalInDays = int.Parse(CrawlIntervalstringValue);
 
-
-
                 //prepare the datasource and specifications for the crawl
+                CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[AllPapersIDs.Count];
 
                 //create an array of all CanonicalDataSources
-                for (int itr = 0; itr < DataSourceGrid.Rows.Count; itr++)
+                for (int itr = 0; itr < AllPapersIDs.Count; itr++)
                 {
 
                     AllSourcesArray[itr] = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AllPapersIDs[itr]);
