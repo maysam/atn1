@@ -73,7 +73,7 @@ namespace ATN.Data
             {
                 return Context.Crawls.Single(t => t.TheoryId == theoryId).HasChanged;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -309,7 +309,7 @@ namespace ATN.Data
             {
                 return Context.Crawls.Single(t => t.TheoryId == theoryId).DateCrawled;
             }
-            catch (Exception e)
+            catch
             {
                 return DateTime.Now;
             }

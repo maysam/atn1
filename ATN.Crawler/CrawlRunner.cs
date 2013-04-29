@@ -60,10 +60,10 @@ namespace ATN.Crawler
             CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
             {
-                /*if (RefreshExistingCrawl(Specifier.Crawl.CrawlId))
-                {*/
+                if (RefreshExistingCrawl(Specifier.Crawl.CrawlId))
+                {
                     ChangedCrawls.Add(Specifier);
-                /*}*/
+                }
             }
 
             ChangedCrawls = ChangedCrawls.Union(_progress.GetCrawlsWithoutAnalysisRuns(ChangedCrawls.Select(c => c.Crawl).ToArray()).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
@@ -251,7 +251,7 @@ namespace ATN.Crawler
                 _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.Complete);
                 Trace.WriteLine("Dequeueing references complete", "Informational");
             }
-            SetModifiedIfChanged(Changed, Specifier.TheoryId);
+            SetModifiedDateIfChanged(Changed, Specifier.TheoryId);
             return Changed;
         }
 
@@ -332,7 +332,13 @@ namespace ATN.Crawler
                 return false;
             }
         }
-        public void SetModifiedIfChanged(bool Changed, int TheoryId)
+
+        /// <summary>
+        /// Sets a theory's modification date if it had previously been changed
+        /// </summary>
+        /// <param name="Changed">Whether or not the theory has changed</param>
+        /// <param name="TheoryId">The TheoryId for the theory having been changed</param>
+        public void SetModifiedDateIfChanged(bool Changed, int TheoryId)
         {
             if (Changed)
             {

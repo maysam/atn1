@@ -78,15 +78,6 @@ namespace ATN.Data
         }
 
         /// <summary>
-        /// Retrieves all existing theories in a list
-        /// </summary>
-        /// <returns>All existing theories in a list</returns>
-        public List<Theory> GetTheoriesAsList()
-        {
-            return Context.Theories.ToList<Theory>();
-        }
-
-        /// <summary>
         /// Retrieves a specific theory
         /// </summary>
         /// <param name="TheoryId">ID of theory to retrieve</param>
@@ -97,14 +88,28 @@ namespace ATN.Data
             {
                 return Context.Theories.Single(t => t.TheoryId == TheoryId);
             }
-            catch(Exception e)
+            catch
             {
                 return new Theory();
             }
         }
 
+        /// <summary>
+        /// Saves any modified theories
+        /// </summary>
         public void SaveTheory()
         {
+            var Entries = Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Added)
+            .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Deleted))
+            .Union(Context.ObjectStateManager.GetObjectStateEntries(System.Data.EntityState.Modified));
+            foreach (var Entry in Entries)
+            {
+                Type t = Entry.Entity.GetType();
+                if (t != typeof(Theory))
+                {
+                    throw new Exception("Theory save did not succeed. There were pending changes in entites other than the target theory.");
+                }
+            }
             Context.SaveChanges();
         }
 
