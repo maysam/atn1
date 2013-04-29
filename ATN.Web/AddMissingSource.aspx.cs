@@ -16,9 +16,9 @@ namespace ATN.Web
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            //TheoryId = Int32.Parse(Request["TheoryId"]);
-            //txtTheoryId.Text = Request["TheoryId"]; 
-            txtTheoryId.Text = "123";
+            TheoryId = Int32.Parse(Request["TheoryId"]);
+            txtTheoryId.Text = Request["TheoryId"]; 
+            //txtTheoryId.Text = "123";
            
 
             searchlnk.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + TheoryId.ToString();
