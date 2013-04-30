@@ -9,29 +9,41 @@ using System.Data.Objects.DataClasses;
 
 namespace ATN.Web
 {
+    /// <summary>
+    /// This page adds a missing source to a theory manually
+    /// </summary>
     public partial class AddMissingSource : System.Web.UI.Page
     {
 
         int TheoryId;
         long newlyAddedSourceId; // to store the Id of the newly added source
 
+        /// <summary>
+        /// retreives theoryId and sets initial page
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             TheoryId = Int32.Parse(Request["TheoryId"]);
             txtTheoryId.Text = Request["TheoryId"]; 
             //txtTheoryId.Text = "123";
-           
+
+            // link the search link to a specific theory
             searchlnk.NavigateUrl= Common.Pages.Theory + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + TheoryId.ToString();
 
 
         }
-
+        /// <summary>
+        /// adds the newly enetered source to a certain theory
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 
         protected void Submit_Click(object sender, EventArgs e)
         {
 
 
-            
             Source sourceNew = new Source(); // to store the source for completed source parameter
             Theories theoriesnew = new Theories();
             Sources theorySources =  new Sources();
@@ -42,17 +54,19 @@ namespace ATN.Web
             sourceNew.DataSourceSpecificId = Guid.NewGuid().ToString();
             sourceNew.SerializedDataSourceResponse = "<Response />";
       
-
+            // create completeSource of our newly created source to use addDetachedSource
             CompleteSource newSource = new CompleteSource(sourceNew, new Author[0], null);
+            //sets data for newly created source
             newSource.Subjects = new Subject[0];
             newSource.IsDetached = true;
             
-
+            
             sourceNew= theorySources.AddDetachedSource(newSource); //add new source to our new sources collection
+
             newlyAddedSourceId = sourceNew.SourceId;
             
             
-            
+            //after creating a source, now add it to a specific theory
             theoriesnew.AddManualTheoryMember(TheoryId, newlyAddedSourceId);
 
 
@@ -61,10 +75,10 @@ namespace ATN.Web
                 theoriesnew.MarkSourceMetaAnalysis(TheoryId, newlyAddedSourceId);
 
 
-
+                // if a source is a meta analysis then add its references, retreive them from the refrences dropdown list
                 string singleId;
                 long longID;
-                List<string> str = new List<string>();
+                List<string> str = new List<string>(); // save items as strings
 
                 foreach (ListItem current in citations.Items)
                 {
@@ -77,7 +91,7 @@ namespace ATN.Web
                     
                     longID = int.Parse(singleId);
 
-                    theorySources.AddCitation(newlyAddedSourceId, longID);
+                    theorySources.AddCitation(newlyAddedSourceId, longID); // add each reference
                     
                 }
             }
@@ -87,6 +101,11 @@ namespace ATN.Web
 
             
         }
+        /// <summary>
+        /// decides if a source is a metaAnalysis allow adding references, if not take no further action. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
 
         protected void metAnalysis_CheckedChanged(object sender, EventArgs e)
         {
@@ -126,7 +145,7 @@ namespace ATN.Web
         }
 
         /// <summary>
-        /// 
+        /// adds a reference to the references list
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -154,17 +173,7 @@ namespace ATN.Web
         }
 
         
-/*
-        protected void citations_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (citations.SelectedIndex == 1)
-            {
 
-                CitationPanel.Enabled = true;
-            }
-          
-        }
-*/
        
 
 
