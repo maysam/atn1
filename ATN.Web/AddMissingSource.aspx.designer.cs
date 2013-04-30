@@ -58,13 +58,13 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.Label lblYear;
         
         /// <summary>
-        /// Year control.
+        /// txtYear control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Year;
+        protected global::System.Web.UI.WebControls.TextBox txtYear;
         
         /// <summary>
         /// IsmetAnalysis control.
@@ -94,15 +94,6 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.DropDownList citations;
         
         /// <summary>
-        /// CitationPanel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel CitationPanel;
-        
-        /// <summary>
         /// lbladdbyId control.
         /// </summary>
         /// <remarks>
@@ -121,13 +112,13 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.TextBox addById;
         
         /// <summary>
-        /// Add control.
+        /// addreference control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Add;
+        protected global::System.Web.UI.WebControls.Button addreference;
         
         /// <summary>
         /// searchlnk control.
@@ -136,7 +127,7 @@ namespace ATN.Web {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton searchlnk;
+        protected global::System.Web.UI.WebControls.HyperLink searchlnk;
         
         /// <summary>
         /// Submit control.

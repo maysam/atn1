@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Help" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AddMissingSource.aspx.cs" Inherits="ATN.Web.AddMissingSource" %>
+﻿<%@ Page Title="AddMissingSource" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AddMissingSource.aspx.cs" Inherits="ATN.Web.AddMissingSource" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent" Visible="False">
 
@@ -24,7 +24,7 @@
 
     <asp:Label ID="lblYear" runat="server" Text="Year  " style="font-size: medium; font-weight: 700"></asp:Label>
      <br />
-    <asp:TextBox ID="Year" runat="server" Width="325px"></asp:TextBox>
+    <asp:TextBox ID="txtYear" runat="server" Width="325px"></asp:TextBox>
 
     <br />
     <br />
@@ -36,10 +36,8 @@
 
      <asp:Label ID="lblCitations" runat="server" Text="References:  " style="font-size: medium; font-weight: 700" ForeColor="Silver" ></asp:Label>
     <br />
-    <asp:DropDownList ID="citations" runat="server" Enabled="False" ForeColor="Silver" BorderColor="Silver" Height="30px" Width="144px" OnSelectedIndexChanged="citations_SelectedIndexChanged" AutoPostBack="True" Visible="True">
-        <asp:ListItem Text="" Selected="True" />
-        <asp:ListItem Text="Add a new reference" Value="add" />
-        
+    <asp:DropDownList ID="citations" runat="server" Enabled="False" ForeColor="Silver" BorderColor="Silver" Height="30px" Width="144px"  AutoPostBack="True" Visible="True">
+       
     </asp:DropDownList>
 
 
@@ -47,27 +45,27 @@
     <br />
 
 
-    <asp:Panel ID="CitationPanel" runat="server" Height="119px" Enabled="False">
-        <asp:Label ID="lbladdbyId" runat="server" Text="Add by ID"></asp:Label>
+    
+        <asp:Label ID="lbladdbyId" runat="server" Text="Add reference by ID"></asp:Label>
         <br />
-        <asp:TextBox ID="addById" runat="server"></asp:TextBox>
-        <asp:Button ID="Add" runat="server" Text="Add" OnClick="Add_citation" Height="31px" />
-
-
-        <br />
+        <asp:TextBox ID="addById" runat="server" Enabled="false"></asp:TextBox>
+        <asp:Button ID="addreference" runat="server" Text="Add" OnClick="Add_citation_to_list"/>
 
 
         <br />
 
 
-        <asp:LinkButton ID="searchlnk" runat="server" >Search for IDs</asp:LinkButton>
+        <br />
+
+ 
+        <asp:HyperLink ID="searchlnk" Target="_blank" runat="server">Search for IDs</asp:HyperLink>
 
 
         <br />
         
 
 
-    </asp:Panel>
+  
     
 
 

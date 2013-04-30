@@ -180,10 +180,10 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="help.aspx" />
     <Content Include="Images\accent.png" />
-    <Content Include="Images\AtoZ.gif" />
     <Content Include="Images\ATN1.jpg" />
     <Content Include="Images\ATN2.jpg" />
     <Content Include="Images\ATN3.jpg" />
+    <Content Include="Images\AtoZ.gif" />
     <Content Include="Images\bullet.png" />
     <Content Include="Images\HBPLogo.png" />
     <Content Include="Images\heroAccent.png" />

@@ -13,6 +13,7 @@ namespace ATN.Web
     {
 
         int TheoryId;
+        long newlyAddedSourceId; // to store the Id of the newly added source
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -20,9 +21,7 @@ namespace ATN.Web
             txtTheoryId.Text = Request["TheoryId"]; 
             //txtTheoryId.Text = "123";
            
-
-            searchlnk.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + TheoryId.ToString();
-
+            searchlnk.NavigateUrl= Common.Pages.Theory + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + TheoryId.ToString();
 
 
         }
@@ -31,37 +30,29 @@ namespace ATN.Web
         protected void Submit_Click(object sender, EventArgs e)
         {
 
-            // tp store the entered title 
-            //string TheoryId;  //to store the entered theory id
-            long newlyAddedSourceId; // to store the Id of the newly added source
 
-            //Author newAuthor= new Author();
-            //Authors newAuthors = new Authors(); // = new Authors();
-            // Author doesn't have enpugh properties
-
-            Source sourceNew = new Source(); // store the source for completed source parameter
-            Sources theorySources = new Sources(); // to add the newly created source to
+            
+            Source sourceNew = new Source(); // to store the source for completed source parameter
             Theories theoriesnew = new Theories();
+            Sources theorySources =  new Sources();
 
-
-            //TheoryId = txtTheoryId.Text;
-            //int intTheoryId = int.Parse(TheoryId); // store theory id provided
-
+            sourceNew.DataSourceId = (int)CrawlerDataSource.Human;
             sourceNew.ArticleTitle = txtTitle.Text;
-           
-
+            sourceNew.Year = int.Parse(txtYear.Text);
+            sourceNew.DataSourceSpecificId = Guid.NewGuid().ToString();
+            sourceNew.SerializedDataSourceResponse = "<Response />";
+      
 
             CompleteSource newSource = new CompleteSource(sourceNew, new Author[0], null);
-
-
+            newSource.Subjects = new Subject[0];
             newSource.IsDetached = true;
+            
 
-
-
-            theorySources.AddDetachedSource(newSource); //add new source to our new sources collection
-            newlyAddedSourceId = theorySources.AddDetachedSource(newSource).SourceId;
-            // newlyAddedSourceId= theoriesnew.GetCanonicalSourcesForTheory(intTheoryId).AddDetachedSource(newSource).SourceId;
-
+            sourceNew= theorySources.AddDetachedSource(newSource); //add new source to our new sources collection
+            newlyAddedSourceId = sourceNew.SourceId;
+            
+            
+            
             theoriesnew.AddManualTheoryMember(TheoryId, newlyAddedSourceId);
 
 
@@ -71,23 +62,30 @@ namespace ATN.Web
 
 
 
-
-
                 string singleId;
-                int intID;
-                int num = citations.Items.Count;
+                long longID;
+                List<string> str = new List<string>();
 
-                for (int index = 2; index <= num; index++)
+                foreach (ListItem current in citations.Items)
                 {
-                    citations.SelectedIndex = index;
-                    singleId = citations.SelectedItem.Text;
-                    intID = int.Parse(singleId);
+                    str.Add(current.Text);
+                }
 
-                    theorySources.AddCitation(newlyAddedSourceId, intID);
+                foreach ( string sourcestr in str){
+
+                    singleId = sourcestr;
+                    
+                    longID = int.Parse(singleId);
+
+                    theorySources.AddCitation(newlyAddedSourceId, longID);
+                    
                 }
             }
 
 
+            theoriesnew.SaveTheory();
+
+            
         }
 
         protected void metAnalysis_CheckedChanged(object sender, EventArgs e)
@@ -95,7 +93,7 @@ namespace ATN.Web
             if (IsmetAnalysis.Checked)
             {
                 citations.Enabled = true;
-                //CitationPanel.ForeColor = System.Drawing.Color.Black; 
+                addById.Enabled = true;
 
                 lblCitations.ForeColor = System.Drawing.Color.Black;
                 citations.ForeColor = System.Drawing.Color.Black;
@@ -118,6 +116,8 @@ namespace ATN.Web
             else
             {
                 citations.Enabled = false;
+                addById.Enabled = false;
+             
                 // CitationPanel.ForeColor = System.Drawing.Color.Silver;
                 lblCitations.ForeColor = System.Drawing.Color.Silver;
                 citations.ForeColor = System.Drawing.Color.Silver;
@@ -132,7 +132,7 @@ namespace ATN.Web
         /// <param name="e"></param>
 
 
-        protected void Add_citation(object sender, EventArgs e)
+        protected void Add_citation_to_list(object sender, EventArgs e)
         {
 
             /*Source newCitationSource= new Source();
@@ -154,7 +154,7 @@ namespace ATN.Web
         }
 
         
-
+/*
         protected void citations_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (citations.SelectedIndex == 1)
@@ -164,7 +164,7 @@ namespace ATN.Web
             }
           
         }
-
+*/
        
 
 
