@@ -33,6 +33,10 @@ namespace ATN.Web
             List<ExtendedSource> sources = new List<ExtendedSource>();
             string postBackControl = Common.GetPostBackControlId(Page);
 
+            string BaseAttributes = "channelmode=yes,directories=yes,resizable=yes,scrollbars=yes,location=yes,menubar=yes,status=yes,toolbar=yes";
+
+            addnew.Attributes.Add("onclick", "window.open('AddMissingSource.aspx?TheoryId=" + theoryId.ToString() + "','_blank','" + BaseAttributes + "',false);");
+
             //show the papers contributing to the theory                
             if (postBackControl == "btnRandomize")
             {

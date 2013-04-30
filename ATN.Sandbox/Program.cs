@@ -26,9 +26,17 @@ namespace ATN.Analysis
 
             //int x = 0;
 
-            //FileStream fs = File.Open(@"D:\users\pfaffj\Documents\Visual Studio 2012\Projects\atn\ATN.Sandbox\bin\x64\Debug\TAM - Training Data.csv", FileMode.Open, FileAccess.Read);
-            //ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
-            //Importer.ImportTheory(2, fs);
+            if (args.Length == 2)
+            {
+                FileStream fs = File.Open(args[1], FileMode.Open, FileAccess.Read);
+                ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
+                Importer.ImportTheory(Int32.Parse(args[0]), fs);
+            }
+            else
+            {
+                Console.WriteLine("Usage: ATN.Sandbox.exe TheoryId ImportFile");
+            }
+            //int x = 0;
 
             //int TheoryId = 2;
             //AnalysisRunner ar = new AnalysisRunner();
@@ -36,17 +44,17 @@ namespace ATN.Analysis
             //Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
             //ar.AnalyzeTheory(c, TheoryId);
 
-            int TheoryId = 2;
+            //int TheoryId = 2;
 
-            GraphBuilder gb = new GraphBuilder();
+            //GraphBuilder gb = new GraphBuilder();
             //Graph UnprunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, false, false);
-            Graph PrunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, true, true);
+            //Graph PrunedGraph = gb.GetGraphForTheory(TheoryId, false, false, false, true, true);
             //int x = 0;
             //FileStream UnprunedStream = File.Open(TheoryId.ToString() + "UnprunnedGraph.xml", FileMode.Create);
             //XGMMLExporter.Export(UnprunedGraph.Nodes.ToArray(), UnprunedGraph.Edges.ToArray(), UnprunedStream);
 
-            FileStream PrunedStream = File.Open(TheoryId.ToString() + "PrunnedGraph.xml", FileMode.Create);
-            XGMMLExporter.Export(PrunedGraph.Nodes.ToArray(), PrunedGraph.Edges.ToArray(), PrunedStream);
+            //FileStream PrunedStream = File.Open(TheoryId.ToString() + "PrunnedGraph.xml", FileMode.Create);
+            //XGMMLExporter.Export(PrunedGraph.Nodes.ToArray(), PrunedGraph.Edges.ToArray(), PrunedStream);
         }
     }
 }

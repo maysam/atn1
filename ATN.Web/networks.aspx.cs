@@ -32,7 +32,7 @@ namespace ATN.Web
             Theories theoryCaller = new Theories();
             List<Theory> allTheories;
 
-            allTheories = theoryCaller.GetTheoriesAsList();
+            allTheories = theoryCaller.GetTheories().ToList();
             //sort the partStepList if necessary
             if (sortCol != null)
             {

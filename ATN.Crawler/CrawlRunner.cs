@@ -60,10 +60,10 @@ namespace ATN.Crawler
             CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
             {
-                /*if (RefreshExistingCrawl(Specifier.Crawl.CrawlId))
-                {*/
+                if (RefreshExistingCrawl(Specifier.Crawl.CrawlId))
+                {
                     ChangedCrawls.Add(Specifier);
-                /*}*/
+                }
             }
 
             ChangedCrawls = ChangedCrawls.Union(_progress.GetCrawlsWithoutAnalysisRuns(ChangedCrawls.Select(c => c.Crawl).ToArray()).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
@@ -251,7 +251,7 @@ namespace ATN.Crawler
                 _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.Complete);
                 Trace.WriteLine("Dequeueing references complete", "Informational");
             }
-            SetModifiedIfChanged(Changed, Specifier.TheoryId);
+            SetModifiedDateIfChanged(Changed, Specifier.TheoryId);
             return Changed;
         }
 
@@ -295,24 +295,17 @@ namespace ATN.Crawler
 
                     Trace.WriteLine("Source does not exist in database, adding.", "Informational");
                 }
-                try
+
+                //Add a citation between the retrieved source and the paper which it cites
+                //The reference direction merely switches the direction of the citation,
+                //which merely swaps the parameters to the AddCitation call
+                if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
                 {
-                    //Add a citation between the retrieved source and the paper which it cites
-                    //The reference direction merely switches the direction of the citation,
-                    //which merely swaps the parameters to the AddCitation call
-                    if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
-                    {
-                        _sources.AddCitation(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
-                    }
-                    else if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
-                    {
-                        _sources.AddCitation(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
-                    }
+                    _sources.AddCitation(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
                 }
-                catch
+                else if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
                 {
-                    _sources = new Sources();
-                    Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId), "Informational");
+                    _sources.AddCitation(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
                 }
 
                 //Mark this queue item as completed
@@ -320,7 +313,7 @@ namespace ATN.Crawler
                 Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
 
                 _sources.Detach(SourceToComplete);
-                _context.Detach(CrawlsToComplete[i]);
+                _sources.Detach(CrawlsToComplete[i]);
             }
 
             if (CrawlsToComplete.Length > 0)
@@ -332,7 +325,13 @@ namespace ATN.Crawler
                 return false;
             }
         }
-        public void SetModifiedIfChanged(bool Changed, int TheoryId)
+
+        /// <summary>
+        /// Sets a theory's modification date if it had previously been changed
+        /// </summary>
+        /// <param name="Changed">Whether or not the theory has changed</param>
+        /// <param name="TheoryId">The TheoryId for the theory having been changed</param>
+        public void SetModifiedDateIfChanged(bool Changed, int TheoryId)
         {
             if (Changed)
             {
