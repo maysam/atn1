@@ -31,7 +31,7 @@ namespace ATN.Web
         protected void Submit_Click(object sender, EventArgs e)
         {
 
-            Subject title = new Subject(); // tp store the entered title 
+            // tp store the entered title 
             //string TheoryId;  //to store the entered theory id
             long newlyAddedSourceId; // to store the Id of the newly added source
 
@@ -47,14 +47,11 @@ namespace ATN.Web
             //TheoryId = txtTheoryId.Text;
             //int intTheoryId = int.Parse(TheoryId); // store theory id provided
 
-
+            sourceNew.ArticleTitle = txtTitle.Text;
            
 
-            title.SubjectText = txtTitle.Text;
 
-            sourceNew.Subjects.Add(title); // add subject to our newly created source
-
-            CompleteSource newSource = new CompleteSource(sourceNew, null, null);
+            CompleteSource newSource = new CompleteSource(sourceNew, new Author[0], null);
 
 
             newSource.IsDetached = true;
@@ -164,17 +161,7 @@ namespace ATN.Web
             {
 
                 CitationPanel.Enabled = true;
-                lbladdbyId.ForeColor = System.Drawing.Color.Black;
-
             }
-
-            else
-            {
-
-                CitationPanel.Enabled = false;
-                lbladdbyId.ForeColor = System.Drawing.Color.Silver;
-            }
-
           
         }
 

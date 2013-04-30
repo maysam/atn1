@@ -18,12 +18,7 @@
      <br />
     <asp:TextBox ID="txtTitle" runat="server" Width="327px"></asp:TextBox>
 
-    <br />
-    <br />
-    <asp:Label ID="lbAuthor" runat="server" Text="Author  " style="font-size: medium; font-weight: 700"></asp:Label>
-     <br />
-    <asp:TextBox ID="txtAuthor" runat="server" Width="325px"></asp:TextBox>
-
+    
     <br />
     <br />
 
@@ -41,7 +36,7 @@
 
      <asp:Label ID="lblCitations" runat="server" Text="References:  " style="font-size: medium; font-weight: 700" ForeColor="Silver" ></asp:Label>
     <br />
-    <asp:DropDownList ID="citations" runat="server" Enabled="False" ForeColor="Silver" BorderColor="Silver" Height="30px" Width="144px" OnSelectedIndexChanged="citations_SelectedIndexChanged" AutoPostBack="True" >
+    <asp:DropDownList ID="citations" runat="server" Enabled="False" ForeColor="Silver" BorderColor="Silver" Height="30px" Width="144px" OnSelectedIndexChanged="citations_SelectedIndexChanged" AutoPostBack="True" Visible="True">
         <asp:ListItem Text="" Selected="True" />
         <asp:ListItem Text="Add a new reference" Value="add" />
         
