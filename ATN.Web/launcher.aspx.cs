@@ -11,10 +11,20 @@ using System.IO;
 
 namespace ATN.Web
 {
+    /// <summary>
+    /// This page launches a new Crawl, or update an existing one
+    /// </summary>
      public partial class launcher : System.Web.UI.Page
     {
+         /// <summary>
+         /// retrieves data if a crawl exists, or create blank fields
+         /// </summary>
+         /// <param name="sender"></param>
+         /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
+
+            //fetching data of  the theory to be recrawled
             int TheoryId;
             if (Int32.TryParse(Request["TheoryId"], out TheoryId) && !IsPostBack)
             {
@@ -71,22 +81,12 @@ namespace ATN.Web
             DataSourceGrid.DataBind();
         }
 
-   /*   protected void AddNewDataSourceId(object sender, EventArgs e)
-        {
-            
-
-            //TemplateField tf = new TemplateField();
-
-            DataControlField newColumn = DataSourceGrid.Columns[1];
-
-            DataSourceGrid.Columns.Add(newColumn);
-   
-                
-           
-        }
-  
-*/
-        
+ 
+        /// <summary>
+        /// adds a new text field for adding a new canonical source
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void AddNewDataSourceToGrid(object sender, EventArgs e)
         {
 
@@ -100,23 +100,16 @@ namespace ATN.Web
                 {
                     for (int i = 1; i <= dtCurrentTable.Rows.Count; i++)
                     {
-   //                    for (int j = 0; j <= dtCurrentTable.Columns.Count; j++)
-  //                      {
 
-
-                            //string box = DataSourceGrid.Rows[rowIndex].Cells[j].Text;
                             drCurrentRow = dtCurrentTable.NewRow();
 
-  //                          drCurrentRow[j] = box;
-
+  
                             //extract the TextBox values
                             TextBox box1 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[0].FindControl("txtMasId1");
-                           // TextBox box2 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[1].FindControl("txtMasId2");
-
+                          
                            drCurrentRow = dtCurrentTable.NewRow();
                             drCurrentRow["MsAcademicSearchId1"] = box1.Text;
-                           // drCurrentRow["MsAcademicSearchId2"] = box2.Text;
-                       // }   
+                       
                         rowIndex++;
                     }
 
@@ -139,6 +132,10 @@ namespace ATN.Web
             SetPreviousData();
         }
 
+         /// <summary>
+         /// save the entered data so they could be retreived when a state changes
+         /// </summary>
+
         private void SetPreviousData(){
 
             int rowIndex = 0;
@@ -149,16 +146,12 @@ namespace ATN.Web
                 {
                     for (int i = 1; i < dt.Rows.Count; i++)
                     {
-                        // for (int j = 0; j <= dt.Columns.Count; j++){ 
-                        //   DataSourceGrid.Rows[rowIndex].Cells[j].Text = dt.Rows[i][j].ToString();
-                        // }
+                        
                         TextBox box1 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[0].FindControl("txtMasId1");
-                       // TextBox box2 = (TextBox)DataSourceGrid.Rows[rowIndex].Cells[1].FindControl("txtMasId2");
+                      
 
                         box1.Text = dt.Rows[i]["MsAcademicSearchId1"].ToString();
-                       // box2.Text = dt.Rows[i]["MsAcademicSearchId2"].ToString();
-
-                        //string box = DataSourceGrid.Rows[rowIndex].Cells[j].Text;
+                       
 
 
 
@@ -211,77 +204,54 @@ namespace ATN.Web
             }
             else
             {
+                //retreiving user enterd data 
                 string TheoryName;
                 string TheoryComment;
                 TheoryName = txtNetworkName.Text;
                 TheoryComment = txtNetworkComments.Text;
                 
 
-
-
-                // string txtMSAcademicSearchIdTemp;
-                //string [] txtMSAcademicSearchIdTemp2 = new string[DataSourceGrid.Columns.Count];
-                //TextBox txtMSAcademicSearchIdTemp2;
-
-
-                string tempsingleLine;
+                
+                string tempsingleLine; //to store all Ids of a single paper
 
 
                 int CrawlIntervalInDays = 0;
-                string CrawlIntervalstringValue = crawlperiod.SelectedValue;
+                string CrawlIntervalstringValue = crawlperiod.SelectedValue; 
 
-                int numberOfIds;
+                int numberOfIds; // to store the number of IDs for one paper
 
-                List<string[]> AllPapersIDs = new List<string[]>();
-                //string[] OnePaperMsAcademicSearchIds2 = new string[DataSourceGrid.Columns.Count];
-
-
-                //string[][] AllPapersMsAcademicSearchIds = new string[DataSourceGrid.Rows.Count][DataSourceGrid.GridViewColumnsGenerator.Count];
-
-
-                //set initial array size for first row
+                List<string[]> AllPapersIDs = new List<string[]>(); // list of arrays of all sources, each list item represents one source id/ids
+               
 
                 TextBox txtMSAcademicSearchIdTemp;
 
 
-                //AllPapersIDs[0] = OnePaperMsAcademicSearchIds;
-
+               
 
                 //header row makes iterator 1, footer row makes iterator only go up to count - 1
                 for (int itr = 0; itr < DataSourceGrid.Rows.Count; itr++)
                 {
-                    // for (int itr1 = 0; itr1 < DataSourceGrid.Columns.Count; itr1++)
-                    //{
-                    //txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[itr1].Text; 
-                    // txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[itr1].FindControl("txtMasId1") as TextBox;
-                    // txtMSAcademicSearchIdTemp2 = DataSourceGrid.Rows[itr].Cells[itr1].FindControl("txtMasId2") as TextBox;
-
+                   
 
                     txtMSAcademicSearchIdTemp = DataSourceGrid.Rows[itr].Cells[0].FindControl("txtMasId1") as TextBox;
-                    //txtMSAcademicSearchIdTemp2 = DataSourceGrid.Rows[itr].Cells[1].FindControl("txtMasId2") as TextBox;
-
-                    //OnePaperMsAcademicSearchIds[itr1] = txtMSAcademicSearchIdTemp;
-
-                    //OnePaperMsAcademicSearchIds[itr1] = txtMSAcademicSearchIdTemp.Text;
+                    
 
 
-                    numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length;
-                    string[] OnePaperMsAcademicSearchIds = new string[numberOfIds];
+                    numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length; // get how many id's are entered for a single paper
+                    string[] OnePaperMsAcademicSearchIds = new string[numberOfIds]; // an array to save all single paper ids
 
 
-                    tempsingleLine = txtMSAcademicSearchIdTemp.Text;
+                    tempsingleLine = txtMSAcademicSearchIdTemp.Text; 
 
-                    OnePaperMsAcademicSearchIds = tempsingleLine.Split(',');
+                    OnePaperMsAcademicSearchIds = tempsingleLine.Split(','); // split the single line of ids into multiple strings each represent one ID
 
-                    //OnePaperMsAcademicSearchIds[1] = txtMSAcademicSearchIdTemp2.Text;
-
-                    // }
+                   
 
 
-                    //AllPapersIDs[itr] = new string[DataSourceGrid.Columns.Count];
+                    
                     if (tempsingleLine != string.Empty && OnePaperMsAcademicSearchIds.Length > 0)
                     {
-                        AllPapersIDs.Add(OnePaperMsAcademicSearchIds);
+                        AllPapersIDs.Add(OnePaperMsAcademicSearchIds); // add the array of Ids for a single paper to the whole list all papers arrays
                     }
                 }
 
@@ -290,15 +260,13 @@ namespace ATN.Web
                 //prepare the datasource and specifications for the crawl
                 CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[AllPapersIDs.Count];
 
-                //create an array of all CanonicalDataSources
+                //create an array of all CanonicalDataSources so it could be passed to newCrawlSpecifier
                 for (int itr = 0; itr < AllPapersIDs.Count; itr++)
                 {
 
                     AllSourcesArray[itr] = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AllPapersIDs[itr]);
                 }
-                //CanonicalDataSource MASIds = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds);
-                //CanonicalDataSource MASIds2 = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, OnePaperMsAcademicSearchIds2);
-
+                
 
                 NewCrawlSpecifier CrawlSpecifier = new NewCrawlSpecifier(TheoryName, TheoryComment, AEF.Checked, ImpactFactor.Checked, TAR.Checked, DataMining.Checked, Clustring.Checked, AllSourcesArray);
 
@@ -324,6 +292,11 @@ namespace ATN.Web
                 //ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
             }
         }
+         /// <summary>
+         /// sets availability of analysis engin part based on user choices
+         /// </summary>
+         /// <param name="sender"></param>
+         /// <param name="e"></param>
 
         protected void ImpactFactor_CheckedChanged(object sender, EventArgs e)
         {
