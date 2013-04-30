@@ -58,6 +58,7 @@ namespace ATN.Crawler
             ExistingCrawlSpecifier[] CrawlSpecifiers = ExistingCrawls.Where(c => c.CrawlState < 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray())).ToArray();
             CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState > 5).OrderByDescending(c => c.CrawlState).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
             CrawlSpecifiers = CrawlSpecifiers.Union(ExistingCrawls.Where(c => c.CrawlState == 5 && c.CrawlIntervalDays.HasValue && c.DateCrawled <= DateTime.Now.AddDays(-c.CrawlIntervalDays.Value)).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToArray();
+            
             foreach (ExistingCrawlSpecifier Specifier in CrawlSpecifiers)
             {
                 if (RefreshExistingCrawl(Specifier.Crawl.CrawlId))
@@ -67,6 +68,7 @@ namespace ATN.Crawler
             }
 
             ChangedCrawls = ChangedCrawls.Union(_progress.GetCrawlsWithoutAnalysisRuns(ChangedCrawls.Select(c => c.Crawl).ToArray()).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
+            ChangedCrawls = ChangedCrawls.Union(ExistingCrawls.Where(c => c.HasChanged).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
 
             return ChangedCrawls.ToArray();
         }
