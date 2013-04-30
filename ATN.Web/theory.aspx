@@ -2,6 +2,9 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><asp:Label ID="lblNetworkName" runat="server" /></h2>
+    <div id="addnewcontainer">
+        <input type="button" value="Add Missing Source" runat="server" id="addnew" />
+    </div>
     <br />
     <strong><asp:Label ID="lblFindSource" runat="server" Text="Search for meta analysis by ID or Title" /></strong>
     <br />

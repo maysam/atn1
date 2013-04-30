@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
+using System.Diagnostics;
 
 namespace ATN.Data
 {
@@ -55,8 +56,16 @@ namespace ATN.Data
         {
             Source CitingSource = Context.Sources.SingleOrDefault(s => s.SourceId == SourceId);
             Source CitedSource = Context.Sources.SingleOrDefault(s => s.SourceId == CitesSourceId);
-            CitedSource.CitingSources.Add(CitingSource);
-            Context.SaveChanges();
+            try
+            {
+                CitedSource.CitingSources.Add(CitingSource);
+                Context.SaveChanges();
+            }
+            catch
+            {
+                CitedSource.CitingSources.Remove(CitingSource);
+                Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", SourceId, CitesSourceId), "Informational");
+            }
         }
 
         /// <summary>

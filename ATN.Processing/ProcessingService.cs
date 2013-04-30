@@ -24,6 +24,21 @@ namespace ATN.Processing
 
             InitializeComponent();
         }
+
+        private void TraceException(Exception e)
+        {
+            Trace.WriteLine("Exception:", "Error");
+            Trace.WriteLine(e.Message);
+            Trace.WriteLine(e.Source);
+            Trace.WriteLine(e.StackTrace);
+            Trace.WriteLine(e.TargetSite);
+            Trace.WriteLine(e.Data);
+            if (e.InnerException != null)
+            {
+                TraceException(e.InnerException);
+            }
+        }
+
         private void PersistService()
         {
             while (true)
@@ -51,12 +66,7 @@ namespace ATN.Processing
                     }
                     catch (Exception e)
                     {
-                        Trace.WriteLine("Exception:", "Error");
-                        Trace.WriteLine(e.Message);
-                        Trace.WriteLine(e.Source);
-                        Trace.WriteLine(e.StackTrace);
-                        Trace.WriteLine(e.TargetSite);
-                        Trace.WriteLine(e.Data);
+                        TraceException(e);
                     }
                 }
                 GC.Collect();

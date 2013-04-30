@@ -295,24 +295,17 @@ namespace ATN.Crawler
 
                     Trace.WriteLine("Source does not exist in database, adding.", "Informational");
                 }
-                try
+
+                //Add a citation between the retrieved source and the paper which it cites
+                //The reference direction merely switches the direction of the citation,
+                //which merely swaps the parameters to the AddCitation call
+                if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
                 {
-                    //Add a citation between the retrieved source and the paper which it cites
-                    //The reference direction merely switches the direction of the citation,
-                    //which merely swaps the parameters to the AddCitation call
-                    if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Reference)
-                    {
-                        _sources.AddCitation(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
-                    }
-                    else if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
-                    {
-                        _sources.AddCitation(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
-                    }
+                    _sources.AddCitation(CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId);
                 }
-                catch
+                else if (CrawlsToComplete[i].CrawlReferenceDirection == (int)CrawlReferenceDirection.Citation)
                 {
-                    _sources = new Sources();
-                    Trace.WriteLine(string.Format("Source ID {0} already cites Source ID {1}", CrawlsToComplete[i].ReferencesSourceId.Value, SourceToComplete.SourceId), "Informational");
+                    _sources.AddCitation(SourceToComplete.SourceId, CrawlsToComplete[i].ReferencesSourceId.Value);
                 }
 
                 //Mark this queue item as completed
@@ -320,7 +313,7 @@ namespace ATN.Crawler
                 Trace.WriteLine(string.Format("Dequeued and retrieved {0}/{1}, Source ID: {2}, Data-Source Specific ID: {3}", i + 1, CrawlsToComplete.Length, SourceToComplete.SourceId, CrawlsToComplete[i].DataSourceSpecificId), "Informational");
 
                 _sources.Detach(SourceToComplete);
-                _context.Detach(CrawlsToComplete[i]);
+                _sources.Detach(CrawlsToComplete[i]);
             }
 
             if (CrawlsToComplete.Length > 0)

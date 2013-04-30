@@ -26,16 +26,23 @@ namespace ATN.Analysis
 
             //int x = 0;
 
-            //FileStream fs = File.Open(@"D:\users\pfaffj\Documents\Visual Studio 2012\Projects\atn\ATN.Sandbox\bin\x64\Debug\TAM - Training Data.csv", FileMode.Open, FileAccess.Read);
-            //ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
-            //Importer.ImportTheory(2, fs);
+            if (args.Length == 2)
+            {
+                FileStream fs = File.Open(args[1], FileMode.Open, FileAccess.Read);
+                ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
+                Importer.ImportTheory(Int32.Parse(args[0]), fs);
+            }
+            else
+            {
+                Console.WriteLine("Usage: ATN.Sandbox.exe TheoryId ImportFile");
+            }
             //int x = 0;
 
-            int TheoryId = 2;
-            AnalysisRunner ar = new AnalysisRunner();
-            CrawlerProgress cp = new CrawlerProgress();
-            Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
-            ar.AnalyzeTheory(c, TheoryId);
+            //int TheoryId = 2;
+            //AnalysisRunner ar = new AnalysisRunner();
+            //CrawlerProgress cp = new CrawlerProgress();
+            //Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
+            //ar.AnalyzeTheory(c, TheoryId);
 
             //int TheoryId = 2;
 

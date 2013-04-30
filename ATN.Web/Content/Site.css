@@ -738,3 +738,7 @@ tr.pager td {
     display:inline-block;
     margin-left:10px;
 }
+#addnewcontainer
+{
+    float:right;
+}
