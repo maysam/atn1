@@ -177,8 +177,8 @@ namespace ATN.Data
 
                 foreach (Subject Subject in SourceToAdd.Subjects)
                 {
-                    _subjects.GetOrAddSubject(Subject);
-                    _subjects.AddSubjectToSource(SourceToAdd.Source.SourceId, Subject.SubjectId);
+                    Subject AlwaysBoundSubject = _subjects.GetOrAddSubject(Subject);
+                    _subjects.AddSubjectToSource(SourceToAdd.Source.SourceId, AlwaysBoundSubject.SubjectId);
                 }
 
                 Context.SaveChanges();
