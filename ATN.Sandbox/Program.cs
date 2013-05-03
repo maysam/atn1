@@ -29,8 +29,10 @@ namespace ATN.Analysis
             if (args.Length == 2)
             {
                 FileStream fs = File.Open(args[1], FileMode.Open, FileAccess.Read);
+                //FileStream fs = File.Open("TAM Worksheet - Copy.csv", FileMode.Open, FileAccess.Read);
                 ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
                 Importer.ImportTheory(Int32.Parse(args[0]), fs);
+                //Importer.ImportTheory(2, fs);
             }
             else
             {
@@ -43,7 +45,7 @@ namespace ATN.Analysis
             //CrawlerProgress cp = new CrawlerProgress();
             //Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
             //ar.AnalyzeTheory(c, TheoryId);
-
+            //int x = 0;
             //int TheoryId = 2;
 
             //GraphBuilder gb = new GraphBuilder();

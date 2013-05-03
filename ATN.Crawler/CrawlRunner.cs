@@ -67,8 +67,9 @@ namespace ATN.Crawler
                 }
             }
 
-            ChangedCrawls = ChangedCrawls.Union(_progress.GetCrawlsWithoutAnalysisRuns(ChangedCrawls.Select(c => c.Crawl).ToArray()).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
             ChangedCrawls = ChangedCrawls.Union(ExistingCrawls.Where(c => c.HasChanged).Select(c => new ExistingCrawlSpecifier(c, c.Theory.TheoryName, c.Theory.TheoryComment, c.TheoryId, c.Theory.ArticleLevelEigenfactor, c.Theory.ImpactFactor, c.Theory.TheoryAttributionRatio, c.Theory.DataMining, c.Theory.Clustering, c.Theory.TheoryDefinitions.ToArray()))).ToList();
+
+            Trace.WriteLine(string.Format("Found {0} crawls that changed", ChangedCrawls.Count));
 
             return ChangedCrawls.ToArray();
         }

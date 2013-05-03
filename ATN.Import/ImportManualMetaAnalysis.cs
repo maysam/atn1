@@ -44,7 +44,7 @@ namespace ATN.Import
                 //Handle meta analysis creation
                 if (SourceToImport.IsMetaAnalysis == "Yes" || SourceToImport.IsContributing == "Yes")
                 {
-                    if (!Int64.TryParse(SourceToImport.SourceId, out SourceId))
+                    if (!Int64.TryParse(SourceToImport.SourceId, out SourceId) || SourceId < 0)
                     {
                         //The source does not exist
                         CompleteSource SourceToComplete = new CompleteSource();
@@ -95,17 +95,21 @@ namespace ATN.Import
                             HumanMetaAnalysisIdentifierToSourceId.Add(SourceToImport.MasID, RetrievedSource.SourceId);
                         }
                     }
-                    uint[] MetaAnalysisIDs = SourceToImport.MemberOfMetaAnalyses.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Where(u => u.Trim() != string.Empty).Select(u => uint.Parse(u)).ToArray();
+                    string[] MetaAnalysisIDs = SourceToImport.MemberOfMetaAnalyses.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Where(u => u.Trim() != string.Empty).Select(u => u.Trim()).ToArray();
 
-                    foreach (uint MetaAnalysisMember in MetaAnalysisIDs)
+                    foreach (string MetaAnalysisMember in MetaAnalysisIDs)
                     {
                         Source s;
                         if (!HumanMetaAnalysisIdentifierToSourceId.ContainsKey(MetaAnalysisMember.ToString()))
                         {
-                            s = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MetaAnalysisMember.ToString());
+                            s = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MetaAnalysisMember);
                             if (s == null)
                             {
-                                CompleteSource SourceToAdd = _crawler.GetSourceById(MetaAnalysisMember.ToString());
+                                s = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.Human, MetaAnalysisMember);
+                            }
+                            if (s == null)
+                            {
+                                CompleteSource SourceToAdd = _crawler.GetSourceById(MetaAnalysisMember);
                                 s = _sources.AddDetachedSource(SourceToAdd);
                             }
                         }
@@ -113,8 +117,14 @@ namespace ATN.Import
                         {
                             s = _sources.GetSourceById(HumanMetaAnalysisIdentifierToSourceId[MetaAnalysisMember.ToString()]);
                         }
+
+                        Source ActualMemberSouce = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, s.DataSourceSpecificId);
+                        if (ActualMemberSouce == null)
+                        {
+                            ActualMemberSouce = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.Human, s.DataSourceSpecificId);
+                        }
                         _theories.MarkSourceMetaAnalysis(TheoryId, s.SourceId);
-                        _theories.MarkMetaAnalysisMember(TheoryId, s.SourceId, Int64.Parse(SourceToImport.SourceId), true);
+                        _theories.MarkMetaAnalysisMember(TheoryId, s.SourceId, ActualMemberSouce.SourceId, true);
                     }
                 }
             }
