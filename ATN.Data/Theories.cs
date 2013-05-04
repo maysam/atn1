@@ -452,5 +452,17 @@ namespace ATN.Data
             TheoryToUpdate.LastModifiedDate = LastModified;
             Context.SaveChanges();
         }
+
+        public ExtendedSource[] GetTrainingSourcesForTheory(int TheoryId)
+        {
+            return GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue)
+                .Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+        }
+
+        public ExtendedSource[] GetClassifySourcesForTheory(int TheoryId)
+        {
+            return GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue)
+                .Where(s => !s.Contributing.HasValue).ToArray();
+        }
     }
 }

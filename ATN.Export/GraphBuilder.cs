@@ -169,7 +169,7 @@ namespace ATN.Export
                             !Source.SWR.IsContributingPrediction.HasValue ||
                             !Source.SWR.IsContributingPrediction.Value ||
                             !Source.SWR.PredictionProbability.HasValue ||
-                            Source.SWR.PredictionProbability.Value < 0.95d))
+                            Source.SWR.PredictionProbability.Value < 1.0d))
                     {
                         RemoveFromTree(SourceTree, Source.SWR.SourceId);
                     }

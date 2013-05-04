@@ -205,6 +205,8 @@
     <Content Include="packages.config" />
     <Content Include="ExportVisualization.ashx" />
     <Content Include="AddMissingSource.aspx" />
+    <Content Include="ExportTrain.ashx" />
+    <Content Include="ExportClassify.ashx" />
     <None Include="Properties\PublishProfiles\ATN Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -251,6 +253,12 @@
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Common.cs" />
+    <Compile Include="ExportClassify.ashx.cs">
+      <DependentUpon>ExportClassify.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ExportTrain.ashx.cs">
+      <DependentUpon>ExportTrain.ashx</DependentUpon>
+    </Compile>
     <Compile Include="ExportVisualization.ashx.cs">
       <DependentUpon>ExportVisualization.ashx</DependentUpon>
     </Compile>

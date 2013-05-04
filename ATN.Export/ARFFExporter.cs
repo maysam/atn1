@@ -14,7 +14,7 @@ namespace ATN.Export
         /// </summary>
         /// <param name="Nodes">Nodes marked by RAs to train decision tree with</param>
         /// <param name="DestinationStream">Output ARFF training data file</param>
-        public static void Export(ExtendedSource[] Sources, int TheoryId, Stream DestinationStream)
+        public static void Export(ExtendedSource[] Sources, int TheoryId, Stream DestinationStream, bool Close = true)
         {
             StreamWriter ExportDestination = new System.IO.StreamWriter(DestinationStream, Encoding.ASCII);
 
@@ -49,7 +49,11 @@ namespace ATN.Export
                     Source.TheoryNamePresent ? "present" : "not-present",
                     Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
             }
-            ExportDestination.Close();
+
+            if (Close)
+            {
+                ExportDestination.Close();
+            }
         }
     }
 }
