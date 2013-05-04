@@ -47,6 +47,25 @@ namespace ATN.Export
 
         public void RemoveFromTree(Dictionary<long, SourceWithReferences> SourceTree, long SourceToRemove)
         {
+            List<long> Citations = SourceTree[SourceToRemove].Citations;
+            List<long> References = SourceTree[SourceToRemove].References;
+
+            foreach (long Citation in Citations)
+            {
+                if (SourceTree.ContainsKey(Citation))
+                {
+                    SourceTree[Citation].References.Remove(SourceToRemove);
+                }
+            }
+
+            foreach (long Reference in References)
+            {
+                if (SourceTree.ContainsKey(Reference))
+                {
+                    SourceTree[Reference].Citations.Remove(SourceToRemove);
+                }
+            }
+
             SourceTree.Remove(SourceToRemove);
         }
 

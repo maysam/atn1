@@ -11,7 +11,6 @@ namespace ATN.Import
 {
     public class ImportSource
     {
-        public string SourceId { get; set; }
         public string MasID { get; set; }
         public string Title { get; set; }
         public string Year { get; set; }
@@ -26,7 +25,6 @@ namespace ATN.Import
     {
         public ImportSourceMap()
         {
-            Map(m => m.SourceId).Name("Source ID");
             Map(m => m.MasID).Name("MAS ID");
             Map(m => m.Title).Name("Title");
             Map(m => m.Year).Name("Year");

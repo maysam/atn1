@@ -26,18 +26,18 @@ namespace ATN.Analysis
 
             //int x = 0;
 
-            if (args.Length == 2)
-            {
-                FileStream fs = File.Open(args[1], FileMode.Open, FileAccess.Read);
-                //FileStream fs = File.Open("TAM Worksheet - Copy.csv", FileMode.Open, FileAccess.Read);
-                ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
-                Importer.ImportTheory(Int32.Parse(args[0]), fs);
+            //if (args.Length == 2)
+            //{
+                //FileStream fs = File.Open(args[1], FileMode.Open, FileAccess.Read);
+                //FileStream fs = File.Open("TAM Worksheet.csv", FileMode.Open, FileAccess.Read);
+                //ImportManualMetaAnalysis Importer = new ImportManualMetaAnalysis();
+                //Importer.ImportTheory(Int32.Parse(args[0]), fs);
                 //Importer.ImportTheory(2, fs);
-            }
-            else
-            {
-                Console.WriteLine("Usage: ATN.Sandbox.exe TheoryId ImportFile");
-            }
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Usage: ATN.Sandbox.exe TheoryId ImportFile");
+            //}
             //int x = 0;
 
             //int TheoryId = 2;
@@ -45,7 +45,7 @@ namespace ATN.Analysis
             //CrawlerProgress cp = new CrawlerProgress();
             //Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
             //ar.AnalyzeTheory(c, TheoryId);
-            //int x = 0;
+            int x = 0;
             //int TheoryId = 2;
 
             //GraphBuilder gb = new GraphBuilder();
@@ -57,6 +57,12 @@ namespace ATN.Analysis
 
             //FileStream PrunedStream = File.Open(TheoryId.ToString() + "PrunnedGraph.xml", FileMode.Create);
             //XGMMLExporter.Export(PrunedGraph.Nodes.ToArray(), PrunedGraph.Edges.ToArray(), PrunedStream);
+
+            MemoryStream ms = new MemoryStream();
+            StreamWriter sw = new StreamWriter(ms);
+            sw.WriteLine("test!");
+            sw.Close();
+            long z = ms.Length;
         }
     }
 }

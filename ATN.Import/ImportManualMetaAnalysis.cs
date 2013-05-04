@@ -40,96 +40,95 @@ namespace ATN.Import
             {
                 Trace.WriteLine(string.Format("Writing import source {0}/{1}", i, Count));
                 i++;
-                long SourceId;
+                long MasID;
                 //Handle meta analysis creation
                 if (SourceToImport.IsMetaAnalysis == "Yes" || SourceToImport.IsContributing == "Yes")
                 {
-                    if (!Int64.TryParse(SourceToImport.SourceId, out SourceId) || SourceId < 0)
+                    Source ActualMemberSource = null;
+                    if (Int64.TryParse(SourceToImport.MasID.Trim(), out MasID))
                     {
-                        //The source does not exist
-                        CompleteSource SourceToComplete = new CompleteSource();
-                        SourceToComplete.Source = new Source();
-                        SourceToComplete.Source.ArticleTitle = SourceToImport.Title;
-                        SourceToComplete.Source.Year = SourceToImport.Year == "0" || SourceToImport.Year == "None" ? (int?)null : (int?)Int32.Parse(SourceToImport.Year);
-                        SourceToComplete.Journal = new Journal();
-                        SourceToComplete.Journal.JournalName = SourceToImport.Journal;
-                        SourceToComplete.Source.DataSourceId = (int)CrawlerDataSource.Human;
-                        SourceToComplete.Source.DataSourceSpecificId = Guid.NewGuid().ToString();
-                        SourceToComplete.Source.SerializedDataSourceResponse = "<Response />";
+                        if (MasID < 0)
+                        {
+                            //The source does not exist
+                            CompleteSource SourceToComplete = new CompleteSource();
+                            SourceToComplete.Source = new Source();
+                            SourceToComplete.Source.ArticleTitle = SourceToImport.Title;
+                            SourceToComplete.Source.Year = SourceToImport.Year == "0" || SourceToImport.Year == "None" ? (int?)null : (int?)Int32.Parse(SourceToImport.Year);
+                            SourceToComplete.Journal = new Journal();
+                            SourceToComplete.Journal.JournalName = SourceToImport.Journal;
+                            SourceToComplete.Source.DataSourceId = (int)CrawlerDataSource.Human;
+                            SourceToComplete.Source.DataSourceSpecificId = Guid.NewGuid().ToString();
+                            SourceToComplete.Source.SerializedDataSourceResponse = "<Response />";
 
-                        string[] AuthorNames = SourceToImport.Authors.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        string[][] AuthorLastFirst = AuthorNames.Select(a => a.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)).ToArray();
-                        List<Author> Authors = new List<Author>();
-                        /*foreach (string[] Author in AuthorLastFirst)
-                        {
-                            Author AuthorToAdd = new Author();
-                            if (Author.Length == 2)
+                            string[] AuthorNames = SourceToImport.Authors.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                            string[][] AuthorLastFirst = AuthorNames.Select(a => a.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)).ToArray();
+                            List<Author> Authors = new List<Author>();
+                            /*foreach (string[] Author in AuthorLastFirst)
                             {
-                                AuthorToAdd.LastName = Author[1];
-                                AuthorToAdd.FirstName = Author[0];
-                            }
-                            else if (Author.Length == 1)
+                                Author AuthorToAdd = new Author();
+                                if (Author.Length == 2)
+                                {
+                                    AuthorToAdd.LastName = Author[1];
+                                    AuthorToAdd.FirstName = Author[0];
+                                }
+                                else if (Author.Length == 1)
+                                {
+                                    AuthorToAdd.FirstName = string.Empty;
+                                    AuthorToAdd.LastName = Author[0];
+                                }
+                                else
+                                {
+                                    AuthorToAdd.FirstName = Author[0];
+                                    AuthorToAdd.LastName = Author[1] + " " + Author[2];
+                                    int x = 0;
+                                }
+                                AuthorToAdd.DataSourceId = (int)CrawlerDataSource.Human;
+                                AuthorToAdd.DataSourceSpecificId = Guid.NewGuid().ToString();
+                                Authors.Add(AuthorToAdd);
+                            }*/
+                            SourceToComplete.Authors = Authors.ToArray();
+                            SourceToComplete.Subjects = new Subject[0];
+                            SourceToComplete.IsDetached = true;
+                            Source RetrievedSource = _sources.AddDetachedSource(SourceToComplete);
+                            _theories.AddManualTheoryMember(TheoryId, RetrievedSource.SourceId);
+                            if (SourceToImport.IsMetaAnalysis == "Yes")
                             {
-                                AuthorToAdd.FirstName = string.Empty;
-                                AuthorToAdd.LastName = Author[0];
+                                _theories.MarkSourceMetaAnalysis(TheoryId, RetrievedSource.SourceId);
                             }
-                            else
-                            {
-                                AuthorToAdd.FirstName = Author[0];
-                                AuthorToAdd.LastName = Author[1] + " " + Author[2];
-                                int x = 0;
-                            }
-                            AuthorToAdd.DataSourceId = (int)CrawlerDataSource.Human;
-                            AuthorToAdd.DataSourceSpecificId = Guid.NewGuid().ToString();
-                            Authors.Add(AuthorToAdd);
-                        }*/
-                        SourceToComplete.Authors = Authors.ToArray();
-                        SourceToComplete.Subjects = new Subject[0];
-                        SourceToComplete.IsDetached = true;
-                        Source RetrievedSource = _sources.AddDetachedSource(SourceToComplete);
-                        SourceToImport.SourceId = RetrievedSource.SourceId.ToString();
-                        _theories.AddManualTheoryMember(TheoryId, RetrievedSource.SourceId);
-                        if (SourceToImport.IsMetaAnalysis == "Yes")
-                        {
-                            _theories.MarkSourceMetaAnalysis(TheoryId, RetrievedSource.SourceId);
+                            HumanDataSourceToSource.Add(SourceToImport.MasID, RetrievedSource.SourceId);
+                            ActualMemberSource = RetrievedSource;
                         }
-                        HumanDataSourceToSource.Add(SourceToImport.MasID, RetrievedSource.SourceId);
-                    }
-
-                    Source ActualMemberSouce = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, SourceToImport.MasID);
-                    if (ActualMemberSouce == null)
-                    {
-                        ActualMemberSouce = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.Human, SourceToImport.MasID);
-                    }
-                    if (ActualMemberSouce == null && HumanDataSourceToSource.ContainsKey(SourceToImport.MasID.Trim()))
-                    {
-                        ActualMemberSouce = _sources.GetSourceById(HumanDataSourceToSource[SourceToImport.MasID.Trim()]);
+                        else
+                        {
+                            ActualMemberSource = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, SourceToImport.MasID.Trim());
+                            if (ActualMemberSource == null)
+                            {
+                                CompleteSource SourceToAdd = _crawler.GetSourceById(SourceToImport.MasID.Trim());
+                                ActualMemberSource = _sources.AddDetachedSource(SourceToAdd);
+                            }
+                        }
                     }
                     string[] MetaAnalysisIDs = SourceToImport.MemberOfMetaAnalyses.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Where(u => u.Trim() != string.Empty).Select(u => u.Trim()).ToArray();
 
                     foreach (string MetaAnalysisMember in MetaAnalysisIDs)
                     {
 
-                        Source s;
+                        Source MetaAnalysisSource;
                         if (!HumanDataSourceToSource.ContainsKey(MetaAnalysisMember.ToString()))
                         {
-                            s = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MetaAnalysisMember);
-                            if (s == null)
-                            {
-                                s = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.Human, MetaAnalysisMember);
-                            }
-                            if (s == null)
+                            MetaAnalysisSource = _sources.GetSourceByDataSourceSpecificId(CrawlerDataSource.MicrosoftAcademicSearch, MetaAnalysisMember);
+                            if (MetaAnalysisSource == null)
                             {
                                 CompleteSource SourceToAdd = _crawler.GetSourceById(MetaAnalysisMember);
-                                s = _sources.AddDetachedSource(SourceToAdd);
+                                MetaAnalysisSource = _sources.AddDetachedSource(SourceToAdd);
                             }
                         }
                         else
                         {
-                            s = _sources.GetSourceById(HumanDataSourceToSource[MetaAnalysisMember.ToString()]);
+                            MetaAnalysisSource = _sources.GetSourceById(HumanDataSourceToSource[MetaAnalysisMember.ToString()]);
                         }
-                        _theories.MarkSourceMetaAnalysis(TheoryId, s.SourceId);
-                        _theories.MarkMetaAnalysisMember(TheoryId, s.SourceId, ActualMemberSouce.SourceId, true);
+                        _theories.MarkSourceMetaAnalysis(TheoryId, MetaAnalysisSource.SourceId);
+                        _theories.MarkMetaAnalysisMember(TheoryId, MetaAnalysisSource.SourceId, ActualMemberSource.SourceId, true);
                     }
                 }
             }

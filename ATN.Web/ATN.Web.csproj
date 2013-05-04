@@ -207,6 +207,7 @@
     <Content Include="AddMissingSource.aspx" />
     <Content Include="ExportTrain.ashx" />
     <Content Include="ExportClassify.ashx" />
+    <Content Include="LoginUser.ashx" />
     <None Include="Properties\PublishProfiles\ATN Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -278,6 +279,9 @@
     </Compile>
     <Compile Include="launcher.aspx.designer.cs">
       <DependentUpon>launcher.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="LoginUser.ashx.cs">
+      <DependentUpon>LoginUser.ashx</DependentUpon>
     </Compile>
     <Compile Include="metaAnalysis.aspx.cs">
       <DependentUpon>metaAnalysis.aspx</DependentUpon>

@@ -45,10 +45,12 @@ namespace ATN.Export
                     Source.Depth.ToString(),
                     Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
                     Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?",
-                    Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
+                    "?", //Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
                     Source.TheoryNamePresent ? "present" : "not-present",
                     Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
             }
+
+            ExportDestination.Flush();
 
             if (Close)
             {
