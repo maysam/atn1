@@ -13,6 +13,15 @@ namespace ATN.Web {
     public partial class launcher {
         
         /// <summary>
+        /// confirmation control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal confirmation;
+        
+        /// <summary>
         /// lblNetworkName control.
         /// </summary>
         /// <remarks>

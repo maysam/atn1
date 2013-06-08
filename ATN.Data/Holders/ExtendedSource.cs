@@ -15,7 +15,9 @@ namespace ATN.Data
         public int? NumContributing { get; set; }
         public bool? Contributing { get; set; }
         public double? AEF { get; set; }
-        public double? TAR { get; set; }
+        public double? TAR1 { get; set; }
+        public double? TAR2 { get; set; }
+        public double? TAR3 { get; set; }
         public double? predictionProbability { get; set; }
         public bool? isContributingPrediction { get; set; }
         public bool TheoryNamePresent { get; set; }

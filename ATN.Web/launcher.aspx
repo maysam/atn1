@@ -1,6 +1,11 @@
 ﻿<%@ Page Title="Launcher" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="launcher.aspx.cs" Inherits="ATN.Web.launcher" %>
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
-        <h3><asp:Label ID="lblNetworkName" runat="server" Text="Network Name"></asp:Label></h3>
+        <asp:Literal ID="confirmation" runat="server" Visible="false">
+            <p style="padding:20px;border:2px solid green;">
+                The crawl has started and my take several hours to complete. Analysis will be run after the crawl has completed. Following completion of the crawl, the machine learning system requires tagging the contribution of several individual theory members to serve as training data.
+            </p>
+        </asp:Literal>
+        <h3><asp:Label ID="lblNetworkName" runat="server" Text="Network Name" style="width: 250px;"></asp:Label></h3>
         <asp:TextBox ID="txtNetworkName" runat="server"></asp:TextBox>
         <br />
         <h3><asp:Label ID="lblNetworkComments" runat="server" Text="Comments"></asp:Label></h3>
@@ -16,6 +21,7 @@
                 <asp:TemplateField>
                     <HeaderTemplate>
                         <asp:Label ID="lbMasId1" runat="server" Text="MS Academic Search ID(s)"></asp:Label>
+                        <div style="font-size:.8em;font-weight:normal;">Multiple MAS IDs may be separated by commas (e.g. 12345,567890)</div>
                     </HeaderTemplate>
                     <ItemTemplate>
                         <asp:TextBox ID="txtMasId1" runat="server" ></asp:TextBox>

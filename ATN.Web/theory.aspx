@@ -11,33 +11,11 @@
     <asp:TextBox ID="txtFindSource" runat="server" /><asp:Button ID="btnFindSource" runat="server" Text="Search" />
     <br />
     <asp:Button ID="btnRandomize" runat="server" OnClick="btnRandomize_Click" Text="Random Sample" />
+    <asp:Button ID="btnExportVisualization" runat="server" Text="Export Visualization" OnClick="btnExportVisualization_Click" />
+    <asp:Button ID="btnExportTrain" runat="server" Text="Export Train" OnClick="btnExportTrain_Click" />
+    <asp:Button ID="btnExportClassify" runat="server" Text="Export Classify" OnClick="btnExportClassify_Click" />
     <asp:GridView ID="grdFirstLevelSources" runat="server" OnRowDataBound="grdFirstLevelSources_RowDataBound" AutoGenerateColumns="false" Visible="true" EnableViewState="true">
         <Columns>
-            <asp:TemplateField>
-                <HeaderTemplate>
-                    <asp:Label ID="lblAuthorsHeader" runat="server" Text="Authors"/>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <asp:Label ID="lblAuthors" runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
-            <asp:TemplateField>
-                <HeaderTemplate>
-                    <asp:LinkButton ID="lnkTitleHeader" runat="server" Text="Title" />
-                    <asp:Image ID="imgTitleHeader" runat="server" Visible="false" />
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <asp:LinkButton ID="lnkTitle" runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
-            <asp:TemplateField>
-                <HeaderTemplate>
-                    <asp:Label ID="lblSourceIdHeader" runat="server" Text="Source ID" />
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <asp:Label ID="lblSourceId" runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
                     <asp:Label ID="lblMetaAnalysisHeader" runat="server" Text="Meta-Analysis" />
@@ -57,6 +35,22 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
+                    <asp:Label ID="lblSourceIdHeader" runat="server" Text="SID" />
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <asp:Label ID="lblSourceId" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField>
+                <HeaderTemplate>
+                    <asp:Label ID="lblAuthorsHeader" runat="server" Text="Author"/>
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <asp:Label ID="lblAuthors" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField>
+                <HeaderTemplate>
                     <asp:Label ID="lblYearHeader" runat="server" Text="Year"/>
                 </HeaderTemplate>
                 <ItemTemplate>
@@ -65,18 +59,11 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblEigenfactorHeader" runat="server" Text="Eigenfactor Score"/>
+                    <asp:LinkButton ID="lnkTitleHeader" runat="server" Text="Title" />
+                    <asp:Image ID="imgTitleHeader" runat="server" Visible="false" />
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <asp:Label ID="lblEigenfactor" runat="server" />
-                </ItemTemplate>
-            </asp:TemplateField>
-            <asp:TemplateField>
-                <HeaderTemplate>
-                    <asp:Label ID="lblDepthHeader" runat="server" Text="Citation Level"/>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <asp:Label ID="lblDepth" runat="server" />
+                    <asp:LinkButton ID="lnkTitle" runat="server" />
                 </ItemTemplate>
             </asp:TemplateField>
             <asp:TemplateField>
@@ -89,7 +76,23 @@
             </asp:TemplateField>
             <asp:TemplateField>
                 <HeaderTemplate>
-                    <asp:Label ID="lblPredictionHeader" runat="server" Text="Machine Learning Prediction" />
+                    <asp:Label ID="lblDepthHeader" runat="server" Text="Citation Level"/>
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <asp:Label ID="lblDepth" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField>
+                <HeaderTemplate>
+                    <asp:Label ID="lblEigenfactorHeader" runat="server" Text="ALE"/>
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <asp:Label ID="lblEigenfactor" runat="server" />
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField>
+                <HeaderTemplate>
+                    <asp:Label ID="lblPredictionHeader" runat="server" Text="Probability" />
                 </HeaderTemplate>
                 <ItemTemplate>
                     <asp:Label ID="lblPrediction" runat="server" />

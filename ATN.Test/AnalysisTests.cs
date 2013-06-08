@@ -39,7 +39,7 @@ namespace ATN.Test
             {
                 TARTree[AEFScore.Key].ArticleLevelEigenFactor = AEFScore.Value;
             }
-            Dictionary<long, double?> TARScores = TAR.ComputeTAR(TARTree);
+            Dictionary<long, double?> TARScores = TAR.ComputeTAR1(TARTree);
             foreach (KeyValuePair<long, double?> TARScore in TARScores)
             {
                 if (TARScore.Key == CanonicalSource.SourceId)

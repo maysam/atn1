@@ -23,10 +23,8 @@ namespace ATN.Web
         protected void Page_Load(object sender, EventArgs e)
         {
             //retrieve arguments from url
-            theoryId = (Request.QueryString[Common.QueryStrings.TheoryId] != null) ?
-                Convert.ToInt32(Request.QueryString[Common.QueryStrings.TheoryId]) : 2;
-            lastPageIndex = (Request.QueryString[Common.QueryStrings.PageNumber] != null) ?
-                Convert.ToInt32(Request.QueryString[Common.QueryStrings.PageNumber]) : 0;
+            Int32.TryParse(Request.QueryString[Common.QueryStrings.TheoryId], out theoryId);
+            Int32.TryParse(Request.QueryString[Common.QueryStrings.PageNumber], out lastPageIndex);
             
             Theories sourceRetriever = new Theories();
             Theory theoryRetriever = new Theory();
@@ -106,8 +104,12 @@ namespace ATN.Web
             //save the results if necessary and display the correct information
             
             //not a post back
-            if (postBackControl == string.Empty)
+            if (postBackControl == string.Empty || postBackControl == "lnkTitleHeader")
             {
+                if (postBackControl == "lnkTitleHeader")
+                {
+                    Common.Sort<ExtendedSource>(sources, "Title ASC");
+                }
                 grdFirstLevelSources.DataSource = sources;
                 grdFirstLevelSources.DataBind();
             }
@@ -119,7 +121,7 @@ namespace ATN.Web
                 grdFirstLevelSources.DataBind();
             }
             //redirect to metaAnalysis
-            else
+            else if (postBackControl != "btnExportVisualization" && postBackControl != "btnExportTrain" && postBackControl != "btnExportClassify")
             {
                 save_results();
                 long metaAnalysis = (Request.QueryString[Common.QueryStrings.MetaAnalysis] != null) ?
@@ -129,7 +131,6 @@ namespace ATN.Web
                     Common.QueryStrings.MetaAnalysis + Common.Symbols.Eq + metaAnalysis.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
             }
-
         }
 
         /// <summary>
@@ -161,11 +162,11 @@ namespace ATN.Web
                 {
                     source.Authors = "";
                 }
-                Label lblAuthors = e.Row.Cells[0].Controls[1] as Label;
+                Label lblAuthors = e.Row.Cells[3].Controls[1] as Label;
                 lblAuthors.Text = source.Authors;
 
                 //cell 1 - Title
-                LinkButton lnkTitle = e.Row.Cells[1].Controls[1] as LinkButton;
+                LinkButton lnkTitle = e.Row.Cells[5].Controls[1] as LinkButton;
                 lnkTitle.Text = source.Title;
                 lnkTitle.PostBackUrl = Common.Pages.Theory + Common.Symbols.Question +
                     Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
@@ -178,50 +179,50 @@ namespace ATN.Web
                     
                 //cell 3 - meta analysis checkbox
                 //if metaAnalysis then checked
-                CheckBox chkMetaAnalysis = e.Row.Cells[3].Controls[1] as CheckBox;
+                CheckBox chkMetaAnalysis = e.Row.Cells[0].Controls[1] as CheckBox;
                 chkMetaAnalysis.Checked = source.IsMetaAnalysis;
 
                 //put sourceId in hidden field for postBack 
-                HiddenField hdnSourceId = e.Row.Cells[3].Controls[3] as HiddenField;
+                HiddenField hdnSourceId = e.Row.Cells[0].Controls[3] as HiddenField;
                 hdnSourceId.Value = source.SourceId.ToString();
 
                 //cell 4 - number of contributing papers in meta analysis
                 //show number of papers contributing to this papers meta analysis
-                Label lblContributing = e.Row.Cells[4].Controls[1] as Label;
+                Label lblContributing = e.Row.Cells[1].Controls[1] as Label;
                 if(source.NumContributing != null)
                     lblContributing.Text = source.NumContributing.ToString();
                 else
                     lblContributing.Text = Common.Symbols.Zero;
 
                 //cell 5 - year
-                Label lblYear = e.Row.Cells[5].Controls[1] as Label;
+                Label lblYear = e.Row.Cells[4].Controls[1] as Label;
                 lblYear.Text = source.Year.ToString();
 
                 //cell 6 - AEF
-                Label lblEigenfactor = e.Row.Cells[6].Controls[1] as Label;
-                lblEigenfactor.Text = source.AEF.ToString();
+                Label lblEigenfactor = e.Row.Cells[8].Controls[1] as Label;
+                lblEigenfactor.Text = source.AEF.HasValue ? string.Format("{0:f7}", source.AEF.Value) : string.Empty;
 
                 //cell 7 - depth
                 Label lblDepth = e.Row.Cells[7].Controls[1] as Label;
                 lblDepth.Text = source.Depth.ToString();
 
                 //cell 8 - Journal
-                Label lblJournal = e.Row.Cells[8].Controls[1] as Label;
+                Label lblJournal = e.Row.Cells[6].Controls[1] as Label;
                 lblJournal.Text = source.Journal;
 
                 //cell 9 - Prediction
                 Label lblPrediction = e.Row.Cells[9].Controls[1] as Label;
                 if(source.isContributingPrediction == true)
                 {
-                    lblPrediction.Text = "Contributing";
+                    lblPrediction.Text = "C";
                 }
                 else if (source.isContributingPrediction == false)
                 {
-                    lblPrediction.Text = "Not Contributing";
+                    lblPrediction.Text = "NC";
                 }
                 
                 Label lblPredictionScore = e.Row.Cells[9].Controls[3] as Label;
-                lblPredictionScore.Text = (source.predictionProbability != null) ? "Probability: " + source.predictionProbability.ToString() : string.Empty;
+                lblPredictionScore.Text = source.predictionProbability.HasValue ? string.Format("{0:f2}", source.predictionProbability.Value) : string.Empty;
                 #endregion
                 
             }
@@ -273,6 +274,20 @@ namespace ATN.Web
                     Common.QueryStrings.TheoryId + Common.Symbols.Eq + theoryId.ToString() + Common.Symbols.Amp +
                     Common.QueryStrings.PageNumber + Common.Symbols.Eq + lastPageIndex.ToString());
         }
-       
+
+        protected void btnExportVisualization_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(string.Format("ExportVisualization.ashx?TheoryId={0}", theoryId), true);
+        }
+
+        protected void btnExportTrain_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(string.Format("ExportTrain.ashx?TheoryId={0}", theoryId), true);
+        }
+
+        protected void btnExportClassify_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(string.Format("ExportClassify.ashx?TheoryId={0}", theoryId));
+        }
     }
 }

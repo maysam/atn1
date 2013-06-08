@@ -156,22 +156,22 @@ namespace ATN.Web
                 lnkDateHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.DateAdded;
 
                 LinkButton lnkLastRunHeader = e.Row.Cells[3].Controls[1] as LinkButton;
-                //lnkLastRunHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastRun;
+                lnkLastRunHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastRun;
 
                 LinkButton lnkLastMachineLearningHeader = e.Row.Cells[4].Controls[1] as LinkButton;
-                //lnkLastMachineLearningHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastMachineLearning;
+                lnkLastMachineLearningHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.LastMachineLearning;
 
                 LinkButton lnkStatusHeader = e.Row.Cells[5].Controls[1] as LinkButton;
-                //lnkStatusHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Status;
+                lnkStatusHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.Status;
 
                 LinkButton lnkSecondLevelHeader = e.Row.Cells[6].Controls[1] as LinkButton;
-                //lnkSecondLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.SecondLevel;
+                lnkSecondLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.SecondLevel;
 
                 LinkButton lnkThirdLevelHeader = e.Row.Cells[7].Controls[1] as LinkButton;
-                //lnkThirdLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.ThirdLevel;
+                lnkThirdLevelHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.ThirdLevel;
 
                 LinkButton lnkTheoryContributingHeader = e.Row.Cells[8].Controls[1] as LinkButton;
-                //lnkTheoryContributingHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.TheoryContributing;
+                lnkTheoryContributingHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.TheoryContributing;
 
             }
         }

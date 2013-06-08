@@ -275,21 +275,7 @@ namespace ATN.Web
                 CrawlRunner NewCrawler = new CrawlRunner();
                 NewCrawler.StartNewCrawl(CrawlSpecifier, CrawlIntervalInDays);
 
-                //pop an alert box to test if information is being passed correctly
-
-                //string crawlerString;
-                //crawlerString = "alert('" +
-                //        txtNetworkName.Text + "\\n" +
-                //        txtNetworkComments.Text + "\\n" +
-                //        "paper name     MS Academic Search ID \\n";
-
-                //for (int itr = 0; itr < paperNames.Count(); itr++)
-                //{
-                //    crawlerString += paperNames[itr] + "    " + msAcademicSearchIds[itr] + "\\n";
-                //}
-                //crawlerString += "');";
-
-                //ClientScript.RegisterClientScriptBlock(this.GetType(), "Alert", crawlerString, true);
+                confirmation.Visible = true;
             }
         }
          /// <summary>

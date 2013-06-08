@@ -43,6 +43,25 @@ namespace ATN.Analysis
                 return;
             }
 
+            Dictionary<long, ExtendedSource> SourceDetailsForTheory = _theories.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue)
+                .Join(SourceTree.Values, es => es.SourceId, swr => swr.SourceId, (es, swr) => new ExtendedSource()
+                {
+                    AEF = swr.ArticleLevelEigenFactor,
+                    Authors = es.Authors,
+                    Contributing = es.Contributing,
+                    Depth = es.Depth,
+                    ImpactFactor = swr.ImpactFactor,
+                    IsMetaAnalysis = es.IsMetaAnalysis,
+                    Journal = es.Journal,
+                    MasID = es.MasID,
+                    NumContributing = es.NumContributing,
+                    SourceId = es.SourceId,
+                    TAR1 = swr.TheoryAttributionRatio,
+                    TheoryNamePresent = es.TheoryNamePresent,
+                    Year = es.Year,
+                    Title = es.Title
+                }).ToDictionary(st => st.SourceId);
+
             Trace.WriteLine(string.Format("Tree for theory {0} created in {1}", TheoryId, Timer.Elapsed), "Informational");
             Timer.Restart();
 
@@ -69,12 +88,38 @@ namespace ATN.Analysis
                 if (TheoryToAnalyze.TheoryAttributionRatio)
                 {
                     Trace.WriteLine("Running TAR", "Informational");
-                    Dictionary<long, double?> TARScores = TAR.ComputeTAR(SourceTree);
+                    Dictionary<long, double?> TARScores = TAR.ComputeTAR1(SourceTree);
                     foreach (KeyValuePair<long, double?> TARScore in TARScores)
                     {
                         SourceTree[TARScore.Key].TheoryAttributionRatio = TARScore.Value;
                     }
                     Trace.WriteLine(string.Format("TAR completed in {0}", Timer.Elapsed));
+                    Timer.Restart();
+
+                    Trace.WriteLine("Running TAR3", "Informational");
+                    Dictionary<long, double> TAR3Scores = TAR.ComputeTAR3(SourceTree,
+                        SourceDetailsForTheory,
+                        _theories.GetCanonicalSourcesForTheory(TheoryId).Select(s => s.SourceId).ToArray());
+                    foreach (KeyValuePair<long, double> TAR3Score in TAR3Scores)
+                    {
+                        SourceTree[TAR3Score.Key].TheoryAttributionRatio3 = TAR3Score.Value;
+                    }
+                    Trace.WriteLine(string.Format("TAR3 completed in {0}", Timer.Elapsed));
+                    Timer.Restart();
+
+                    Trace.WriteLine("Running TAR2", "Informational");
+                    foreach (KeyValuePair<long, double> TAR3Score in TAR3Scores)
+                    {
+                        if(SourceTree[TAR3Score.Key].References.Count > 0)
+                        {
+                            SourceTree[TAR3Score.Key].TheoryAttributionRatio2 = TAR3Score.Value / SourceTree[TAR3Score.Key].References.Count;
+                        }
+                        else
+                        {
+                            SourceTree[TAR3Score.Key].TheoryAttributionRatio2 = null;
+                        }
+                    }
+                    Trace.WriteLine(string.Format("TAR2 completed in {0}", Timer.Elapsed));
                     Timer.Restart();
                 }
             }
@@ -92,7 +137,7 @@ namespace ATN.Analysis
             {
                 Trace.WriteLine("Running ML", "Informational");
 
-                ExtendedSource[] SourcesForTheory = _theories.GetAllExtendedSourcesForTheory(TheoryId, 0, Int32.MaxValue)
+                SourceDetailsForTheory = SourceDetailsForTheory.Values
                     .Join(SourceTree.Values, es => es.SourceId, swr => swr.SourceId, (es, swr) => new ExtendedSource()
                     {
                         AEF = swr.ArticleLevelEigenFactor,
@@ -105,13 +150,13 @@ namespace ATN.Analysis
                         MasID = es.MasID,
                         NumContributing = es.NumContributing,
                         SourceId = es.SourceId,
-                        TAR = swr.TheoryAttributionRatio,
+                        TAR1 = swr.TheoryAttributionRatio,
                         TheoryNamePresent = es.TheoryNamePresent,
                         Year = es.Year,
                         Title = es.Title
-                    }).ToArray();
-                var TrainSources = SourcesForTheory.Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
-                var ClassifySources = SourcesForTheory.Where(s => !s.Contributing.HasValue).ToArray();
+                    }).ToDictionary(es => es.SourceId);
+                var TrainSources = SourceDetailsForTheory.Values.Where(s => s.Contributing.HasValue && s.Depth < 3).ToArray();
+                var ClassifySources = SourceDetailsForTheory.Values.Where(s => !s.Contributing.HasValue).ToArray();
 
                 if (TrainSources.Length > 0)
                 {

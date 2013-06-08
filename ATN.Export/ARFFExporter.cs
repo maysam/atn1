@@ -25,7 +25,9 @@ namespace ATN.Export
             ExportDestination.WriteLine("@ATTRIBUTE Depth Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ImpactFactor Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE ArticleLevelEigenFactor Numeric");
-            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio1 Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio2 Numeric");
+            ExportDestination.WriteLine("@ATTRIBUTE TheoryAttributionRatio3 Numeric");
             ExportDestination.WriteLine("@ATTRIBUTE TheoryNamePresent {present, not-present}");
             ExportDestination.WriteLine("@ATTRIBUTE class {contributing, not-contributing}");
             ExportDestination.WriteLine();
@@ -40,12 +42,14 @@ namespace ATN.Export
                 //    Source.Year != 0 ? Source.Year.ToString() : "?", Source.Depth.ToString(), Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
                 //    Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?", Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
                 //    Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
-                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5},{6}",
+                ExportDestination.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8}",
                     Source.Year != 0 ? Source.Year.ToString() : "?",
                     Source.Depth.ToString(),
                     Source.ImpactFactor.HasValue ? Source.ImpactFactor.Value.ToString() : "?",
                     Source.AEF.HasValue ? Source.AEF.Value.ToString("F20") : "?",
-                    "?", //Source.TAR.HasValue ? Source.TAR.Value.ToString("F20") : "?",
+                    Source.TAR1.HasValue ? Source.TAR1.Value.ToString("F20") : "?",
+                    Source.TAR2.HasValue ? Source.TAR2.Value.ToString("F20") : "?",
+                    Source.TAR3.HasValue ? Source.TAR3.Value.ToString("F20") : "?",
                     Source.TheoryNamePresent ? "present" : "not-present",
                     Source.Contributing.HasValue ? (Source.Contributing.Value ? "contributing" : "not-contributing") : "?");
             }
