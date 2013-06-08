@@ -92,6 +92,12 @@ namespace ATN.Data
             return SourceToReturn;
         }
 
+        public void UpdateExternalURL(Source SourceToUpdate, string ExternalURL)
+        {
+            SourceToUpdate.ExternalURL = ExternalURL;
+            Context.SaveChanges();
+        }
+
         /// <summary>
         /// Retrieve a full representation of a Source
         /// </summary>

@@ -215,6 +215,10 @@ namespace ATN.Crawler.WebCrawler
             CanonicalPaper.Year = RetrievedPublication.Year;
             CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(response);
             CanonicalPaper.DOI = RetrievedPublication.DOI;
+            if(RetrievedPublication.FullVersionURL.Length > 0)
+            {
+                CanonicalPaper.ExternalURL = RetrievedPublication.FullVersionURL.FirstOrDefault();
+            }
 
             List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication.Author.Length);
             foreach (var Author in RetrievedPublication.Author)
