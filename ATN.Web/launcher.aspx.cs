@@ -38,7 +38,7 @@ namespace ATN.Web
                 txtNetworkName.Text = TheoryToGet.TheoryName;
                 txtNetworkComments.Text = TheoryToGet.TheoryComment;
 
-                if (TheoryCrawl.CrawlIntervalDays.HasValue)
+                if (TheoryCrawl != null && TheoryCrawl.CrawlIntervalDays.HasValue)
                 {
                     crawlperiod.SelectedValue = TheoryCrawl.CrawlIntervalDays.Value.ToString();
                 }
@@ -188,7 +188,7 @@ namespace ATN.Web
                 TheoryToGet.TheoryName = txtNetworkName.Text;
                 TheoryToGet.TheoryComment = txtNetworkComments.Text;
 
-                if (TheoryCrawl.CrawlIntervalDays.HasValue)
+                if (TheoryCrawl != null && TheoryCrawl.CrawlIntervalDays.HasValue)
                 {
                     TheoryCrawl.DateCrawled = DateTime.Now.AddMonths(-1);
                     TheoryCrawl.CrawlIntervalDays = Int32.Parse(crawlperiod.SelectedValue);

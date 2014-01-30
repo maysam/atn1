@@ -125,6 +125,7 @@ namespace ATN.Data
             foreach (TheoryDefinition t in CanonicalPapers)
             {
                 Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                if(CanonicalSource != null)
                 foreach (Source CitingSource in CanonicalSource.CitingSources)
                 {
                     FirstLevelSources.Add(CitingSource);

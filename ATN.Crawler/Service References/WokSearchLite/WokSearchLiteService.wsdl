@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:woksearchlite="http://woksearchlite.cxf.wokmws.thomsonreuters.com" name="WokSearchLiteService" targetNamespace="http://woksearchlite.cxf.wokmws.thomsonreuters.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://woksearchlite.cxf.wokmws.thomsonreuters.com">
+      <xs:element name="citingArticles" type="woksearchlite:citingArticles" />
+      <xs:element name="citingArticlesResponse" type="woksearchlite:citingArticlesResponse" />
+      <xs:element name="relatedRecords" type="woksearchlite:relatedRecords" />
+      <xs:element name="relatedRecordsResponse" type="woksearchlite:relatedRecordsResponse" />
+      <xs:element name="retrieve" type="woksearchlite:retrieve" />
+      <xs:element name="retrieveById" type="woksearchlite:retrieveById" />
+      <xs:element name="retrieveByIdResponse" type="woksearchlite:retrieveByIdResponse" />
+      <xs:element name="retrieveResponse" type="woksearchlite:retrieveResponse" />
+      <xs:element name="search" type="woksearchlite:search" />
+      <xs:element name="searchResponse" type="woksearchlite:searchResponse" />
+      <xs:complexType name="retrieveById">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="databaseId" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="uids" type="xs:string" />
+          <xs:element minOccurs="0" name="queryLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="retrieveParameters" type="woksearchlite:retrieveParameters" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="retrieveParameters">
+        <xs:sequence>
+          <xs:element name="count" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="fields" nillable="true" type="woksearchlite:queryField" />
+          <xs:element name="firstRecord" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="queryField">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string" />
+          <xs:element minOccurs="0" name="sort" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="retrieveByIdResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="woksearchlite:searchResults" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="searchResults">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="parent" type="woksearchlite:liteRecord" />
+          <xs:element minOccurs="0" name="queryID" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="records" nillable="true" type="woksearchlite:liteRecord" />
+          <xs:element name="recordsFound" type="xs:int" />
+          <xs:element name="recordsSearched" type="xs:long" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="liteRecord">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="authors" nillable="true" type="woksearchlite:labelValuesPair" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="keywords" nillable="true" type="woksearchlite:labelValuesPair" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="other" nillable="true" type="woksearchlite:labelValuesPair" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="source" nillable="true" type="woksearchlite:labelValuesPair" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="title" nillable="true" type="woksearchlite:labelValuesPair" />
+          <xs:element minOccurs="0" name="UT" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="labelValuesPair">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="label" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="values" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="retrieve">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="queryId" type="xs:string" />
+          <xs:element minOccurs="0" name="retrieveParameters" type="woksearchlite:retrieveParameters" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="retrieveResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="woksearchlite:searchResults" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="search">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="queryParameters" type="woksearchlite:queryParameters" />
+          <xs:element minOccurs="0" name="retrieveParameters" type="woksearchlite:retrieveParameters" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="queryParameters">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="databaseID" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="editions" nillable="true" type="woksearchlite:editionDesc" />
+          <xs:element minOccurs="0" name="queryLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="symbolicTimeSpan" type="xs:string" />
+          <xs:element minOccurs="0" name="timeSpan" type="woksearchlite:timeSpan" />
+          <xs:element minOccurs="0" name="userQuery" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="editionDesc">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="collection" type="xs:string" />
+          <xs:element minOccurs="0" name="edition" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="timeSpan">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="begin" type="xs:string" />
+          <xs:element minOccurs="0" name="end" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="searchResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="woksearchlite:searchResults" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="citingArticles">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="databaseId" type="xs:string" />
+          <xs:element minOccurs="0" name="uid" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="editionDesc" type="woksearchlite:editionDesc" />
+          <xs:element minOccurs="0" name="timeSpan" type="woksearchlite:timeSpan" />
+          <xs:element minOccurs="0" name="queryLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="retrieveParameters" type="woksearchlite:retrieveParameters" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="citingArticlesResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="woksearchlite:searchResults" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="relatedRecords">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="databaseId" type="xs:string" />
+          <xs:element minOccurs="0" name="uid" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="editionDesc" type="woksearchlite:editionDesc" />
+          <xs:element minOccurs="0" name="timeSpan" type="woksearchlite:timeSpan" />
+          <xs:element minOccurs="0" name="queryLanguage" type="xs:string" />
+          <xs:element minOccurs="0" name="retrieveParameters" type="woksearchlite:retrieveParameters" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="relatedRecordsResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="woksearchlite:searchResults" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="InvalidInputException" type="woksearchlite:InvalidInputException" />
+      <xs:complexType name="InvalidInputException">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:element name="InternalServerException" type="woksearchlite:InternalServerException" />
+      <xs:complexType name="InternalServerException">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:element name="QueryException" type="woksearchlite:QueryException" />
+      <xs:complexType name="QueryException">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:element name="SessionException" type="woksearchlite:SessionException" />
+      <xs:complexType name="SessionException">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:element name="AuthenticationException" type="woksearchlite:AuthenticationException" />
+      <xs:complexType name="AuthenticationException">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:element name="ESTIWSException" type="woksearchlite:ESTIWSException" />
+      <xs:complexType name="ESTIWSException">
+        <xs:sequence />
+      </xs:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="retrieveResponse">
+    <wsdl:part name="parameters" element="woksearchlite:retrieveResponse" />
+  </wsdl:message>
+  <wsdl:message name="relatedRecords">
+    <wsdl:part name="parameters" element="woksearchlite:relatedRecords" />
+  </wsdl:message>
+  <wsdl:message name="SessionException">
+    <wsdl:part name="SessionException" element="woksearchlite:SessionException" />
+  </wsdl:message>
+  <wsdl:message name="relatedRecordsResponse">
+    <wsdl:part name="parameters" element="woksearchlite:relatedRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="InternalServerException">
+    <wsdl:part name="InternalServerException" element="woksearchlite:InternalServerException" />
+  </wsdl:message>
+  <wsdl:message name="InvalidInputException">
+    <wsdl:part name="InvalidInputException" element="woksearchlite:InvalidInputException" />
+  </wsdl:message>
+  <wsdl:message name="ESTIWSException">
+    <wsdl:part name="ESTIWSException" element="woksearchlite:ESTIWSException" />
+  </wsdl:message>
+  <wsdl:message name="searchResponse">
+    <wsdl:part name="parameters" element="woksearchlite:searchResponse" />
+  </wsdl:message>
+  <wsdl:message name="retrieveByIdResponse">
+    <wsdl:part name="parameters" element="woksearchlite:retrieveByIdResponse" />
+  </wsdl:message>
+  <wsdl:message name="QueryException">
+    <wsdl:part name="QueryException" element="woksearchlite:QueryException" />
+  </wsdl:message>
+  <wsdl:message name="citingArticles">
+    <wsdl:part name="parameters" element="woksearchlite:citingArticles" />
+  </wsdl:message>
+  <wsdl:message name="citingArticlesResponse">
+    <wsdl:part name="parameters" element="woksearchlite:citingArticlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="retrieve">
+    <wsdl:part name="parameters" element="woksearchlite:retrieve" />
+  </wsdl:message>
+  <wsdl:message name="AuthenticationException">
+    <wsdl:part name="AuthenticationException" element="woksearchlite:AuthenticationException" />
+  </wsdl:message>
+  <wsdl:message name="search">
+    <wsdl:part name="parameters" element="woksearchlite:search" />
+  </wsdl:message>
+  <wsdl:message name="retrieveById">
+    <wsdl:part name="parameters" element="woksearchlite:retrieveById" />
+  </wsdl:message>
+  <wsdl:portType name="WokSearchLite">
+    <wsdl:operation name="retrieveById">
+      <wsdl:input name="retrieveById" message="woksearchlite:retrieveById" />
+      <wsdl:output name="retrieveByIdResponse" message="woksearchlite:retrieveByIdResponse" />
+      <wsdl:fault name="InternalServerException" message="woksearchlite:InternalServerException" />
+      <wsdl:fault name="InvalidInputException" message="woksearchlite:InvalidInputException" />
+      <wsdl:fault name="ESTIWSException" message="woksearchlite:ESTIWSException" />
+      <wsdl:fault name="AuthenticationException" message="woksearchlite:AuthenticationException" />
+      <wsdl:fault name="QueryException" message="woksearchlite:QueryException" />
+      <wsdl:fault name="SessionException" message="woksearchlite:SessionException" />
+    </wsdl:operation>
+    <wsdl:operation name="retrieve">
+      <wsdl:input name="retrieve" message="woksearchlite:retrieve" />
+      <wsdl:output name="retrieveResponse" message="woksearchlite:retrieveResponse" />
+      <wsdl:fault name="InternalServerException" message="woksearchlite:InternalServerException" />
+      <wsdl:fault name="InvalidInputException" message="woksearchlite:InvalidInputException" />
+      <wsdl:fault name="ESTIWSException" message="woksearchlite:ESTIWSException" />
+      <wsdl:fault name="AuthenticationException" message="woksearchlite:AuthenticationException" />
+      <wsdl:fault name="QueryException" message="woksearchlite:QueryException" />
+      <wsdl:fault name="SessionException" message="woksearchlite:SessionException" />
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <wsdl:input name="search" message="woksearchlite:search" />
+      <wsdl:output name="searchResponse" message="woksearchlite:searchResponse" />
+      <wsdl:fault name="InternalServerException" message="woksearchlite:InternalServerException" />
+      <wsdl:fault name="InvalidInputException" message="woksearchlite:InvalidInputException" />
+      <wsdl:fault name="ESTIWSException" message="woksearchlite:ESTIWSException" />
+      <wsdl:fault name="AuthenticationException" message="woksearchlite:AuthenticationException" />
+      <wsdl:fault name="QueryException" message="woksearchlite:QueryException" />
+      <wsdl:fault name="SessionException" message="woksearchlite:SessionException" />
+    </wsdl:operation>
+    <wsdl:operation name="citingArticles">
+      <wsdl:input name="citingArticles" message="woksearchlite:citingArticles" />
+      <wsdl:output name="citingArticlesResponse" message="woksearchlite:citingArticlesResponse" />
+      <wsdl:fault name="InternalServerException" message="woksearchlite:InternalServerException" />
+      <wsdl:fault name="InvalidInputException" message="woksearchlite:InvalidInputException" />
+      <wsdl:fault name="ESTIWSException" message="woksearchlite:ESTIWSException" />
+      <wsdl:fault name="AuthenticationException" message="woksearchlite:AuthenticationException" />
+      <wsdl:fault name="QueryException" message="woksearchlite:QueryException" />
+      <wsdl:fault name="SessionException" message="woksearchlite:SessionException" />
+    </wsdl:operation>
+    <wsdl:operation name="relatedRecords">
+      <wsdl:input name="relatedRecords" message="woksearchlite:relatedRecords" />
+      <wsdl:output name="relatedRecordsResponse" message="woksearchlite:relatedRecordsResponse" />
+      <wsdl:fault name="InternalServerException" message="woksearchlite:InternalServerException" />
+      <wsdl:fault name="InvalidInputException" message="woksearchlite:InvalidInputException" />
+      <wsdl:fault name="ESTIWSException" message="woksearchlite:ESTIWSException" />
+      <wsdl:fault name="AuthenticationException" message="woksearchlite:AuthenticationException" />
+      <wsdl:fault name="QueryException" message="woksearchlite:QueryException" />
+      <wsdl:fault name="SessionException" message="woksearchlite:SessionException" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WokSearchLiteServiceSoapBinding" type="woksearchlite:WokSearchLite">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="retrieveById">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="retrieveById">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="retrieveByIdResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="InternalServerException">
+        <soap:fault use="literal" name="InternalServerException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="InvalidInputException">
+        <soap:fault use="literal" name="InvalidInputException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ESTIWSException">
+        <soap:fault use="literal" name="ESTIWSException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationException">
+        <soap:fault use="literal" name="AuthenticationException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="QueryException">
+        <soap:fault use="literal" name="QueryException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="SessionException">
+        <soap:fault use="literal" name="SessionException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retrieve">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="retrieve">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="retrieveResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="InternalServerException">
+        <soap:fault use="literal" name="InternalServerException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="InvalidInputException">
+        <soap:fault use="literal" name="InvalidInputException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ESTIWSException">
+        <soap:fault use="literal" name="ESTIWSException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationException">
+        <soap:fault use="literal" name="AuthenticationException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="QueryException">
+        <soap:fault use="literal" name="QueryException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="SessionException">
+        <soap:fault use="literal" name="SessionException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="search">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="search">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="searchResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="InternalServerException">
+        <soap:fault use="literal" name="InternalServerException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="InvalidInputException">
+        <soap:fault use="literal" name="InvalidInputException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ESTIWSException">
+        <soap:fault use="literal" name="ESTIWSException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationException">
+        <soap:fault use="literal" name="AuthenticationException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="QueryException">
+        <soap:fault use="literal" name="QueryException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="SessionException">
+        <soap:fault use="literal" name="SessionException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="citingArticles">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="citingArticles">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="citingArticlesResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="InternalServerException">
+        <soap:fault use="literal" name="InternalServerException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="InvalidInputException">
+        <soap:fault use="literal" name="InvalidInputException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ESTIWSException">
+        <soap:fault use="literal" name="ESTIWSException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationException">
+        <soap:fault use="literal" name="AuthenticationException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="QueryException">
+        <soap:fault use="literal" name="QueryException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="SessionException">
+        <soap:fault use="literal" name="SessionException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="relatedRecords">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="relatedRecords">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="relatedRecordsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="InternalServerException">
+        <soap:fault use="literal" name="InternalServerException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="InvalidInputException">
+        <soap:fault use="literal" name="InvalidInputException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ESTIWSException">
+        <soap:fault use="literal" name="ESTIWSException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="AuthenticationException">
+        <soap:fault use="literal" name="AuthenticationException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="QueryException">
+        <soap:fault use="literal" name="QueryException" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="SessionException">
+        <soap:fault use="literal" name="SessionException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WokSearchLiteService">
+    <wsdl:port name="WokSearchLitePort" binding="woksearchlite:WokSearchLiteServiceSoapBinding">
+      <soap:address location="http://search.isiknowledge.com/esti/wokmws/ws/WokSearchLite" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

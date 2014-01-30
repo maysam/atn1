@@ -8,7 +8,7 @@ namespace ATN.Data
     /// <summary>
     /// A representation of the data source for a specific crawl
     /// </summary>
-    public enum CrawlerDataSource { Human = 0, MicrosoftAcademicSearch = 1 };
+    public enum CrawlerDataSource { Human = 0, MicrosoftAcademicSearch = 1, WebOfKnowledge = 2 };
 
     /// <summary>
     /// A light-weight service for providing persistence-model interaction

@@ -74,6 +74,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigurationReader.cs" />
+    <Compile Include="Service References\WOKMWSAuthenticate\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\WokSearchLite\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\WokSearch\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="WebCrawler\CrawlInstantiator.cs" />
     <Compile Include="CrawlRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,11 +100,13 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="WebCrawler\MASCrawler.cs" />
+    <Compile Include="WebCrawler\WOKCrawler.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Service References\MAS\API.wsdl" />
     <None Include="Service References\MAS\API.xsd">
       <SubType>Designer</SubType>
@@ -104,9 +121,69 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Service References\MAS\APIService.wsdl" />
+    <None Include="Service References\WOKMWSAuthenticate\ATN.Crawler.WOKMWSAuthenticate.authenticateResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WOKMWSAuthenticate\WOKMWSAuthenticateService.wsdl" />
+    <None Include="Service References\WokSearchLite\ATN.Crawler.WokSearchLite.citingArticlesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearchLite\ATN.Crawler.WokSearchLite.relatedRecordsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearchLite\ATN.Crawler.WokSearchLite.retrieveByIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearchLite\ATN.Crawler.WokSearchLite.retrieveResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearchLite\ATN.Crawler.WokSearchLite.searchResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearchLite\ATN.Crawler.WokSearchLite.searchResults.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearchLite\WokSearchLiteService.wsdl" />
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.citedReference.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.citedReferencesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.citedReferencesRetrieveResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.citedReferencesSearchResults.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.citingArticlesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.fullRecordData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.fullRecordSearchResults.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.relatedRecordsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.retrieveByIdResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.retrieveResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\ATN.Crawler.WokSearch.searchResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\WokSearch\WokSearchService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\MAS\" />
+    <WCFMetadataStorage Include="Service References\WOKMWSAuthenticate\" />
+    <WCFMetadataStorage Include="Service References\WokSearchLite\" />
+    <WCFMetadataStorage Include="Service References\WokSearch\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\MAS\ATN.Crawler.MAS.AuthorResponse.datasource">
@@ -137,6 +214,42 @@
       <Project>{D656A9ED-9157-42B1-A870-AB260ECBEED2}</Project>
       <Name>ATN.Data</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WOKMWSAuthenticate\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WOKMWSAuthenticate\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WOKMWSAuthenticate\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WokSearch\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WokSearch\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WokSearch\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WokSearchLite\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WokSearchLite\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WokSearchLite\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
