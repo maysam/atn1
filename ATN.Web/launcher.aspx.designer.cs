@@ -58,6 +58,15 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.TextBox txtNetworkComments;
         
         /// <summary>
+        /// data_source control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList data_source;
+        
+        /// <summary>
         /// DataSourceGrid control.
         /// </summary>
         /// <remarks>

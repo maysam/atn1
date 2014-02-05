@@ -14,6 +14,11 @@
 
         <br />
         <br />
+        <strong>Date Source</strong>
+        <asp:RadioButtonList ID="data_source" runat="server" Width="342px" >
+            <asp:ListItem Text="MAS" Selected="True" Value="1" />
+            <asp:ListItem Text="WOK" Selected="False" Value="2" />
+        </asp:RadioButtonList>
         <br />
         <asp:GridView ID="DataSourceGrid" runat="server" AutoGenerateColumns="False" ShowFooter="True" Width="549px" >
             <Columns>

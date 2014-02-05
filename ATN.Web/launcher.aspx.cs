@@ -31,6 +31,7 @@ namespace ATN.Web
                 btnForceAnalysis.Visible = true;
                 DataSourceGrid.Visible = false;
                 btnNewSource.Visible = false;
+                data_source.Enabled = false;
 
                 Theories t = new Theories();
                 Theory TheoryToGet = t.GetTheory(TheoryId);
@@ -259,12 +260,14 @@ namespace ATN.Web
 
                 //prepare the datasource and specifications for the crawl
                 CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[AllPapersIDs.Count];
+                CrawlerDataSource the_source = (CrawlerDataSource) Int16.Parse(data_source.SelectedValue);
+                
 
                 //create an array of all CanonicalDataSources so it could be passed to newCrawlSpecifier
                 for (int itr = 0; itr < AllPapersIDs.Count; itr++)
                 {
 
-                    AllSourcesArray[itr] = new CanonicalDataSource(CrawlerDataSource.MicrosoftAcademicSearch, AllPapersIDs[itr]);
+                    AllSourcesArray[itr] = new CanonicalDataSource(the_source, AllPapersIDs[itr]);
                 }
                 
 
