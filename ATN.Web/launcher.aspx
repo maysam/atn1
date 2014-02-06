@@ -25,8 +25,8 @@
                
                 <asp:TemplateField>
                     <HeaderTemplate>
-                        <asp:Label ID="lbMasId1" runat="server" Text="MS Academic Search ID(s)"></asp:Label>
-                        <div style="font-size:.8em;font-weight:normal;">Multiple MAS IDs may be separated by commas (e.g. 12345,567890)</div>
+                        <asp:Label ID="lbMasId1" runat="server" Text="Paper ID(s)"></asp:Label>
+                        <div style="font-size:.8em;font-weight:normal;">Multiple IDs may be separated by commas (e.g. 12345,567890)</div>
                     </HeaderTemplate>
                     <ItemTemplate>
                         <asp:TextBox ID="txtMasId1" runat="server" ></asp:TextBox>
