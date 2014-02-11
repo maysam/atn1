@@ -96,7 +96,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>DAEA78A33705570298EFAF232F6D8CF9DD30978B</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>7BE7AF25B84DC18BCE0C7E586A6901911CD2389D</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>ATN.Processing_TemporaryKey.pfx</ManifestKeyFile>
@@ -138,6 +138,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ATN.Processing_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ATN.Analysis\ATN.Analysis.csproj">
