@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ATN.Data;
+using ATN.Crawler.WebCrawler;
 
 namespace ATN.Test
 {
@@ -18,6 +19,14 @@ namespace ATN.Test
         {
             CrawlProgress = new CrawlerProgress(Context);
         }
+        [TestMethod]
+        public void VerifyWokCrawl()
+        {
+            WOKCrawler wok = new WOKCrawler();
+            string[] citations = wok.GetCitationsBySourceId("000240045200008");
+            Assert.IsTrue(citations.Contains<string>("000272014500002"));
+        }
+
 
         [TestMethod]
         public void VerifyQueueItemsAreDeleted()

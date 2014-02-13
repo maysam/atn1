@@ -60,8 +60,13 @@ namespace ATN.Crawler.WebCrawler
             WokSearchLite.retrieveParameters retrieveParams = new WokSearchLite.retrieveParameters();
             retrieveParams.firstRecord = 1;
             retrieveParams.count = MaxResultSize;
-            retrieveParams.fields[0].name = "YEAR";
-            retrieveParams.fields[0].sort = "A";
+            WokSearchLite.queryField sorting = new WokSearchLite.queryField();
+            sorting.name = "YEAR";
+            sorting.sort = "A";
+            retrieveParams.fields = new WokSearchLite.queryField[1];
+            retrieveParams.fields.SetValue(sorting, 0);
+//            retrieveParams.fields[0].name = "YEAR";
+//            retrieveParams.fields[0].sort = "A";
             searchResults results = null;
             int AttemptCount = 0;
             bool InitialRequestSucceeded = false;
