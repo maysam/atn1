@@ -10,6 +10,9 @@ using ATN.Crawler.WOKMWSAuthenticate;
 using ATN.Data;
 using System.ServiceModel.Security;
 using System.Xml;
+using System.Net;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 
 namespace ATN.Crawler.WebCrawler
 {
@@ -28,23 +31,16 @@ namespace ATN.Crawler.WebCrawler
         WokSearchClient client;
         WokSearchLiteClient lite_client;
         WOKMWSAuthenticateClient auth_client;
-        private authenticateResponse authentication_identifier;
+        string sid;
 
         public WOKCrawler()
         {
             _limiter = new RateLimit();
             client = new WokSearchClient();
             auth_client = new WOKMWSAuthenticateClient();
-            //            authentication_identifier = auth_client.authenticate();
-            //            _client.ClientCredentials.IssuedToken = authentication_identifier.Body.@return;
             string authentication_token = auth_client.authenticate();
-            // somehow authentication_token needs to be added to client header 
-            // $search_client->__setCookie('SID',$auth_response->return);
-
-            client.Open();
-
             lite_client = new WokSearchLiteClient();
-            lite_client.Open();
+            sid = "SID=\"" + authentication_token + "\"";
         }
 
         public CrawlerDataSource GetDataSource()
@@ -56,17 +52,17 @@ namespace ATN.Crawler.WebCrawler
         {
             Trace.WriteLine(string.Format("Getting citations for publication {0}", PaperId), "Informational");
             List<string> PublicationIdsCitingCanonicalPaper = new List<string>();
+            WokSearchLite.timeSpan timespan = new WokSearchLite.timeSpan();
+            timespan.begin = "2001-01-01";
+            timespan.end = "2014-01-01";
+            WokSearchLite.editionDesc[] editions = new WokSearchLite.editionDesc[1];
+            editions[0] = new WokSearchLite.editionDesc();
+            editions[0].collection = "WOS";
+            editions[0].edition = "SCI";
 
             WokSearchLite.retrieveParameters retrieveParams = new WokSearchLite.retrieveParameters();
             retrieveParams.firstRecord = 1;
             retrieveParams.count = MaxResultSize;
-            WokSearchLite.queryField sorting = new WokSearchLite.queryField();
-            sorting.name = "YEAR";
-            sorting.sort = "A";
-            retrieveParams.fields = new WokSearchLite.queryField[1];
-            retrieveParams.fields.SetValue(sorting, 0);
-//            retrieveParams.fields[0].name = "YEAR";
-//            retrieveParams.fields[0].sort = "A";
             searchResults results = null;
             int AttemptCount = 0;
             bool InitialRequestSucceeded = false;
@@ -75,7 +71,14 @@ namespace ATN.Crawler.WebCrawler
             {
                 try
                 {
-                    results = lite_client.citingArticles(WOKDatabaseId, PaperId, null, null, WOKQueryLanguage, retrieveParams);
+                    using (var scope = new OperationContextScope(lite_client.InnerChannel))
+                    {
+                        var httpRequestProperty = new HttpRequestMessageProperty();
+                        httpRequestProperty.Headers.Add("Cookie", sid);
+                        OperationContext.Current.OutgoingMessageProperties[HttpRequestMessageProperty.Name] = httpRequestProperty;
+                        results = lite_client.citingArticles(WOKDatabaseId, PaperId, editions, timespan, WOKQueryLanguage, retrieveParams);
+                        InitialRequestSucceeded = true;
+                    }
                 }
                 catch (MessageSecurityException e)
                 {
