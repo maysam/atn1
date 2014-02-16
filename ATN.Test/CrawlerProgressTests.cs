@@ -19,12 +19,19 @@ namespace ATN.Test
         {
             CrawlProgress = new CrawlerProgress(Context);
         }
+
         [TestMethod]
         public void VerifyWokCrawl()
         {
             WOKCrawler wok = new WOKCrawler();
-            string[] citations = wok.GetCitationsBySourceId("000240045200008");
-            Assert.IsTrue(citations.Contains<string>("000272014500002"));
+            string parentID = "000240045200008";
+            string childID = "000272014500002";
+            string[] citations = wok.GetCitationsBySourceId(parentID);
+            Assert.IsTrue(citations.Contains<string>(childID));
+            CompleteSource cs = wok.GetSourceById(parentID);
+            Assert.IsTrue(cs.Authors.Length == 2);
+            string[] references = wok.GetReferencesBySourceId(childID);
+            Assert.IsTrue(references.Contains<string>(parentID));
         }
 
 
