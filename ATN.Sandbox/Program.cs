@@ -24,8 +24,6 @@ namespace ATN.Analysis
             Crawl c = cp.GetCrawls().SingleOrDefault(ic => ic.TheoryId == TheoryId);
             ar.AnalyzeTheory(c, TheoryId);
 
-            int x = 0;
-
             //if (args.Length == 2)
             //{
                 //FileStream fs = File.Open(args[1], FileMode.Open, FileAccess.Read);

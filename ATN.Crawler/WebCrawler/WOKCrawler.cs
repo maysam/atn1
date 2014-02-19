@@ -382,10 +382,12 @@ namespace ATN.Crawler.WebCrawler
             foreach (string Author in RetrievedPublication.authors[0].values)
             {
                 var AuthorToAdd = new ATN.Data.Author();
-                //AuthorToAdd.FirstName = Author.FirstName;
-                //AuthorToAdd.LastName = Author.LastName;
+                char[] delimiterChars = { ',' };
+                string[] parts = Author.Split(delimiterChars);
+                AuthorToAdd.FirstName = parts[1].Trim();
+                AuthorToAdd.LastName = parts[0];
                 AuthorToAdd.FullName = Author;
-                //AuthorToAdd.DataSourceSpecificId = Author.ID.ToString();
+                AuthorToAdd.DataSourceSpecificId = "0";
                 AuthorToAdd.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
                 Authors.Add(AuthorToAdd);
             }
