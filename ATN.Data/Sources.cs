@@ -182,6 +182,7 @@ namespace ATN.Data
                 Context.Sources.AddObject(SourceToAdd.Source);
                 Context.SaveChanges();
 
+                if(SourceToAdd.Authors != null)
                 foreach (Author Author in SourceToAdd.Authors)
                 {
                     AuthorsReference AuthorReference = new AuthorsReference();
@@ -189,7 +190,8 @@ namespace ATN.Data
                     AuthorReference.SourceId = SourceToAdd.Source.SourceId;
                     Context.AuthorsReferences.AddObject(AuthorReference);
                 }
-
+                
+                if(SourceToAdd.Subjects != null)
                 foreach (Subject Subject in SourceToAdd.Subjects)
                 {
                     Subject AlwaysBoundSubject = _subjects.GetOrAddSubject(Subject);

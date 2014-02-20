@@ -379,15 +379,17 @@ namespace ATN.Crawler.WebCrawler
             }
             */
             List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication.authors.Length);
+            int i = 0;
             foreach (string Author in RetrievedPublication.authors[0].values)
             {
+                i++;
                 var AuthorToAdd = new ATN.Data.Author();
                 char[] delimiterChars = { ',' };
                 string[] parts = Author.Split(delimiterChars);
                 AuthorToAdd.FirstName = parts[1].Trim();
                 AuthorToAdd.LastName = parts[0];
                 AuthorToAdd.FullName = Author;
-                AuthorToAdd.DataSourceSpecificId = "0";
+                AuthorToAdd.DataSourceSpecificId = PaperId+"."+i;
                 AuthorToAdd.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
                 Authors.Add(AuthorToAdd);
             }
