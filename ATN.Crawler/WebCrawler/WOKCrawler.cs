@@ -360,7 +360,9 @@ namespace ATN.Crawler.WebCrawler
             liteRecord RetrievedPublication = results.records[0];
             Source CanonicalPaper = new Source();
             //CanonicalPaper.Abstract = RetrievedPublication.Abstract;
-            CanonicalPaper.ArticleTitle = RetrievedPublication.title[0].values[0];
+            if (RetrievedPublication.title != null)
+                if (RetrievedPublication.title[0].values != null)
+                    CanonicalPaper.ArticleTitle = RetrievedPublication.title[0].values[0];
             CanonicalPaper.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
             CanonicalPaper.DataSourceSpecificId = PaperId;
             int year;
@@ -376,6 +378,7 @@ namespace ATN.Crawler.WebCrawler
             */
             List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication.authors.Length);
             int author_i = 0;
+            if(RetrievedPublication.authors != null)
             foreach (string Author in RetrievedPublication.authors[0].values)
             {
                 author_i++;
@@ -397,18 +400,6 @@ namespace ATN.Crawler.WebCrawler
                 Journal.JournalName = sourceTitle;
                 cs.Journal = Journal;
             }
-            /*
-            List<Subject> Subjects = new List<Subject>();
-            foreach (Keyword k in RetrievedPublication.Keyword)
-            {
-                Subject s = new Subject();
-                s.DataSourceSpecificId = k.ID.ToString();
-                s.DataSourceId = (int)GetDataSource();
-                s.SubjectText = k.Name;
-                Subjects.Add(s);
-            }
-            cs.Subjects = Subjects.ToArray();
-             */
             cs.IsDetached = true;
             cs.Authors = Authors.ToArray();
             cs.Source = CanonicalPaper;
