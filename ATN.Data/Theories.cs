@@ -134,6 +134,19 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
 
+        public int GetFirstLevelSourcesForTheoryCount(int TheoryId)
+        {
+            TheoryDefinition[] CanonicalPapers = Context.Theories.Single(t => t.TheoryId == TheoryId).TheoryDefinitions.ToArray();
+            int FirstLevelSourcesCount = 0; // CanonicalPapers.Length;
+            foreach (TheoryDefinition t in CanonicalPapers)
+            {
+                Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                if (CanonicalSource != null)
+                    FirstLevelSourcesCount += CanonicalSource.CitingSources.Count;
+            }
+            return FirstLevelSourcesCount;
+        }
+
         /// <summary>
         /// Retrieves all extended sources that are members of a particular theory
         /// </summary>
@@ -216,6 +229,18 @@ namespace ATN.Data
                 return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
             }
             
+        }
+
+        public int GetAllExtendedSourcesForTheoryDepth2(int TheoryId)
+        {
+            string Query = @"SELECT tm.Depth FROM TheoryMembership tm WHERE tm.TheoryId = {0} and Depth=2";
+            return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId).Count();
+        }
+
+        public int GetAllExtendedSourcesForTheoryisContributingPrediction(int TheoryId)
+        {
+            string Query = @"SELECT tm.Depth FROM TheoryMembership tm WHERE tm.TheoryId = {0} and cast(isContributingPrediction as bit)=1";
+            return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId).Count();
         }
 
         /// <summary>

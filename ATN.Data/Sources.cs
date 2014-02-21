@@ -81,15 +81,7 @@ namespace ATN.Data
 
         public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificIds)
         {
-            Source SourceToReturn = null;
-
-            //Find the canonical source from the database, stopping once one is found
-            for (int i = 0; i < DataSourceSpecificIds.Length && SourceToReturn == null; i++)
-            {
-                SourceToReturn = GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificIds[i]);
-            }
-
-            return SourceToReturn;
+            return Context.Sources.Where(s => s.DataSourceId == (int)DataSource && DataSourceSpecificIds.Contains(s.DataSourceSpecificId)).FirstOrDefault();
         }
 
         public void UpdateExternalURL(Source SourceToUpdate, string ExternalURL)
@@ -182,15 +174,15 @@ namespace ATN.Data
                 Context.Sources.AddObject(SourceToAdd.Source);
                 Context.SaveChanges();
 
-                if (SourceToAdd.Authors != null) 
-                    foreach (Author Author in SourceToAdd.Authors)
+                if(SourceToAdd.Authors != null)
+                foreach (Author Author in SourceToAdd.Authors)
                 {
                     AuthorsReference AuthorReference = new AuthorsReference();
                     AuthorReference.AuthorId = Author.AuthorId;
                     AuthorReference.SourceId = SourceToAdd.Source.SourceId;
                     Context.AuthorsReferences.AddObject(AuthorReference);
                 }
-                
+
                 if (SourceToAdd.Subjects != null)
                 foreach (Subject Subject in SourceToAdd.Subjects)
                 {
