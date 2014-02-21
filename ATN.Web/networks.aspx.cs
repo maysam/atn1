@@ -102,7 +102,7 @@ namespace ATN.Web
                 }
                
                 Label lblSecondLevel = e.Row.Cells[6].Controls[1] as Label;
-                lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheory(theory.TheoryId).Length.ToString();
+                lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheoryCount(theory.TheoryId).ToString();
                 
                 Label lblThirdLevel = e.Row.Cells[7].Controls[1] as Label;
                 lblThirdLevel.Text = dataRetriever.GetAllExtendedSourcesForTheory(theory.TheoryId, 0, 1000000).Where(s => s.Depth == 2).Count().ToString();

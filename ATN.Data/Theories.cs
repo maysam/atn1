@@ -134,6 +134,19 @@ namespace ATN.Data
             return FirstLevelSources.ToArray();
         }
 
+        public int GetFirstLevelSourcesForTheoryCount(int TheoryId)
+        {
+            TheoryDefinition[] CanonicalPapers = Context.Theories.Single(t => t.TheoryId == TheoryId).TheoryDefinitions.ToArray();
+            int FirstLevelSourcesCount = 0; // CanonicalPapers.Length;
+            foreach (TheoryDefinition t in CanonicalPapers)
+            {
+                Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                if (CanonicalSource != null)
+                    FirstLevelSourcesCount += CanonicalSource.CitingSources.Count;
+            }
+            return FirstLevelSourcesCount;
+        }
+
         /// <summary>
         /// Retrieves all extended sources that are members of a particular theory
         /// </summary>
