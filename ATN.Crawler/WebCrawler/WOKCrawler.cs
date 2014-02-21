@@ -320,10 +320,6 @@ namespace ATN.Crawler.WebCrawler
             WokSearchLite.retrieveParameters _retrieveParameters = new WokSearchLite.retrieveParameters();
             _retrieveParameters.count = 1;
             _retrieveParameters.firstRecord = 1;
-            _retrieveParameters.fields = new WokSearchLite.queryField[1];
-            _retrieveParameters.fields[0] = new WokSearchLite.queryField();
-            _retrieveParameters.fields[0].name = "Date";
-            _retrieveParameters.fields[0].sort = "A";
             
             string[] uids = new string[1];
             uids[0] = PaperId;
@@ -379,17 +375,17 @@ namespace ATN.Crawler.WebCrawler
             }
             */
             List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication.authors.Length);
-            int i = 0;
+            int author_i = 0;
             foreach (string Author in RetrievedPublication.authors[0].values)
             {
-                i++;
+                author_i++;
                 var AuthorToAdd = new ATN.Data.Author();
                 char[] delimiterChars = { ',' };
                 string[] parts = Author.Split(delimiterChars);
                 AuthorToAdd.FirstName = parts[1].Trim();
                 AuthorToAdd.LastName = parts[0];
                 AuthorToAdd.FullName = Author;
-                AuthorToAdd.DataSourceSpecificId = PaperId+"."+i;
+                AuthorToAdd.DataSourceSpecificId = PaperId + "." + author_i;
                 AuthorToAdd.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
                 Authors.Add(AuthorToAdd);
             }

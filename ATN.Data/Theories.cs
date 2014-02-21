@@ -231,6 +231,18 @@ namespace ATN.Data
             
         }
 
+        public int GetAllExtendedSourcesForTheoryDepth2(int TheoryId)
+        {
+            string Query = @"SELECT tm.Depth FROM TheoryMembership tm WHERE tm.TheoryId = {0} and Depth=2";
+            return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId).Count();
+        }
+
+        public int GetAllExtendedSourcesForTheoryisContributingPrediction(int TheoryId)
+        {
+            string Query = @"SELECT tm.Depth FROM TheoryMembership tm WHERE tm.TheoryId = {0} and cast(isContributingPrediction as bit)=1";
+            return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId).Count();
+        }
+
         /// <summary>
         /// Retreives a list of source ids, along with the sources they cite and the citation depth
         /// </summary>
