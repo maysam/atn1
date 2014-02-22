@@ -363,9 +363,12 @@ namespace ATN.Crawler.WebCrawler
             CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(results);
             if (results.records == null)
             {
+                throw new Exception("Invalid Source");
+                /*
                 cs.IsDetached = false;
                 cs.Source = CanonicalPaper;
                 return cs;
+                */
             }
             liteRecord RetrievedPublication = results.records[0];
             if (RetrievedPublication.title != null)
