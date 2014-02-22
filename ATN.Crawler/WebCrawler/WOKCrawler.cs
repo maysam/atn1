@@ -357,25 +357,25 @@ namespace ATN.Crawler.WebCrawler
             Trace.WriteLine(string.Format("Retrieved source {0}", PaperId), "Informational");
 
             CompleteSource cs = new CompleteSource();
-            liteRecord RetrievedPublication = results.records[0];
             Source CanonicalPaper = new Source();
-            //CanonicalPaper.Abstract = RetrievedPublication.Abstract;
+            CanonicalPaper.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
+            CanonicalPaper.DataSourceSpecificId = PaperId;
+            CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(results);
+            if (results.records == null)
+            {
+                cs.IsDetached = false;
+                cs.Source = CanonicalPaper;
+                return cs;
+            }
+            liteRecord RetrievedPublication = results.records[0];
             if (RetrievedPublication.title != null)
                 if (RetrievedPublication.title[0].values != null)
                     CanonicalPaper.ArticleTitle = RetrievedPublication.title[0].values[0];
-            CanonicalPaper.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
-            CanonicalPaper.DataSourceSpecificId = PaperId;
             int year;
             Int32.TryParse(getValueByLabel(RetrievedPublication.source, "Published.BiblioYear"), out year);
             CanonicalPaper.Year = year;
-            CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(results);
             CanonicalPaper.DOI = getValueByLabel(RetrievedPublication.other, "Identifier.Xref_Doi");
-/*
-            if(RetrievedPublication.FullVersionURL.Length > 0)
-            {
-                CanonicalPaper.ExternalURL = RetrievedPublication.FullVersionURL.FirstOrDefault();
-            }
-            */
+
             List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication.authors.Length);
             int author_i = 0;
             if(RetrievedPublication.authors != null)
