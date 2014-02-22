@@ -94,6 +94,7 @@ namespace ATN.Crawler
             if (Specifier.Crawl.CrawlState == (short)CrawlerState.Started)
             {
                 foreach (CanonicalDataSource CanonicalDataSource in Specifier.CanonicalDataSources)
+                try
                 {
                     ICrawler Crawler = DataSourceToCrawler[CanonicalDataSource.DataSource];
 
@@ -114,6 +115,9 @@ namespace ATN.Crawler
                     }
 
                     CanonicalSources.Add(AttachedCannonicalSource, CanonicalDataSource);
+                }
+                catch {
+
                 }
                 Changed = true;
                 _progress.SetCrawlerStateChanged(Specifier.Crawl);
@@ -284,6 +288,7 @@ namespace ATN.Crawler
             Trace.WriteLine(string.Format("Retreiving {0} queued references", CrawlsToComplete.Length), "Informational");
 
             for (int i = 0; i < CrawlsToComplete.Length; i++)
+            try
             {
                 ICrawler CrawlerForDataSource = DataSourceToCrawler[(CrawlerDataSource)CrawlsToComplete[i].DataSourceId];
 
@@ -315,6 +320,8 @@ namespace ATN.Crawler
 
                 _sources.Detach(SourceToComplete);
                 _sources.Detach(CrawlsToComplete[i]);
+            } catch {
+                
             }
 
             if (CrawlsToComplete.Length > 0)
