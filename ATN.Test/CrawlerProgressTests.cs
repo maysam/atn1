@@ -30,9 +30,13 @@ namespace ATN.Test
             Assert.IsTrue(citations.Contains<string>(childID));
             string problemID = "000253225600012";
             CompleteSource cs = wok.GetSourceById(problemID);
-            Assert.IsTrue(cs.Authors.Length == 2);
+            Assert.AreEqual(cs.Authors.Length, 2);
+            string problemID_2 = "1910882";
+            CompleteSource cs_2 = wok.GetSourceById(problemID_2);
+            Assert.IsNull(cs_2.Authors);
+            
             string[] references = wok.GetReferencesBySourceId(childID);
-            Assert.IsTrue(references.Contains<string>(parentID));
+            Assert.AreEqual(references.Length, 0);
         }
 
 
