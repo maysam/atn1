@@ -385,7 +385,14 @@ namespace ATN.Crawler.WebCrawler
                 var AuthorToAdd = new ATN.Data.Author();
                 char[] delimiterChars = { ',' };
                 string[] parts = Author.Split(delimiterChars);
-                AuthorToAdd.FirstName = parts[1].Trim();
+                if (parts.Length > 1)
+                {
+                    AuthorToAdd.FirstName = parts[1].Trim();
+                }
+                else
+                {
+                    AuthorToAdd.FirstName = "";
+                }
                 AuthorToAdd.LastName = parts[0];
                 AuthorToAdd.FullName = Author;
                 AuthorToAdd.DataSourceSpecificId = PaperId + "." + author_i;
