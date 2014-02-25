@@ -54,11 +54,23 @@ namespace ATN.Crawler.WebCrawler
             List<string> PublicationIdsCitingCanonicalPaper = new List<string>();
             WokSearchLite.timeSpan timespan = new WokSearchLite.timeSpan();
             timespan.begin = "1790-01-01";
-            timespan.end = "2015-01-01";
-            WokSearchLite.editionDesc[] editions = new WokSearchLite.editionDesc[1];
-            editions[0] = new WokSearchLite.editionDesc();
-            editions[0].collection = "WOS";
+            timespan.end = "2020-01-01";
+
+            WokSearchLite.editionDesc[] editions = new WokSearchLite.editionDesc[7];
+            for (int i = 0; i < editions.Length; i++)
+            {
+                editions[i] = new WokSearchLite.editionDesc();
+                editions[i].collection = "WOS";
+            }
             editions[0].edition = "SCI";
+            editions[1].edition = "SSCI";
+            editions[2].edition = "AHCI";
+            editions[3].edition = "ISTP";
+            editions[4].edition = "ISSHP";
+            editions[5].edition = "IC";
+            editions[6].edition = "CCR";
+            //editions[7].edition = "BHCI";
+            //editions[8].edition = "BSCI";
 
             WokSearchLite.retrieveParameters retrieveParams = new WokSearchLite.retrieveParameters();
             retrieveParams.firstRecord = 1;
@@ -110,23 +122,21 @@ namespace ATN.Crawler.WebCrawler
             int ResultCount = results.recordsFound;
             Trace.WriteLine(string.Format("Received first response, {0} papers total.", ResultCount), "Informational");
 
-            AttemptCount = 0;
 
+            AttemptCount = 0;
             while (PublicationIdsCitingCanonicalPaper.Count < ResultCount)
             {
-
-                Trace.WriteLine(string.Format("Retrieving papers {0} through {1}", 1, ResultCount), "Informational");
                 foreach (liteRecord p in results.records)
                 {
-                    //Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
                     PublicationIdsCitingCanonicalPaper.Add(p.UT);
                 }
-
+                Thread.Sleep(500);
                 while (AttemptCount < RetryLimit && PublicationIdsCitingCanonicalPaper.Count < ResultCount)
                 {
                     try
                     {
-
+                        retrieveParams.firstRecord += MaxResultSize;
+                        retrieveParams.count = MaxResultSize;
                         using (var scope = new OperationContextScope(lite_client.InnerChannel))
                         {
                             var httpRequestProperty = new HttpRequestMessageProperty();
@@ -139,8 +149,6 @@ namespace ATN.Crawler.WebCrawler
                         {
                             break;
                         }
-                        retrieveParams.firstRecord += MaxResultSize;
-                        retrieveParams.count = MaxResultSize;
                         break;
                     }
                     catch (Exception e)
