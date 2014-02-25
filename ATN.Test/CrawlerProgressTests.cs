@@ -24,17 +24,35 @@ namespace ATN.Test
         public void VerifyWokCrawl()
         {
             WOKCrawler wok = new WOKCrawler();
+
+            string child1234ID = "A1997WT80400003";
+            string[] citations_1234 = wok.GetCitationsBySourceId(child1234ID);
+            Assert.AreEqual(citations_1234.Length, 1171); // not 1234 , books are not added
+            
             string parentID = "000240045200008";
             string childID = "000272014500002";
             string[] citations = wok.GetCitationsBySourceId(parentID);
             Assert.IsTrue(citations.Contains<string>(childID));
             string problemID = "000253225600012";
-            CompleteSource cs = wok.GetSourceById(problemID);
-            Assert.AreEqual(cs.Authors.Length, 2);
+            try
+            {
+                CompleteSource cs = wok.GetSourceById(problemID);
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "Invalid Source");
+            }
+
             string problemID_2 = "1910882";
-            CompleteSource cs_2 = wok.GetSourceById(problemID_2);
-            Assert.IsNull(cs_2.Authors);
-            
+            try
+            {
+                CompleteSource cs_2 = wok.GetSourceById(problemID_2);
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "Invalid Source");
+            }
+
             string[] references = wok.GetReferencesBySourceId(childID);
             Assert.AreEqual(references.Length, 0);
         }
