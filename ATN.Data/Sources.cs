@@ -82,6 +82,15 @@ namespace ATN.Data
         public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificIds)
         {
             return Context.Sources.Where(s => s.DataSourceId == (int)DataSource && DataSourceSpecificIds.Contains(s.DataSourceSpecificId)).FirstOrDefault();
+            Source SourceToReturn = null;
+
+            //Find the canonical source from the database, stopping once one is found
+            for (int i = 0; i < DataSourceSpecificIds.Length && SourceToReturn == null; i++)
+            {
+                SourceToReturn = GetSourceByDataSourceSpecificId(DataSource, DataSourceSpecificIds[i]);
+            }
+
+            return SourceToReturn;
         }
 
         public void UpdateExternalURL(Source SourceToUpdate, string ExternalURL)
