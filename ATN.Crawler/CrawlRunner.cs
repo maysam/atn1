@@ -130,7 +130,15 @@ namespace ATN.Crawler
                 //Find the canonical sources from the database
                 foreach (CanonicalDataSource CanonicalDataSource in Specifier.CanonicalDataSources)
                 {
-                    CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds(CanonicalDataSource.DataSource, CanonicalDataSource.CanonicalIds), CanonicalDataSource);
+                    Source key = _sources.GetSourceByDataSourceSpecificIds(CanonicalDataSource.DataSource, CanonicalDataSource.CanonicalIds);
+                    if (key == null)
+                    {
+                        Trace.WriteLine(CanonicalDataSource, "DEBUG CanonicalDataSource");
+                    }
+                    else
+                    {
+                        CanonicalSources.Add(key, CanonicalDataSource);
+                    }
                 }
             }
             if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlStarted)
