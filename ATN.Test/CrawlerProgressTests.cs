@@ -25,6 +25,10 @@ namespace ATN.Test
         {
             WOKCrawler wok = new WOKCrawler();
 
+            string testid = "000073360600013";
+            string[] citations_testid = wok.GetCitationsBySourceId(testid);
+            Assert.AreEqual(citations_testid.Length, 1529); // not 1619 , books are not added
+            
             string child1234ID = "A1997WT80400003";
             string[] citations_1234 = wok.GetCitationsBySourceId(child1234ID);
             Assert.AreEqual(citations_1234.Length, 1171); // not 1234 , books are not added
