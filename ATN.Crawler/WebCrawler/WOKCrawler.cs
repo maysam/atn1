@@ -81,6 +81,7 @@ namespace ATN.Crawler.WebCrawler
 
             while (!InitialRequestSucceeded && AttemptCount < RetryLimit)
             {
+                Thread.Sleep(500);
                 try
                 {
                     using (var scope = new OperationContextScope(lite_client.InnerChannel))
@@ -130,13 +131,13 @@ namespace ATN.Crawler.WebCrawler
                 {
                     PublicationIdsCitingCanonicalPaper.Add(p.UT);
                 }
-                Thread.Sleep(500);
+                retrieveParams.firstRecord += MaxResultSize;
+                retrieveParams.count = MaxResultSize;
                 while (AttemptCount < RetryLimit && PublicationIdsCitingCanonicalPaper.Count < ResultCount)
                 {
+                    Thread.Sleep(500);
                     try
                     {
-                        retrieveParams.firstRecord += MaxResultSize;
-                        retrieveParams.count = MaxResultSize;
                         using (var scope = new OperationContextScope(lite_client.InnerChannel))
                         {
                             var httpRequestProperty = new HttpRequestMessageProperty();
