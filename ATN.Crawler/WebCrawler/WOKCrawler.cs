@@ -326,6 +326,7 @@ namespace ATN.Crawler.WebCrawler
 
         public CompleteSource GetSourceById(string PaperId)
         {
+            Trace.WriteLine(string.Format("Going to retrieve source {0}", PaperId), "Informational");
             WokSearchLite.retrieveParameters _retrieveParameters = new WokSearchLite.retrieveParameters();
             _retrieveParameters.count = 1;
             _retrieveParameters.firstRecord = 1;
