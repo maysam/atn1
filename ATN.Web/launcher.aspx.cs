@@ -38,7 +38,14 @@ namespace ATN.Web
                 Crawl TheoryCrawl = TheoryToGet.Crawl.SingleOrDefault();
                 txtNetworkName.Text = TheoryToGet.TheoryName;
                 txtNetworkComments.Text = TheoryToGet.TheoryComment;
-
+                if (TheoryToGet.TheoryDefinitions.First() != null)
+                {
+                    data_source.Items[TheoryToGet.TheoryDefinitions.First().DataSourceId - 1].Selected = true;
+                }
+                else
+                {
+                    data_source.Items[0].Selected = true;
+                }
                 if (TheoryCrawl != null && TheoryCrawl.CrawlIntervalDays.HasValue)
                 {
                     crawlperiod.SelectedValue = TheoryCrawl.CrawlIntervalDays.Value.ToString();
@@ -57,6 +64,7 @@ namespace ATN.Web
             else if (!Page.IsPostBack)
             {
                 Set_Initial_Data_Source_Row();
+                data_source.Items[0].Selected = true;
             }
         }
         private void Set_Initial_Data_Source_Row()

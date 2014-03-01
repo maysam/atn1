@@ -107,7 +107,7 @@ namespace ATN.Data
                 Type t = Entry.Entity.GetType();
                 if (t != typeof(Theory))
                 {
-                    throw new Exception("Theory save did not succeed. There were pending changes in entites other than the target theory.");
+                    //throw new Exception("Theory save did not succeed. There were pending changes in entites other than the target theory.");
                 }
             }
             Context.SaveChanges();
