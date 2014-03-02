@@ -16,8 +16,8 @@
         <br />
         <strong>Date Source</strong>
         <asp:RadioButtonList ID="data_source" runat="server" Width="342px" >
-            <asp:ListItem Text="MAS" Selected="True" Value="1" />
-            <asp:ListItem Text="WOK" Selected="False" Value="2" />
+            <asp:ListItem Text="MAS" Value="1" />
+            <asp:ListItem Text="WOK" Value="2" />
         </asp:RadioButtonList>
         <br />
         <asp:GridView ID="DataSourceGrid" runat="server" AutoGenerateColumns="False" ShowFooter="True" Width="549px" >
@@ -32,8 +32,6 @@
                         <asp:TextBox ID="txtMasId1" runat="server" ></asp:TextBox>
                     </ItemTemplate>
 
-                   
-
                     </asp:TemplateField>
                
      
@@ -42,12 +40,7 @@
                 
             </Columns>
        
-             </asp:GridView>
-
-
-   
-                 
-                  
+             </asp:GridView>   
     <asp:Button ID="btnNewSource" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid"/>
         <br />
         <br />
