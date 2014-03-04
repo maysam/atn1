@@ -63,7 +63,9 @@ namespace ATN.Data
             List<Source> CanonicalSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                Source _source = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                if (_source != null)
+                    CanonicalSources.Add(_source);
             }
             return CanonicalSources.ToArray();
         }
