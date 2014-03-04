@@ -55,7 +55,8 @@ namespace ATN.Analysis
                 double AEFSum = 0.0d;
                 foreach (long CitationId in SourceTreeWithAEF[SourceId].References)
                 {
-                    if (SourceDetails[CitationId].Contributing.HasValue &&
+                    if (SourceDetails.Keys.Contains(CitationId) &&
+                        SourceDetails[CitationId].Contributing.HasValue &&
                         SourceDetails[CitationId].Contributing.Value &&
                         SourceTreeWithAEF[CitationId].ArticleLevelEigenFactor.HasValue &&
                         SourceTreeWithAEF[CitationId].References.Intersect(CanonicalSourceIds).Count() == 0)
