@@ -58,31 +58,22 @@ namespace ATN.Web {
         protected global::System.Web.UI.WebControls.TextBox txtNetworkComments;
         
         /// <summary>
-        /// Menu1 control.
+        /// MAS_HEADER control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Menu Menu1;
+        protected global::System.Web.UI.WebControls.TableHeaderCell MAS_HEADER;
         
         /// <summary>
-        /// MultiView1 control.
+        /// WOK_HEADER control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.MultiView MultiView1;
-        
-        /// <summary>
-        /// Tab1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View Tab1;
+        protected global::System.Web.UI.WebControls.TableHeaderCell WOK_HEADER;
         
         /// <summary>
         /// GridView1 control.
@@ -101,15 +92,6 @@ namespace ATN.Web {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Button1;
-        
-        /// <summary>
-        /// Tab2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.View Tab2;
         
         /// <summary>
         /// GridView2 control.

@@ -14,58 +14,52 @@
         <asp:Label ID="lblNetworkComments" runat="server" Text="Comments"></asp:Label></h3>
     <asp:TextBox ID="txtNetworkComments" runat="server" TextMode="MultiLine" Rows="3" Width="400px" Height="48px" />
     <br />
-    <asp:Menu
-        ID="Menu1"
-        Width="100%"
-        runat="server"
-        Orientation="Horizontal"
-        StaticEnableDefaultPopOutImage="False"
-        RenderingMode="Table"
-        OnMenuItemClick="Menu1_MenuItemClick" StaticSubMenuIndent="16px">
-        <StaticSelectedStyle Font-Bold="True" BorderStyle="Double" BorderWidth="1" ItemSpacing="100" />
-        <Items>
-            <asp:MenuItem Text="MAS" Value="0"></asp:MenuItem>
-            <asp:MenuItem Text="WOK" Value="1"></asp:MenuItem>
-        </Items>
-    </asp:Menu>
-    <br />
-    <asp:MultiView
-        ID="MultiView1"
-        runat="server"
-        ActiveViewIndex="0">
-        <asp:View ID="Tab1" runat="server" >
-            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowFooter="True" Width="549px" ShowHeaderWhenEmpty="True">
-                <Columns>
-                    <asp:TemplateField>
-                        <HeaderTemplate>
-                            <asp:Label ID="lbMasId1" runat="server" Text="Paper ID(s)"></asp:Label>
-                            <div style="font-size: .8em; font-weight: normal;">Multiple MAS IDs may be separated by commas (e.g. 12345,567890)</div>
-                        </HeaderTemplate>
-                        <ItemTemplate>
-                            <asp:TextBox ID="txtMasId1" runat="server" Text='<%# Bind("txtMasId1") %>' ></asp:TextBox>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
-            <asp:Button ID="Button1" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid1" />
-        </asp:View>
-        <asp:View ID="Tab2" runat="server">
-            <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="false" ShowFooter="True" ShowHeaderWhenEmpty="True">
-                <Columns>
-                    <asp:TemplateField>
-                        <HeaderTemplate>
-                            <asp:Label ID="lbWokId1" runat="server" Text="Paper ID(s)"></asp:Label>
-                            <div style="font-size: .8em; font-weight: normal;">Multiple WOK IDs may be separated by commas (e.g. 12345,567890)</div>
-                        </HeaderTemplate>
-                        <ItemTemplate>
-                             <asp:TextBox ID="txtWokId1" runat="server" Text='<%# Bind("txtWokId1") %>' ></asp:TextBox>
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                </Columns>
-            </asp:GridView>
-            <asp:Button ID="Button2" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid2" />
-        </asp:View>
-    </asp:MultiView>
+    <asp:Table runat="server" Width="100%" BorderWidth="1" BorderStyle="Dashed">
+        <asp:TableHeaderRow>
+            <asp:TableHeaderCell ID="MAS_HEADER" HorizontalAlign="Center">
+                MAS
+            </asp:TableHeaderCell>
+            <asp:TableHeaderCell ID="WOK_HEADER" HorizontalAlign="Center">
+                WOK
+            </asp:TableHeaderCell>
+        </asp:TableHeaderRow>
+        <asp:TableRow VerticalAlign="Top">
+            <asp:TableCell>
+                <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowFooter="True" Width="549px" ShowHeaderWhenEmpty="True">
+                    <Columns>
+                        <asp:TemplateField>
+                            <HeaderTemplate>
+                                <asp:Label ID="lbMasId1" runat="server" Text="Paper ID(s)"></asp:Label>
+                                <div style="font-size: .8em; font-weight: normal;">Multiple MAS IDs may be separated by commas (e.g. 12345,567890)</div>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                <asp:TextBox ID="txtMasId1" runat="server" Text='<%# Bind("txtMasId1") %>' ReadOnly='<%# Bind("readonly") %>' ></asp:TextBox>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+                <asp:Button ID="Button1" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid1" />
+
+            </asp:TableCell>
+            <asp:TableCell>
+                <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="false" ShowFooter="True" ShowHeaderWhenEmpty="True">
+                    <Columns>
+                        <asp:TemplateField>
+                            <HeaderTemplate>
+                                <asp:Label ID="lbWokId1" runat="server" Text="Paper ID(s)"></asp:Label>
+                                <div style="font-size: .8em; font-weight: normal;">Multiple WOK IDs may be separated by commas (e.g. 12345,567890)</div>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                 <asp:TextBox ID="txtWokId1" runat="server" Text='<%# Bind("txtWokId1") %>'  ReadOnly='<%# Bind("readonly") %>'></asp:TextBox>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+                <asp:Button ID="Button2" runat="server" Text="Add Another Source" OnCommand="AddNewDataSourceToGrid2" />
+
+            </asp:TableCell>
+        </asp:TableRow>
+    </asp:Table>
     <br />
     <br />
     <asp:Label ID="recrawl" runat="server" Text="Recrawl:" Style="font-weight: 700; font-size: medium"></asp:Label>

@@ -28,51 +28,51 @@ namespace ATN.Web
         int TheoryId;
         bool validTheory = Int32.TryParse(Request["TheoryId"], out TheoryId);
         if (validTheory) {
-            Theories t = new Theories();
-            Theory TheoryToGet = t.GetTheory(TheoryId);
-            int mas_count = 0;
-            int wok_count = 0;
-            DataTable dtCurrentTable = new DataTable();
-            dtCurrentTable.Columns.Add(new DataColumn("txtMasId1", typeof(string)));
-            dtCurrentTable.Columns.Add(new DataColumn("readonly", typeof(string)));
-            DataTable dtCurrentTable2 = new DataTable();
-            dtCurrentTable2.Columns.Add(new DataColumn("txtWokId1", typeof(string)));
-            dtCurrentTable2.Columns.Add(new DataColumn("readonly", typeof(string)));
-            
-            foreach (TheoryDefinition td in TheoryToGet.TheoryDefinitions)
-            {
-                if (td.DataSourceId == 1)
-                {
-                    mas_count++;
-                    DataRow drCurrentRow = dtCurrentTable.NewRow();
-                    drCurrentRow["txtMasId1"] = td.CanonicalIds;
-                    drCurrentRow["readonly"] = true;
-                    dtCurrentTable.Rows.Add(drCurrentRow);
-                }
-                else
-                if (td.DataSourceId == 2)
-                {
-                    wok_count++;
-                    DataRow drCurrentRow = dtCurrentTable2.NewRow();
-                    drCurrentRow["txtWokId1"] = td.CanonicalIds;
-                    drCurrentRow["readonly"] = true;
-                    dtCurrentTable2.Rows.Add(drCurrentRow);
-                }
-            }
-                    //Store the current data to ViewState
-            ViewState["CurrentTable1"] = dtCurrentTable;
-            GridView1.DataSource = dtCurrentTable;
-            GridView1.DataBind();
-            ViewState["CurrentTable2"] = dtCurrentTable2;
-            GridView2.DataSource = dtCurrentTable2;
-            GridView2.DataBind();
-
-            Menu1.Items[0].Text = "MAS (" + mas_count + ")";
-            Menu1.Items[1].Text = "WOK (" + wok_count + ")";
-
             if (!Page.IsPostBack)
             {
-                Menu1.Items[0].Selected = true;
+                Theories t = new Theories();
+                Theory TheoryToGet = t.GetTheory(TheoryId);
+                int mas_count = 0;
+                int wok_count = 0;
+                DataTable dtCurrentTable = new DataTable();
+                dtCurrentTable.Columns.Add(new DataColumn("txtMasId1", typeof(string)));
+                dtCurrentTable.Columns.Add(new DataColumn("readonly", typeof(bool)));
+                DataTable dtCurrentTable2 = new DataTable();
+                dtCurrentTable2.Columns.Add(new DataColumn("txtWokId1", typeof(string)));
+                dtCurrentTable2.Columns.Add(new DataColumn("readonly", typeof(bool)));
+
+                foreach (TheoryDefinition td in TheoryToGet.TheoryDefinitions)
+                {
+                    if (td.DataSourceId == 1)
+                    {
+                        mas_count++;
+                        DataRow drCurrentRow = dtCurrentTable.NewRow();
+                        drCurrentRow["txtMasId1"] = td.CanonicalIds;
+                        drCurrentRow["readonly"] = true;
+                        dtCurrentTable.Rows.Add(drCurrentRow);
+                    }
+                    else
+                        if (td.DataSourceId == 2)
+                        {
+                            wok_count++;
+                            DataRow drCurrentRow = dtCurrentTable2.NewRow();
+                            drCurrentRow["txtWokId1"] = td.CanonicalIds;
+                            drCurrentRow["readonly"] = true;
+                            dtCurrentTable2.Rows.Add(drCurrentRow);
+                        }
+                }
+                //Store the current data to ViewState
+                ViewState["CurrentTable1"] = dtCurrentTable;
+                GridView1.DataSource = dtCurrentTable;
+                GridView1.DataBind();
+                ViewState["CurrentTable2"] = dtCurrentTable2;
+                GridView2.DataSource = dtCurrentTable2;
+                GridView2.DataBind();
+
+
+                MAS_HEADER.Text = "MAS (" + mas_count + ")";
+                WOK_HEADER.Text = "WOK (" + wok_count + ")";
+
                 btnForceAnalysis.Visible = true;
 
                 txtNetworkName.Text = TheoryToGet.TheoryName;
@@ -83,9 +83,6 @@ namespace ATN.Web
                 {
                     crawlperiod.SelectedValue = TheoryCrawl.CrawlIntervalDays.Value.ToString();
                 }
-
-                Button1.Visible = false;
-                Button2.Visible = false;
 
                 AEF.Checked = TheoryToGet.ArticleLevelEigenfactor;
                 ImpactFactor.Checked = TheoryToGet.TheoryAttributionRatio;
@@ -100,7 +97,6 @@ namespace ATN.Web
         {
             Set_Initial_Data_Source_Row();
             crawlperiod.SelectedValue = "30";
-            Menu1.Items[0].Selected = true;
         }
     }
 
@@ -111,10 +107,11 @@ namespace ATN.Web
         DataRow dr = null;
 
         dt.Columns.Add(new DataColumn("txtMasId1", typeof(string)));
-        dt.Columns.Add(new DataColumn("readonly", typeof(string)));
+        dt.Columns.Add(new DataColumn("readonly", typeof(bool)));
         
         dr = dt.NewRow();
         dr["txtMasId1"] = string.Empty;
+        dr["readonly"] = false;
         dt.Rows.Add(dr);
 
             //Store the DataTable in ViewState
@@ -126,10 +123,11 @@ namespace ATN.Web
         DataTable dt2 = new DataTable();
         DataRow dr2 = null;
         dt2.Columns.Add(new DataColumn("txtWokId1", typeof(string)));
-        dt2.Columns.Add(new DataColumn("readonly", typeof(string)));
+        dt2.Columns.Add(new DataColumn("readonly", typeof(bool)));
         
         dr2 = dt2.NewRow();
         dr2["txtWokId1"] = string.Empty;
+        dr2["readonly"] = false;
         dt2.Rows.Add(dr2);
 
             //Store the DataTable in ViewState
@@ -153,9 +151,11 @@ namespace ATN.Web
             {
                 TextBox box1 = (TextBox)GridView1.Rows[rowIndex].Cells[0].FindControl("txtMasId1");
                 dtCurrentTable.Rows[rowIndex]["txtMasId1"] = box1.Text;
+                dtCurrentTable.Rows[rowIndex]["readonly"] = box1.ReadOnly;
             }
             DataRow drCurrentRow = dtCurrentTable.NewRow();
-                //add new row to DataTable
+            drCurrentRow["readonly"] = false;
+            //add new row to DataTable
             dtCurrentTable.Rows.Add(drCurrentRow);
                 //Store the current data to ViewState
             ViewState["CurrentTable1"] = dtCurrentTable;
@@ -179,8 +179,10 @@ namespace ATN.Web
             {
                 TextBox box1 = (TextBox)GridView2.Rows[rowIndex].Cells[0].FindControl("txtWokId1");
                 dtCurrentTable.Rows[rowIndex]["txtWokId1"] = box1.Text;
+                dtCurrentTable.Rows[rowIndex]["readonly"] = box1.ReadOnly;
             }
             DataRow drCurrentRow = dtCurrentTable.NewRow();
+            drCurrentRow["readonly"] = false;
                 //add new row to DataTable
             dtCurrentTable.Rows.Add(drCurrentRow);
                 //Store the current data to ViewState
@@ -354,11 +356,6 @@ namespace ATN.Web
                 CrawlerProgress cp = new CrawlerProgress();
                 cp.SetTheoryChanged(TheoryId);
             }
-        }
-
-        protected void Menu1_MenuItemClick(object sender, MenuEventArgs e)
-        {
-            MultiView1.ActiveViewIndex = Int32.Parse(e.Item.Value);
         }
     }
 }
