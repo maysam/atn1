@@ -27,9 +27,14 @@ namespace ATN.Web
             //fetching data of  the theory to be recrawled
         int TheoryId;
         bool validTheory = Int32.TryParse(Request["TheoryId"], out TheoryId);
+        if (!validTheory)
+        {
+            validTheory = Int32.TryParse(TheoryID.Value , out TheoryId);
+        }
         if (validTheory) {
             if (!Page.IsPostBack)
             {
+                TheoryID.Value = TheoryId.ToString();
                 Theories t = new Theories();
                 Theory TheoryToGet = t.GetTheory(TheoryId);
                 int mas_count = 0;
@@ -90,8 +95,8 @@ namespace ATN.Web
                 DataMining.Checked = TheoryToGet.DataMining;
                 Clustring.Checked = TheoryToGet.Clustering;
 
-                btnSubmit1.Text = "Update Crawl";
             }
+            btnSubmit1.Text = "Update Crawl";
         }
         if (!Page.IsPostBack &&  !validTheory)
         {
@@ -205,13 +210,68 @@ namespace ATN.Web
     protected void btnSubmit_LaunchCrawler(object sender, CommandEventArgs e)
     {
         int TheoryId;
-        if (Int32.TryParse(Request["TheoryId"], out TheoryId))
+        if (Int32.TryParse(TheoryID.Value, out TheoryId))
         {
             Theories t = new Theories();
             Theory TheoryToGet = t.GetTheory(TheoryId);
             Crawl TheoryCrawl = TheoryToGet.Crawl.SingleOrDefault();
             TheoryToGet.TheoryName = txtNetworkName.Text;
             TheoryToGet.TheoryComment = txtNetworkComments.Text;
+
+            string tempsingleLine; //to store all Ids of a single paper
+
+            string CrawlIntervalstringValue = crawlperiod.SelectedValue;
+
+            int numberOfIds; // to store the number of IDs for one paper
+
+            List<string[]> AllPapersIDs1 = new List<string[]>(); // list of arrays of all sources, each list item represents one source id/ids
+            List<string[]> AllPapersIDs2 = new List<string[]>(); // list of arrays of all sources, each list item represents one source id/ids
+
+            TextBox txtMSAcademicSearchIdTemp;
+
+            //header row makes iterator 1, footer row makes iterator only go up to count - 1
+            for (int itr = 0; itr < GridView1.Rows.Count; itr++)
+            {
+                txtMSAcademicSearchIdTemp = GridView1.Rows[itr].Cells[0].FindControl("txtMasId1") as TextBox;
+                if (txtMSAcademicSearchIdTemp.ReadOnly) continue;
+                numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length; // get how many id's are entered for a single paper
+                string[] OnePaperMsAcademicSearchIds = new string[numberOfIds]; // an array to save all single paper 
+                tempsingleLine = txtMSAcademicSearchIdTemp.Text;
+                OnePaperMsAcademicSearchIds = tempsingleLine.Split(','); // split the single line of ids into multiple strings each represent one ID
+                if (tempsingleLine != string.Empty && OnePaperMsAcademicSearchIds.Length > 0)
+                {
+                    txtMSAcademicSearchIdTemp.ReadOnly = true;
+                    foreach (String paperId in OnePaperMsAcademicSearchIds)
+                    {
+                        TheoryDefinition td = new TheoryDefinition();
+                        td.CanonicalIds = paperId;
+                        td.DataSourceId = (int)CrawlerDataSource.MicrosoftAcademicSearch;
+                        TheoryToGet.TheoryDefinitions.Add(td);
+                    }
+                }
+            }
+
+            //header row makes iterator 1, footer row makes iterator only go up to count - 1
+            for (int itr = 0; itr < GridView2.Rows.Count; itr++)
+            {
+                txtMSAcademicSearchIdTemp = GridView2.Rows[itr].Cells[0].FindControl("txtWokId1") as TextBox;
+                if (txtMSAcademicSearchIdTemp.ReadOnly) continue;
+                numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length; // get how many id's are entered for a single paper
+                string[] OnePaperMsAcademicSearchIds = new string[numberOfIds]; // an array to save all single paper 
+                tempsingleLine = txtMSAcademicSearchIdTemp.Text;
+                OnePaperMsAcademicSearchIds = tempsingleLine.Split(','); // split the single line of ids into multiple strings each represent one ID
+                if (tempsingleLine != string.Empty && OnePaperMsAcademicSearchIds.Length > 0)
+                {
+                    txtMSAcademicSearchIdTemp.ReadOnly = true;
+                    foreach (String paperId in OnePaperMsAcademicSearchIds)
+                    {
+                        TheoryDefinition td = new TheoryDefinition();
+                        td.CanonicalIds = paperId;
+                        td.DataSourceId = (int)CrawlerDataSource.WebOfKnowledge;
+                        TheoryToGet.TheoryDefinitions.Add(td);
+                    }
+                }
+            }
 
             if (TheoryCrawl != null && TheoryCrawl.CrawlIntervalDays.HasValue)
             {
@@ -236,9 +296,7 @@ namespace ATN.Web
             TheoryComment = txtNetworkComments.Text;
 
                 string tempsingleLine; //to store all Ids of a single paper
-
-                int CrawlIntervalInDays = 0;
-                string CrawlIntervalstringValue = crawlperiod.SelectedValue; 
+                                string CrawlIntervalstringValue = crawlperiod.SelectedValue; 
 
                 int numberOfIds; // to store the number of IDs for one paper
 
@@ -253,10 +311,11 @@ namespace ATN.Web
                     txtMSAcademicSearchIdTemp = GridView1.Rows[itr].Cells[0].FindControl("txtMasId1") as TextBox;
                     numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length; // get how many id's are entered for a single paper
                     string[] OnePaperMsAcademicSearchIds = new string[numberOfIds]; // an array to save all single paper 
-                    tempsingleLine = txtMSAcademicSearchIdTemp.Text; 
+                    tempsingleLine = txtMSAcademicSearchIdTemp.Text.Trim(); 
                     OnePaperMsAcademicSearchIds = tempsingleLine.Split(','); // split the single line of ids into multiple strings each represent one ID
                     if (tempsingleLine != string.Empty && OnePaperMsAcademicSearchIds.Length > 0)
                     {
+                        txtMSAcademicSearchIdTemp.ReadOnly = true;
                         AllPapersIDs1.Add(OnePaperMsAcademicSearchIds); // add the array of Ids for a single paper to the whole list all papers arrays
                     }
                 }
@@ -267,15 +326,16 @@ namespace ATN.Web
                     txtMSAcademicSearchIdTemp = GridView2.Rows[itr].Cells[0].FindControl("txtWokId1") as TextBox;
                     numberOfIds = txtMSAcademicSearchIdTemp.Text.Split(',').Length; // get how many id's are entered for a single paper
                     string[] OnePaperMsAcademicSearchIds = new string[numberOfIds]; // an array to save all single paper 
-                    tempsingleLine = txtMSAcademicSearchIdTemp.Text; 
+                    tempsingleLine = txtMSAcademicSearchIdTemp.Text.Trim(); 
                     OnePaperMsAcademicSearchIds = tempsingleLine.Split(','); // split the single line of ids into multiple strings each represent one ID
                     if (tempsingleLine != string.Empty && OnePaperMsAcademicSearchIds.Length > 0)
                     {
+                        txtMSAcademicSearchIdTemp.ReadOnly = true;
                         AllPapersIDs2.Add(OnePaperMsAcademicSearchIds); // add the array of Ids for a single paper to the whole list all papers arrays
                     }
                 }
 
-                CrawlIntervalInDays = int.Parse(CrawlIntervalstringValue);
+                int CrawlIntervalInDays = int.Parse(CrawlIntervalstringValue);
 
                 //prepare the datasource and specifications for the crawl
                 CanonicalDataSource[] AllSourcesArray = new CanonicalDataSource[AllPapersIDs1.Count + AllPapersIDs2.Count];
@@ -297,9 +357,10 @@ namespace ATN.Web
 
                 //start a new crawl
                 CrawlRunner NewCrawler = new CrawlRunner();
-                NewCrawler.StartNewCrawl(CrawlSpecifier, CrawlIntervalInDays);
-
+                Theory theory = NewCrawler.StartNewCrawl(CrawlSpecifier, CrawlIntervalInDays);
+                TheoryID.Value = theory.TheoryId.ToString();
                 confirmation.Visible = true;
+                btnSubmit1.Text = "Update Crawl";
             }
         }
          /// <summary>

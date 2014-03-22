@@ -273,12 +273,13 @@ namespace ATN.Crawler
         /// </summary>
         /// <param name="CrawlSpecifier">The parameters of the theory being crawled</param>
         /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of this crawl. If null, this theory will not be refreshed.</param>
-        public void StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
+        public Theory StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
         {
             Theory TheoryToCrawl = _theories.AddTheory(CrawlSpecifier.TheoryName, CrawlSpecifier.TheoryComment, CrawlSpecifier.AEF, CrawlSpecifier.ImpactFactor, CrawlSpecifier.TAR, CrawlSpecifier.DataMining, CrawlSpecifier.Clustering, CrawlSpecifier.CanonicalDataSources);
             PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier, CrawlIntervalDays, TheoryToCrawl.ArticleLevelEigenfactor, TheoryToCrawl.ImpactFactor, TheoryToCrawl.TheoryAttributionRatio, TheoryToCrawl.DataMining, TheoryToCrawl.Clustering);
             Crawl Crawl = _progress.QueueTheoryCrawl(pcs);
             Trace.WriteLine(string.Format("Queueing crawl using for theory {0}", TheoryToCrawl.TheoryName, "Informational"));
+            return TheoryToCrawl;
         }
 
         /// <summary>

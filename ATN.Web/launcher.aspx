@@ -87,4 +87,5 @@
     <asp:Button ID="btnSubmit1" runat="server" OnCommand="btnSubmit_LaunchCrawler" Text="Start Crawler" />
     <asp:Button ID="btnForceAnalysis" runat="server" Text="Force Analysis" OnClick="btnForceAnalysis_Click" Visible="false" />
     <br />
+    <asp:HiddenField runat="server" ID="TheoryID" />
 </asp:Content>
