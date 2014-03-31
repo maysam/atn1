@@ -107,6 +107,8 @@ namespace ATN.Crawler.WebCrawler
                     //Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
                     PublicationIdsCitingCanonicalPaper.Add(p.ID);
                 }
+                request.StartIdx += MaxResultSize;
+                request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
                 while (AttemptCount < RetryLimit && PublicationIdsCitingCanonicalPaper.Count < ResultCount)
                 {
@@ -114,14 +116,6 @@ namespace ATN.Crawler.WebCrawler
                     {
 
                         response = _client.Search(request, _limiter);
-
-                        if (response.Publication.Result.Length == 0)
-                        {
-                            break;
-                        }
-
-                        request.StartIdx += MaxResultSize;
-                        request.EndIdx = request.StartIdx + MaxResultSize - 1;
                         break;
                     }
                     catch (Exception e)
