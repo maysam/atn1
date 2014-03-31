@@ -21,6 +21,14 @@ namespace ATN.Test
         }
 
         [TestMethod]
+        public void VerifyMASCrawl()
+        {
+            MASCrawler mas = new MASCrawler();
+            Assert.AreEqual(0, mas.GetReferencesBySourceId("4153206").Length);
+            Assert.AreEqual(116, mas.GetCitationsBySourceId("4153206").Length);
+        }
+
+        [TestMethod]
         public void VerifyWokCrawl()
         {
             WOKCrawler wok = new WOKCrawler();
