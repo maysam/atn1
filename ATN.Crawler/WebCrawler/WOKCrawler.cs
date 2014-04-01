@@ -177,6 +177,7 @@ namespace ATN.Crawler.WebCrawler
         {
             Trace.WriteLine(string.Format("Getting references for publication {0}", PaperId), "Informational");
             List<string> PublicationIdsCitingCanonicalPaper = new List<string>();
+            return PublicationIdsCitingCanonicalPaper.ToArray();
 
             WokSearch.retrieveParameters retrieveParams = new WokSearch.retrieveParameters();
             retrieveParams.firstRecord = 1;
