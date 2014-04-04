@@ -43,6 +43,11 @@ namespace ATN.Crawler.WebCrawler
             sid = "SID=\"" + authentication_token + "\"";
         }
 
+        private void reauthenticate() {
+            string authentication_token = auth_client.authenticate();
+            sid = "SID=\"" + authentication_token + "\"";            
+        }
+
         public CrawlerDataSource GetDataSource()
         {
             return CrawlerDataSource.WebOfKnowledge;
@@ -50,6 +55,7 @@ namespace ATN.Crawler.WebCrawler
 
         public string[] GetCitationsBySourceId(string PaperId)
         {
+            reauthenticate();
             Trace.WriteLine(string.Format("Getting citations for publication {0}", PaperId), "Informational");
             List<string> PublicationIdsCitingCanonicalPaper = new List<string>();
             WokSearchLite.timeSpan timespan = new WokSearchLite.timeSpan();
@@ -179,6 +185,7 @@ namespace ATN.Crawler.WebCrawler
             List<string> PublicationIdsCitingCanonicalPaper = new List<string>();
             return PublicationIdsCitingCanonicalPaper.ToArray();
 
+            reauthenticate();
             WokSearch.retrieveParameters retrieveParams = new WokSearch.retrieveParameters();
             retrieveParams.firstRecord = 1;
             retrieveParams.count = MaxResultSize;
