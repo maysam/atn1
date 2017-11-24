@@ -94,7 +94,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
                     <ItemTemplate>
-                        <asp:LinkButton ID="lnkDelete"  runat="server" Text="Delete" OnClientClick="return confirm('Do you want to delete this network?');" OnClick="lnkDelete_Click" ToolTip='<% #Bind("ID") %>' />
+                        <asp:LinkButton ID="lnkDelete"  runat="server" Text="Delete" OnClientClick="return confirm('Do you want to delete this network?');" OnClick="lnkDelete_Click" ToolTip='<% #Bind("theoryId") %>' />
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>

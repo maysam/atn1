@@ -96,30 +96,63 @@ namespace ATN.Data
             }
         }
 
-        public void DeleteTheory(Theory theory)
+        public void DeleteTheory(int theoryId)
         {
-            var TheoryDefs = Context.TheoryDefinitions.Where(td => td.TheoryId == theory.TheoryId);
-            foreach (var TheoryDef in TheoryDefs)
+            bool done = false;
+            int count = 0;
+            while (!done)
             {
-                Context.DeleteObject(TheoryDef);
+                count++;
+                if(count>20)
+                {
+                    break;
+                }
+                try
+                {
+                    var TheoryDefs = Context.TheoryDefinitions.Where(td => td.TheoryId == theoryId);
+                    foreach (var TheoryDef in TheoryDefs)
+                    {
+                        Context.DeleteObject(TheoryDef);
+                    }
+                    Context.SaveChanges();
+
+                    var TheoryMemberships = Context.TheoryMemberships.Where(tm => tm.TheoryId == theoryId);
+                    foreach (var TheoryMembership in TheoryMemberships)
+                    {
+                        Context.DeleteObject(TheoryMembership);
+                    }
+                    Context.SaveChanges();
+
+                    var TheoryMembershipSignificances = Context.TheoryMembershipSignificances.Where(tms => tms.TheoryId == theoryId);
+                    foreach (var TheoryMembershipSignificance in TheoryMembershipSignificances)
+                    {
+                        Context.DeleteObject(TheoryMembershipSignificance);
+                    }
+                    Context.SaveChanges();
+
+                    var Runs = Context.Runs.Where(r => r.TheoryId == theoryId);
+                    foreach (var Run in Runs)
+                    {
+                        Context.DeleteObject(Run);
+                    }
+                    Context.SaveChanges();
+
+                    var crawls = Context.Crawls.Where(c => c.TheoryId == theoryId);
+                    foreach (var crawl in crawls)
+                    {
+                        Context.DeleteObject(crawl);
+                    }
+                    Context.SaveChanges();
+                    
+                    var theories = Context.Theories.Where(t => t.TheoryId == theoryId);
+                    foreach (var theory in theories)
+                    {
+                        Context.DeleteObject(theory);
+                    }
+                    Context.SaveChanges();
+                    done = true;
+                } catch { }
             }
-            var TheoryMemberships = Context.TheoryMemberships.Where(tm => tm.TheoryId == theory.TheoryId);
-            foreach (var TheoryMembership in TheoryMemberships)
-            {
-                Context.DeleteObject(TheoryMembership);
-            }
-            var TheoryMembershipSignificances = Context.TheoryMembershipSignificances.Where(tms => tms.TheoryId == theory.TheoryId);
-            foreach (var TheoryMembershipSignificance in TheoryMembershipSignificances)
-            {
-                Context.DeleteObject(TheoryMembershipSignificance);
-            }
-            var Runs = Context.Runs.Where(r => r.TheoryId == theory.TheoryId);
-            foreach (var Run in Runs)
-            {
-                Context.DeleteObject(Run);
-            }
-            Context.DeleteObject(theory);
-            Context.SaveChanges();
         }
 
         /// <summary>

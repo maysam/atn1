@@ -179,8 +179,7 @@ namespace ATN.Web
         protected void lnkDelete_Click(object sender, EventArgs e)
         {
             int theoryId = int.Parse(((sender as LinkButton).ToolTip));
-            Theory theory = new Theories().GetTheory(theoryId);
-            new Theories().DeleteTheory(theory);        
+            new Theories().DeleteTheory(theoryId);        
         }
     }
 }
