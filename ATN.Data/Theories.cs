@@ -96,6 +96,32 @@ namespace ATN.Data
             }
         }
 
+        public void DeleteTheory(Theory theory)
+        {
+            var TheoryDefs = Context.TheoryDefinitions.Where(td => td.TheoryId == theory.TheoryId);
+            foreach (var TheoryDef in TheoryDefs)
+            {
+                Context.DeleteObject(TheoryDef);
+            }
+            var TheoryMemberships = Context.TheoryMemberships.Where(tm => tm.TheoryId == theory.TheoryId);
+            foreach (var TheoryMembership in TheoryMemberships)
+            {
+                Context.DeleteObject(TheoryMembership);
+            }
+            var TheoryMembershipSignificances = Context.TheoryMembershipSignificances.Where(tms => tms.TheoryId == theory.TheoryId);
+            foreach (var TheoryMembershipSignificance in TheoryMembershipSignificances)
+            {
+                Context.DeleteObject(TheoryMembershipSignificance);
+            }
+            var Runs = Context.Runs.Where(r => r.TheoryId == theory.TheoryId);
+            foreach (var Run in Runs)
+            {
+                Context.DeleteObject(Run);
+            }
+            Context.DeleteObject(theory);
+            Context.SaveChanges();
+        }
+
         /// <summary>
         /// Saves any modified theories
         /// </summary>

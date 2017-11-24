@@ -109,7 +109,7 @@ namespace ATN.Web
 
                 Label lblTheoryContributing  = e.Row.Cells[8].Controls[1] as Label;
                 lblTheoryContributing.Text = dataRetriever.GetAllExtendedSourcesForTheoryisContributingPrediction(theory.TheoryId).ToString();
-                
+
 
                 LinkButton lnkEdit = e.Row.Cells[9].Controls[1] as LinkButton;
                 lnkEdit.PostBackUrl = Common.Pages.Launcher + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + theory.TheoryId.ToString();
@@ -174,6 +174,13 @@ namespace ATN.Web
                 lnkTheoryContributingHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.TheoryContributing;
 
             }
+        }
+
+        protected void lnkDelete_Click(object sender, EventArgs e)
+        {
+            int theoryId = int.Parse(((sender as LinkButton).ToolTip));
+            Theory theory = new Theories().GetTheory(theoryId);
+            new Theories().DeleteTheory(theory);        
         }
     }
 }
