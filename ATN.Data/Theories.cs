@@ -96,8 +96,9 @@ namespace ATN.Data
             }
         }
 
-        public void DeleteTheory(Theory theory)
+        public void DeleteTheory(int theoryId)
         {
+            Theory theory = GetTheory(theoryId);
             var TheoryDefs = Context.TheoryDefinitions.Where(td => td.TheoryId == theory.TheoryId);
             foreach (var TheoryDef in TheoryDefs)
             {
