@@ -137,7 +137,8 @@ namespace ATN.Crawler
                     }
                     else
                     {
-                        CanonicalSources.Add(key, CanonicalDataSource);
+                        CanonicalSources[key] = CanonicalDataSource;
+                        //CanonicalSources.Add(key, CanonicalDataSource);
                     }
                 }
             }
