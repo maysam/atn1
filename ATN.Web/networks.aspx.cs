@@ -102,14 +102,13 @@ namespace ATN.Web
                 }
                
                 Label lblSecondLevel = e.Row.Cells[6].Controls[1] as Label;
-                lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheory(theory.TheoryId).Length.ToString();
+                lblSecondLevel.Text = dataRetriever.GetFirstLevelSourcesForTheoryCount(theory.TheoryId).ToString();
                 
                 Label lblThirdLevel = e.Row.Cells[7].Controls[1] as Label;
-                lblThirdLevel.Text = dataRetriever.GetAllExtendedSourcesForTheory(theory.TheoryId, 0, 1000000).Where(s => s.Depth == 2).Count().ToString();
+                lblThirdLevel.Text = dataRetriever.GetAllExtendedSourcesForTheoryDepth2(theory.TheoryId).ToString();
 
                 Label lblTheoryContributing  = e.Row.Cells[8].Controls[1] as Label;
-                lblTheoryContributing.Text = dataRetriever.GetAllExtendedSourcesForTheory(theory.TheoryId, 0, 1000000).Where(s => s.isContributingPrediction == true).Count().ToString();
-                
+                lblTheoryContributing.Text = dataRetriever.GetAllExtendedSourcesForTheoryisContributingPrediction(theory.TheoryId).ToString();
 
                 LinkButton lnkEdit = e.Row.Cells[9].Controls[1] as LinkButton;
                 lnkEdit.PostBackUrl = Common.Pages.Launcher + Common.Symbols.Question + Common.QueryStrings.TheoryId + Common.Symbols.Eq + theory.TheoryId.ToString();
@@ -174,6 +173,12 @@ namespace ATN.Web
                 lnkTheoryContributingHeader.PostBackUrl = URL + Common.QueryStrings.SortCol + Common.Symbols.Eq + Common.QueryStrings.TheoryContributing;
 
             }
+        }
+
+        protected void lnkDelete_Click(object sender, EventArgs e)
+        {
+            int theoryId = int.Parse(((sender as LinkButton).ToolTip));
+            new Theories().DeleteTheory(theoryId);        
         }
     }
 }

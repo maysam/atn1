@@ -81,6 +81,7 @@ namespace ATN.Data
 
         public Source GetSourceByDataSourceSpecificIds(CrawlerDataSource DataSource, string[] DataSourceSpecificIds)
         {
+            return Context.Sources.Where(s => s.DataSourceId == (int)DataSource && DataSourceSpecificIds.Contains(s.DataSourceSpecificId)).FirstOrDefault();
             Source SourceToReturn = null;
 
             //Find the canonical source from the database, stopping once one is found
@@ -182,6 +183,7 @@ namespace ATN.Data
                 Context.Sources.AddObject(SourceToAdd.Source);
                 Context.SaveChanges();
 
+                if(SourceToAdd.Authors != null)
                 foreach (Author Author in SourceToAdd.Authors)
                 {
                     AuthorsReference AuthorReference = new AuthorsReference();
@@ -189,7 +191,8 @@ namespace ATN.Data
                     AuthorReference.SourceId = SourceToAdd.Source.SourceId;
                     Context.AuthorsReferences.AddObject(AuthorReference);
                 }
-
+                
+                if(SourceToAdd.Subjects != null)
                 foreach (Subject Subject in SourceToAdd.Subjects)
                 {
                     Subject AlwaysBoundSubject = _subjects.GetOrAddSubject(Subject);

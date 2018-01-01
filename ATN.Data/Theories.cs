@@ -63,7 +63,9 @@ namespace ATN.Data
             List<Source> CanonicalSources = new List<Source>(CanonicalPapers.Length);
             foreach (TheoryDefinition t in CanonicalPapers)
             {
-                CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                Source _source = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                if (_source != null)
+                    CanonicalSources.Add(_source);
             }
             return CanonicalSources.ToArray();
         }
@@ -92,6 +94,18 @@ namespace ATN.Data
             {
                 return new Theory();
             }
+        }
+
+        public void DeleteTheory(int theoryId)
+        {
+            Context.ExecuteStoreCommand("delete from TheoryDefinition where theoryId={0}", theoryId);
+            Context.ExecuteStoreCommand("delete from TheoryMembership where theoryId={0}", theoryId);
+            Context.ExecuteStoreCommand("delete from TheoryMembershipSignificance where theoryId={0}", theoryId);
+            Context.ExecuteStoreCommand("delete from Run where theoryId={0}", theoryId);
+            Context.ExecuteStoreCommand("delete from CrawlQueue where crawlId in (select crawlId from Crawl where theoryId={0})", theoryId);
+            Context.ExecuteStoreCommand("delete from CrawlResult where crawlId in (select crawlId from Crawl where theoryId={0})", theoryId);
+            Context.ExecuteStoreCommand("delete from Crawl where theoryId={0}", theoryId);
+            Context.ExecuteStoreCommand("delete from Theory where theoryId={0}", theoryId);
         }
 
         /// <summary>
@@ -132,6 +146,19 @@ namespace ATN.Data
                 }
             }
             return FirstLevelSources.ToArray();
+        }
+
+        public int GetFirstLevelSourcesForTheoryCount(int TheoryId)
+        {
+            TheoryDefinition[] CanonicalPapers = Context.Theories.Single(t => t.TheoryId == TheoryId).TheoryDefinitions.ToArray();
+            int FirstLevelSourcesCount = 0; // CanonicalPapers.Length;
+            foreach (TheoryDefinition t in CanonicalPapers)
+            {
+                Source CanonicalSource = _sources.GetSourceByDataSourceSpecificIds((CrawlerDataSource)t.DataSourceId, t.CanonicalIds.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+                if (CanonicalSource != null)
+                    FirstLevelSourcesCount += CanonicalSource.CitingSources.Count;
+            }
+            return FirstLevelSourcesCount;
         }
 
         /// <summary>
@@ -216,6 +243,18 @@ namespace ATN.Data
                 return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId, PageIndex * PageSize, (PageIndex + 1) * PageSize).ToList();
             }
             
+        }
+
+        public int GetAllExtendedSourcesForTheoryDepth2(int TheoryId)
+        {
+            string Query = @"SELECT tm.Depth FROM TheoryMembership tm WHERE tm.TheoryId = {0} and Depth=2";
+            return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId).Count();
+        }
+
+        public int GetAllExtendedSourcesForTheoryisContributingPrediction(int TheoryId)
+        {
+            string Query = @"SELECT tm.Depth FROM TheoryMembership tm WHERE tm.TheoryId = {0} and cast(isContributingPrediction as bit)=1";
+            return Context.ExecuteStoreQuery<ExtendedSource>(Query, TheoryId).Count();
         }
 
         /// <summary>

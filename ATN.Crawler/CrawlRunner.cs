@@ -94,6 +94,7 @@ namespace ATN.Crawler
             if (Specifier.Crawl.CrawlState == (short)CrawlerState.Started)
             {
                 foreach (CanonicalDataSource CanonicalDataSource in Specifier.CanonicalDataSources)
+                try
                 {
                     ICrawler Crawler = DataSourceToCrawler[CanonicalDataSource.DataSource];
 
@@ -115,6 +116,9 @@ namespace ATN.Crawler
 
                     CanonicalSources.Add(AttachedCannonicalSource, CanonicalDataSource);
                 }
+                catch {
+
+                }
                 Changed = true;
                 _progress.SetCrawlerStateChanged(Specifier.Crawl);
                 _progress.UpdateCrawlerState(Specifier.Crawl, CrawlerState.CanonicalPaperComplete);
@@ -125,8 +129,17 @@ namespace ATN.Crawler
                 Trace.WriteLine("Crawl already started, retrieving crawl state from database model", "Informational");
                 //Find the canonical sources from the database
                 foreach (CanonicalDataSource CanonicalDataSource in Specifier.CanonicalDataSources)
-                {
-                    CanonicalSources.Add(_sources.GetSourceByDataSourceSpecificIds(CanonicalDataSource.DataSource, CanonicalDataSource.CanonicalIds), CanonicalDataSource);
+               {
+                    Source key = _sources.GetSourceByDataSourceSpecificIds(CanonicalDataSource.DataSource, CanonicalDataSource.CanonicalIds);
+                    if (key == null)
+                    {
+                        Trace.WriteLine(CanonicalDataSource, "DEBUG CanonicalDataSource");
+                    }
+                    else
+                    {
+                        CanonicalSources[key] = CanonicalDataSource;
+                        //CanonicalSources.Add(key, CanonicalDataSource);
+                    }
                 }
             }
             if (Specifier.Crawl.CrawlState == (int)CrawlerState.ScheduledCrawlStarted)
@@ -261,12 +274,13 @@ namespace ATN.Crawler
         /// </summary>
         /// <param name="CrawlSpecifier">The parameters of the theory being crawled</param>
         /// <param name="CrawlIntervalDays">The interval, in days, between refreshes of this crawl. If null, this theory will not be refreshed.</param>
-        public void StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
+        public Theory StartNewCrawl(NewCrawlSpecifier CrawlSpecifier, int? CrawlIntervalDays = null)
         {
             Theory TheoryToCrawl = _theories.AddTheory(CrawlSpecifier.TheoryName, CrawlSpecifier.TheoryComment, CrawlSpecifier.AEF, CrawlSpecifier.ImpactFactor, CrawlSpecifier.TAR, CrawlSpecifier.DataMining, CrawlSpecifier.Clustering, CrawlSpecifier.CanonicalDataSources);
             PendingCrawlSpecifier pcs = new PendingCrawlSpecifier(TheoryToCrawl.TheoryId, CrawlSpecifier, CrawlIntervalDays, TheoryToCrawl.ArticleLevelEigenfactor, TheoryToCrawl.ImpactFactor, TheoryToCrawl.TheoryAttributionRatio, TheoryToCrawl.DataMining, TheoryToCrawl.Clustering);
             Crawl Crawl = _progress.QueueTheoryCrawl(pcs);
             Trace.WriteLine(string.Format("Queueing crawl using for theory {0}", TheoryToCrawl.TheoryName, "Informational"));
+            return TheoryToCrawl;
         }
 
         /// <summary>
@@ -284,6 +298,7 @@ namespace ATN.Crawler
             Trace.WriteLine(string.Format("Retreiving {0} queued references", CrawlsToComplete.Length), "Informational");
 
             for (int i = 0; i < CrawlsToComplete.Length; i++)
+            try
             {
                 ICrawler CrawlerForDataSource = DataSourceToCrawler[(CrawlerDataSource)CrawlsToComplete[i].DataSourceId];
 
@@ -315,6 +330,8 @@ namespace ATN.Crawler
 
                 _sources.Detach(SourceToComplete);
                 _sources.Detach(CrawlsToComplete[i]);
+            } catch {
+                
             }
 
             if (CrawlsToComplete.Length > 0)

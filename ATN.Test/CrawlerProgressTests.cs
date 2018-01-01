@@ -19,12 +19,57 @@ namespace ATN.Test
         {
             CrawlProgress = new CrawlerProgress(Context);
         }
+
+        [TestMethod]
+        public void VerifyMASCrawl()
+        {
+            MASCrawler mas = new MASCrawler();
+            Assert.AreEqual(0, mas.GetReferencesBySourceId("4153206").Length);
+            Assert.AreEqual(116, mas.GetCitationsBySourceId("4153206").Length);
+        }
+
         [TestMethod]
         public void VerifyWokCrawl()
         {
             WOKCrawler wok = new WOKCrawler();
-            string[] citations = wok.GetCitationsBySourceId("000240045200008");
-            Assert.IsTrue(citations.Contains<string>("000272014500002"));
+
+            //ut=A1989CC00400006 or ut=A1989AL89000005
+            Assert.AreEqual(wok.GetCitationsBySourceId("A1989AL89000005").Length, 2665); // not 1619 , books are not added
+            Assert.AreEqual(wok.GetCitationsBySourceId("A1989CC00400006").Length, 4145); // not 1619 , books are not added
+            string testid = "000073360600013";
+            string[] citations_testid = wok.GetCitationsBySourceId(testid);
+            Assert.AreEqual(citations_testid.Length, 1529); // not 1619 , books are not added
+            
+            string child1234ID = "A1997WT80400003";
+            string[] citations_1234 = wok.GetCitationsBySourceId(child1234ID);
+            Assert.AreEqual(citations_1234.Length, 1171); // not 1234 , books are not added
+            
+            string parentID = "000240045200008";
+            string childID = "000272014500002";
+            string[] citations = wok.GetCitationsBySourceId(parentID);
+            Assert.IsTrue(citations.Contains<string>(childID));
+            string problemID = "000253225600012";
+            try
+            {
+                CompleteSource cs = wok.GetSourceById(problemID);
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "Invalid Source");
+            }
+
+            string problemID_2 = "1910882";
+            try
+            {
+                CompleteSource cs_2 = wok.GetSourceById(problemID_2);
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "Invalid Source");
+            }
+
+            string[] references = wok.GetReferencesBySourceId(childID);
+            Assert.AreEqual(references.Length, 0);
         }
 
 

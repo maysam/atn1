@@ -12,10 +12,53 @@
           <EntitySet Name="Crawl" EntityType="ATNModel.Store.Crawl" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CrawlQueue" EntityType="ATNModel.Store.CrawlQueue" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="CrawlResult" EntityType="ATNModel.Store.CrawlResult" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="DataForAnalysisFinal" EntityType="ATNModel.Store.DataForAnalysisFinal" store:Type="Tables" store:Schema="dbo" store:Name="DataForAnalysisFinal">
+            <DefiningQuery>SELECT 
+      [DataForAnalysisFinal].[sourceid] AS [sourceid], 
+      [DataForAnalysisFinal].[theoryattributionratio] AS [theoryattributionratio], 
+      [DataForAnalysisFinal].[impactfactor] AS [impactfactor], 
+      [DataForAnalysisFinal].[articleleveleigenfactor] AS [articleleveleigenfactor], 
+      [DataForAnalysisFinal].[Abstract_wordcount] AS [Abstract_wordcount], 
+      [DataForAnalysisFinal].[year] AS [year], 
+      [DataForAnalysisFinal].[usefulness_keyword] AS [usefulness_keyword], 
+      [DataForAnalysisFinal].[easeofuse_keyword] AS [easeofuse_keyword], 
+      [DataForAnalysisFinal].[Attitude_keyword] AS [Attitude_keyword], 
+      [DataForAnalysisFinal].[TechnologyAcceptanceModel_keyword] AS [TechnologyAcceptanceModel_keyword], 
+      [DataForAnalysisFinal].[TAM_keyword] AS [TAM_keyword], 
+      [DataForAnalysisFinal].[usefulness_title] AS [usefulness_title], 
+      [DataForAnalysisFinal].[EaseofUse_Title] AS [EaseofUse_Title], 
+      [DataForAnalysisFinal].[Attitude_title] AS [Attitude_title], 
+      [DataForAnalysisFinal].[BehavioralIntention_Title] AS [BehavioralIntention_Title], 
+      [DataForAnalysisFinal].[TechnologyAcceptanceModel_Title] AS [TechnologyAcceptanceModel_Title], 
+      [DataForAnalysisFinal].[TAM_title] AS [TAM_title], 
+      [DataForAnalysisFinal].[usefulness_abstract] AS [usefulness_abstract], 
+      [DataForAnalysisFinal].[easeofuse_abstract] AS [easeofuse_abstract], 
+      [DataForAnalysisFinal].[Attitude_abstract] AS [Attitude_abstract], 
+      [DataForAnalysisFinal].[BehavioralIntention_abstract] AS [BehavioralIntention_abstract], 
+      [DataForAnalysisFinal].[TechnologyAcceptanceModel_abstract] AS [TechnologyAcceptanceModel_abstract], 
+      [DataForAnalysisFinal].[TAM_abstract] AS [TAM_abstract]
+      FROM [dbo].[DataForAnalysisFinal] AS [DataForAnalysisFinal]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="DataSource" EntityType="ATNModel.Store.DataSource" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Editor" EntityType="ATNModel.Store.Editor" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="EditorsReference" EntityType="ATNModel.Store.EditorsReference" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Journal" EntityType="ATNModel.Store.Journal" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="KaiDirk" EntityType="ATNModel.Store.KaiDirk" store:Type="Tables" store:Schema="dbo" store:Name="KaiDirk">
+            <DefiningQuery>SELECT 
+      [KaiDirk].[SourceId] AS [SourceId], 
+      [KaiDirk].[Disagreement] AS [Disagreement], 
+      [KaiDirk].[Subscribing] AS [Subscribing], 
+      [KaiDirk].[Order] AS [Order]
+      FROM [dbo].[KaiDirk] AS [KaiDirk]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="KaiHeather" EntityType="ATNModel.Store.KaiHeather" store:Type="Tables" store:Schema="dbo" store:Name="KaiHeather">
+            <DefiningQuery>SELECT 
+      [KaiHeather].[SourceId] AS [SourceId], 
+      [KaiHeather].[Disagreement] AS [Disagreement], 
+      [KaiHeather].[Subscribing] AS [Subscribing], 
+      [KaiHeather].[Order] AS [Order]
+      FROM [dbo].[KaiHeather] AS [KaiHeather]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="MetaAnalysisMembership" EntityType="ATNModel.Store.MetaAnalysisMembership" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="RelatedSources" EntityType="ATNModel.Store.RelatedSources" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Run" EntityType="ATNModel.Store.Run" store:Type="Tables" Schema="dbo" />
@@ -70,7 +113,7 @@
             <End Role="Source" EntitySet="Source" />
             <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMembership" />
           </AssociationSet>
-          <AssociationSet Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance" Association="ATNModel.Store.FK_MetaAnalysisMembership_TheoryMembershipSignificance">
+          <AssociationSet Name="FK_MetaAnalysisMembership_TheoryMembershipS&#xD;&#xD;&#xA;ignificance" Association="ATNModel.Store.FK_MetaAnalysisMembership_TheoryMembershipS&#xD;&#xD;&#xA;ignificance">
             <End Role="TheoryMembershipSignificance" EntitySet="TheoryMembershipSignificance" />
             <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMembership" />
           </AssociationSet>
@@ -206,6 +249,37 @@
           <Property Name="DateRetreieved" Type="datetime" Nullable="false" />
           <Property Name="ReferenceRetrieved" Type="bit" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+      warning 6002: The table/view 'ATN_test.dbo.DataForAnalysisFinal' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+        <EntityType Name="DataForAnalysisFinal">
+          <Key>
+            <PropertyRef Name="sourceid" />
+          </Key>
+          <Property Name="sourceid" Type="bigint" Nullable="false" />
+          <Property Name="theoryattributionratio" Type="float" />
+          <Property Name="impactfactor" Type="int" />
+          <Property Name="articleleveleigenfactor" Type="float" />
+          <Property Name="Abstract_wordcount" Type="int" />
+          <Property Name="year" Type="int" />
+          <Property Name="usefulness_keyword" Type="varchar" MaxLength="1" />
+          <Property Name="easeofuse_keyword" Type="varchar" MaxLength="1" />
+          <Property Name="Attitude_keyword" Type="varchar" MaxLength="1" />
+          <Property Name="TechnologyAcceptanceModel_keyword" Type="varchar" MaxLength="1" />
+          <Property Name="TAM_keyword" Type="varchar" MaxLength="1" />
+          <Property Name="usefulness_title" Type="varchar" MaxLength="1" />
+          <Property Name="EaseofUse_Title" Type="varchar" MaxLength="1" />
+          <Property Name="Attitude_title" Type="varchar" MaxLength="1" />
+          <Property Name="BehavioralIntention_Title" Type="varchar" MaxLength="1" />
+          <Property Name="TechnologyAcceptanceModel_Title" Type="varchar" MaxLength="1" />
+          <Property Name="TAM_title" Type="varchar" MaxLength="1" />
+          <Property Name="usefulness_abstract" Type="varchar" MaxLength="1" />
+          <Property Name="easeofuse_abstract" Type="varchar" MaxLength="1" />
+          <Property Name="Attitude_abstract" Type="varchar" MaxLength="1" />
+          <Property Name="BehavioralIntention_abstract" Type="varchar" MaxLength="1" />
+          <Property Name="TechnologyAcceptanceModel_abstract" Type="varchar" MaxLength="1" />
+          <Property Name="TAM_abstract" Type="varchar" MaxLength="1" />
+        </EntityType>
         <EntityType Name="DataSource">
           <Key>
             <PropertyRef Name="DataSourceId" />
@@ -238,6 +312,30 @@
           <Property Name="JournalId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="JournalName" Type="varchar" Nullable="false" MaxLength="256" />
           <Property Name="ExternalURL" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <!--Errors Found During Generation:
+      warning 6002: The table/view 'ATN_test.dbo.KaiDirk' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+        <EntityType Name="KaiDirk">
+          <Key>
+            <PropertyRef Name="Order" />
+          </Key>
+          <Property Name="SourceId" Type="float" />
+          <Property Name="Disagreement" Type="float" />
+          <Property Name="Subscribing" Type="float" />
+          <Property Name="Order" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <!--Errors Found During Generation:
+      warning 6002: The table/view 'ATN_test.dbo.KaiHeather' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+        <EntityType Name="KaiHeather">
+          <Key>
+            <PropertyRef Name="Order" />
+          </Key>
+          <Property Name="SourceId" Type="float" />
+          <Property Name="Disagreement" Type="nvarchar" MaxLength="255" />
+          <Property Name="Subscribing" Type="float" />
+          <Property Name="Order" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="MetaAnalysisMembership">
           <Key>
@@ -346,6 +444,8 @@
           <Property Name="ArticleLevelEigenFactor" Type="float" />
           <Property Name="PredictionProbability" Type="float" />
           <Property Name="IsContributingPrediction" Type="bit" />
+          <Property Name="TheoryAttributionRatio2" Type="float" />
+          <Property Name="TheoryAttributionRatio3" Type="float" />
         </EntityType>
         <EntityType Name="TheoryMembershipSignificance">
           <Key>
@@ -490,7 +590,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_MetaAnalysisMembership_TheoryMembershipSignificance">
+        <Association Name="FK_MetaAnalysisMembership_TheoryMembershipS&#xD;&#xD;&#xA;ignificance">
           <End Role="TheoryMembershipSignificance" Type="ATNModel.Store.TheoryMembershipSignificance" Multiplicity="1" />
           <End Role="MetaAnalysisMembership" Type="ATNModel.Store.MetaAnalysisMembership" Multiplicity="*" />
           <ReferentialConstraint>
@@ -706,6 +806,236 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        
+        
+        
+        
+        <Function Name="WordCount" ReturnType="int" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="InputString" Type="varchar" Mode="In" />
+        </Function>
+        <!--Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Alanna$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Alanna$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Amanda$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Amanda$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Amanda$backup' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Amanda$backup">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.DataForAnalysisFinalJevin' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="DataForAnalysisFinalJevin">
+        <Property Name="MASId" Type="float" />
+        <Property Name="Eigenvector" Type="float" />
+        <Property Name="L1Group" Type="float" />
+        <Property Name="L2Group" Type="float" />
+        <Property Name="L3Group" Type="float" />
+        <Property Name="L4Group" Type="float" />
+        <Property Name="L5Group" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.DataForAnalysisFinalKaiDirk' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="DataForAnalysisFinalKaiDirk">
+        <Property Name="ArticleId" Type="float" />
+        <Property Name="Year" Type="float" />
+        <Property Name="SourceType" Type="nvarchar" MaxLength="255" />
+        <Property Name="SourceTypeId" Type="float" />
+        <Property Name="DirkFit" Type="float" />
+        <Property Name="DirkCrit1" Type="float" />
+        <Property Name="DirkCrit2" Type="float" />
+        <Property Name="DirkCrit3" Type="float" />
+        <Property Name="DirkCrit4" Type="float" />
+        <Property Name="DirkCrit5" Type="float" />
+        <Property Name="KaiFit" Type="float" />
+        <Property Name="KaiCrit1" Type="float" />
+        <Property Name="KaiCrit2" Type="float" />
+        <Property Name="KaiCrit3" Type="float" />
+        <Property Name="KaiCrit4" Type="float" />
+        <Property Name="KaiCrit5" Type="float" />
+        <Property Name="SumDirkCrit" Type="float" />
+        <Property Name="SumKaiCrit" Type="float" />
+        <Property Name="SumAllCrit" Type="float" />
+        <Property Name="WeightedSumAllCrit" Type="float" />
+        <Property Name="Disagreement" Type="float" />
+        <Property Name="Class" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.DataForAnalysisFinalKaiHeather' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="DataForAnalysisFinalKaiHeather">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Year" Type="float" />
+        <Property Name="SourceTyp" Type="nvarchar" MaxLength="255" />
+        <Property Name="SourceTypeId" Type="float" />
+        <Property Name="KaiFit" Type="float" />
+        <Property Name="KaiCrit1" Type="float" />
+        <Property Name="KaiCrit2" Type="float" />
+        <Property Name="KaiCrit3" Type="float" />
+        <Property Name="KaiCrit4" Type="float" />
+        <Property Name="KaiCrit5" Type="float" />
+        <Property Name="HeatherFit" Type="float" />
+        <Property Name="HeatherCrit1" Type="float" />
+        <Property Name="HeatherCrit2" Type="float" />
+        <Property Name="HeatherCrit3" Type="float" />
+        <Property Name="HeatherCrit4" Type="float" />
+        <Property Name="HeatherCrit5" Type="float" />
+        <Property Name="SumHeatherCrit" Type="float" />
+        <Property Name="SumKaiCrit" Type="float" />
+        <Property Name="SumAllCrit" Type="float" />
+        <Property Name="WeightedSumAllCrit" Type="float" />
+        <Property Name="Disagreement" Type="nvarchar" MaxLength="255" />
+        <Property Name="Class" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.DataForCoding' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="DataForCoding">
+        <Property Name="SourceId" Type="varchar" MaxLength="15" />
+        <Property Name="JournalId" Type="varchar" MaxLength="4" />
+        <Property Name="ArticleTitle" Type="varchar" MaxLength="243" />
+        <Property Name="Column 3" Type="bigint" />
+        <Property Name="Year" Type="varchar" MaxLength="94" />
+        <Property Name="ImpactFactor" Type="varchar" MaxLength="131" />
+        <Property Name="TheoryAttributionRatio" Type="float" />
+        <Property Name="ArticleLevelEigenFactor" Type="float" />
+        <Property Name="TheoryAttributionRatio2" Type="float" />
+        <Property Name="TheoryAttributionRatio3" Type="float" />
+        <Property Name="citations" Type="varchar" MaxLength="64" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.DataForCodingv2' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="DataForCodingv2">
+        <Property Name="SourceId" Type="varchar" MaxLength="15" />
+        <Property Name="JournalId" Type="varchar" MaxLength="4" />
+        <Property Name="ArticleTitle" Type="varchar" MaxLength="500" />
+        <Property Name="Column 3" Type="bigint" />
+        <Property Name="Year" Type="varchar" MaxLength="94" />
+        <Property Name="ImpactFactor" Type="varchar" MaxLength="131" />
+        <Property Name="TheoryAttributionRatio" Type="float" />
+        <Property Name="ArticleLevelEigenFactor" Type="float" />
+        <Property Name="TheoryAttributionRatio2" Type="float" />
+        <Property Name="TheoryAttributionRatio3" Type="float" />
+        <Property Name="citations" Type="varchar" MaxLength="64" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Davis$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Davis$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.DirkandHeather' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="DirkandHeather">
+        <Property Name="ArticleId" Type="float" />
+        <Property Name="Joint Decision" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Griffin$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Griffin$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.InMetaAnalyses' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="InMetaAnalyses">
+        <Property Name="MASID" Type="float" />
+        <Property Name="Cites" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Jessica$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Jessica$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.MaryBeth$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="MaryBeth$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.MetaAnalyses$backup' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="MetaAnalyses$backup">
+        <Property Name="MASID" Type="float" />
+        <Property Name="Duplicate" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.MetaAnalyses$v2' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="MetaAnalyses$v2">
+        <Property Name="MASID" Type="nvarchar" MaxLength="128" />
+        <Property Name="Duplicate" Type="float" />
+        <Property Name="F3" Type="nvarchar" MaxLength="255" />
+        <Property Name="F4" Type="nvarchar" MaxLength="255" />
+        <Property Name="F5" Type="nvarchar" MaxLength="255" />
+        <Property Name="F6" Type="nvarchar" MaxLength="255" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Remaining5000articles' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Remaining5000articles">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="JournalId" Type="float" />
+        <Property Name="Year" Type="float" />
+        <Property Name="ImpactFactor" Type="float" />
+        <Property Name="TheoryAttributionRatio" Type="float" />
+        <Property Name="ArticleLevelEigenFactor" Type="float" />
+        <Property Name="TheoryAttributionRatio2" Type="float" />
+        <Property Name="TheoryAttributionRatio3" Type="float" />
+        <Property Name="citations" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Sean$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Sean$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+        <Property Name="F3" Type="nvarchar" MaxLength="255" />
+        <Property Name="F4" Type="nvarchar" MaxLength="255" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.TAM_abstracts' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="TAM_abstracts">
+        <Property Name="MASId" Type="bigint" />
+        <Property Name="Abstract" Type="varchar" MaxLength="5002" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Vikas$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Vikas$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>
+      Errors Found During Generation:
+      warning 6013: The table/view 'ATN_test.dbo.Wally$' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="Wally$">
+        <Property Name="SourceId" Type="float" />
+        <Property Name="Prediction" Type="float" />
+      </EntityType>-->
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -832,6 +1162,9 @@
             <End Role="TheoryMembershipSignificance" EntitySet="TheoryMembershipSignificances" />
             <End Role="MetaAnalysisMembership" EntitySet="MetaAnalysisMemberships" />
           </AssociationSet>
+          <EntitySet Name="DataForAnalysisFinals" EntityType="ATNModel.DataForAnalysisFinal" />
+          <EntitySet Name="KaiDirks" EntityType="ATNModel.KaiDirk" />
+          <EntitySet Name="KaiHeathers" EntityType="ATNModel.KaiHeather" />
         </EntityContainer>
         <EntityType Name="Author">
           <Key>
@@ -1179,6 +1512,8 @@
           <Property Type="Double" Name="TheoryAttributionRatio" />
           <Property Type="Int32" Name="ImpactFactor" />
           <Property Type="Int16" Name="Depth" Nullable="false" />
+          <Property Name="TheoryAttributionRatio2" Type="Double" />
+          <Property Name="TheoryAttributionRatio3" Type="Double" />
         </EntityType>
         <Association Name="FK_Crawl_Theory">
           <End Type="ATNModel.Theory" Role="Theory" Multiplicity="1" />
@@ -1364,6 +1699,52 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DataForAnalysisFinal">
+          <Key>
+            <PropertyRef Name="sourceid" />
+          </Key>
+          <Property Name="sourceid" Type="Int64" Nullable="false" />
+          <Property Name="theoryattributionratio" Type="Double" />
+          <Property Name="impactfactor" Type="Int32" />
+          <Property Name="articleleveleigenfactor" Type="Double" />
+          <Property Name="Abstract_wordcount" Type="Int32" />
+          <Property Name="year" Type="Int32" />
+          <Property Name="usefulness_keyword" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="easeofuse_keyword" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Attitude_keyword" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="TechnologyAcceptanceModel_keyword" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="TAM_keyword" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="usefulness_title" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="EaseofUse_Title" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Attitude_title" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="BehavioralIntention_Title" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="TechnologyAcceptanceModel_Title" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="TAM_title" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="usefulness_abstract" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="easeofuse_abstract" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Attitude_abstract" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="BehavioralIntention_abstract" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="TechnologyAcceptanceModel_abstract" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="TAM_abstract" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="KaiDirk">
+          <Key>
+            <PropertyRef Name="Order" />
+          </Key>
+          <Property Name="SourceId" Type="Double" />
+          <Property Name="Disagreement" Type="Double" />
+          <Property Name="Subscribing" Type="Double" />
+          <Property Name="Order" Type="Int32" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+        </EntityType>
+        <EntityType Name="KaiHeather">
+          <Key>
+            <PropertyRef Name="Order" />
+          </Key>
+          <Property Name="SourceId" Type="Double" />
+          <Property Name="Disagreement" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Subscribing" Type="Double" />
+          <Property Name="Order" Type="Int32" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1531,6 +1912,8 @@
           <EntitySetMapping Name="TheoryMemberships">
             <EntityTypeMapping TypeName="ATNModel.TheoryMembership">
               <MappingFragment StoreEntitySet="TheoryMembership">
+                <ScalarProperty Name="TheoryAttributionRatio3" ColumnName="TheoryAttributionRatio3" />
+                <ScalarProperty Name="TheoryAttributionRatio2" ColumnName="TheoryAttributionRatio2" />
                 <ScalarProperty Name="Depth" ColumnName="Depth" />
                 <ScalarProperty Name="ImpactFactor" ColumnName="ImpactFactor" />
                 <ScalarProperty Name="TheoryAttributionRatio" ColumnName="TheoryAttributionRatio" />
@@ -1602,6 +1985,55 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="DataForAnalysisFinals">
+            <EntityTypeMapping TypeName="ATNModel.DataForAnalysisFinal">
+              <MappingFragment StoreEntitySet="DataForAnalysisFinal">
+                <ScalarProperty Name="TAM_abstract" ColumnName="TAM_abstract" />
+                <ScalarProperty Name="TechnologyAcceptanceModel_abstract" ColumnName="TechnologyAcceptanceModel_abstract" />
+                <ScalarProperty Name="BehavioralIntention_abstract" ColumnName="BehavioralIntention_abstract" />
+                <ScalarProperty Name="Attitude_abstract" ColumnName="Attitude_abstract" />
+                <ScalarProperty Name="easeofuse_abstract" ColumnName="easeofuse_abstract" />
+                <ScalarProperty Name="usefulness_abstract" ColumnName="usefulness_abstract" />
+                <ScalarProperty Name="TAM_title" ColumnName="TAM_title" />
+                <ScalarProperty Name="TechnologyAcceptanceModel_Title" ColumnName="TechnologyAcceptanceModel_Title" />
+                <ScalarProperty Name="BehavioralIntention_Title" ColumnName="BehavioralIntention_Title" />
+                <ScalarProperty Name="Attitude_title" ColumnName="Attitude_title" />
+                <ScalarProperty Name="EaseofUse_Title" ColumnName="EaseofUse_Title" />
+                <ScalarProperty Name="usefulness_title" ColumnName="usefulness_title" />
+                <ScalarProperty Name="TAM_keyword" ColumnName="TAM_keyword" />
+                <ScalarProperty Name="TechnologyAcceptanceModel_keyword" ColumnName="TechnologyAcceptanceModel_keyword" />
+                <ScalarProperty Name="Attitude_keyword" ColumnName="Attitude_keyword" />
+                <ScalarProperty Name="easeofuse_keyword" ColumnName="easeofuse_keyword" />
+                <ScalarProperty Name="usefulness_keyword" ColumnName="usefulness_keyword" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="Abstract_wordcount" ColumnName="Abstract_wordcount" />
+                <ScalarProperty Name="articleleveleigenfactor" ColumnName="articleleveleigenfactor" />
+                <ScalarProperty Name="impactfactor" ColumnName="impactfactor" />
+                <ScalarProperty Name="theoryattributionratio" ColumnName="theoryattributionratio" />
+                <ScalarProperty Name="sourceid" ColumnName="sourceid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KaiDirks">
+            <EntityTypeMapping TypeName="ATNModel.KaiDirk">
+              <MappingFragment StoreEntitySet="KaiDirk">
+                <ScalarProperty Name="Order" ColumnName="Order" />
+                <ScalarProperty Name="Subscribing" ColumnName="Subscribing" />
+                <ScalarProperty Name="Disagreement" ColumnName="Disagreement" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KaiHeathers">
+            <EntityTypeMapping TypeName="ATNModel.KaiHeather">
+              <MappingFragment StoreEntitySet="KaiHeather">
+                <ScalarProperty Name="Order" ColumnName="Order" />
+                <ScalarProperty Name="Subscribing" ColumnName="Subscribing" />
+                <ScalarProperty Name="Disagreement" ColumnName="Disagreement" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1618,11 +2050,12 @@
         <edmx:DesignerProperty Name="ValidateOnBuild" Value="true" />
         <edmx:DesignerProperty Name="EnablePluralization" Value="True" />
         <edmx:DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <edmx:DesignerProperty Name="UseLegacyProvider" Value="True" />
       </edmx:DesignerInfoPropertySet>
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <edmx:Diagram Name="ATNModel" ZoomLevel="100">
+      <edmx:Diagram Name="ATNModel" ZoomLevel="72">
         <edmx:EntityTypeShape EntityType="ATNModel.Author" Width="1.5" PointX="3" PointY="9.25" Height="2.7494921875000102" />
         <edmx:EntityTypeShape EntityType="ATNModel.AuthorsReference" Width="1.5" PointX="5.25" PointY="9.625" Height="1.9802864583333388" />
         <edmx:EntityTypeShape EntityType="ATNModel.Crawl" Width="1.5" PointX="8" PointY="5.25" Height="2.3648893229166674" />
@@ -1736,6 +2169,9 @@
         <edmx:AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_Source" />
         <edmx:EntityTypeShape EntityType="ATNModel.TheoryMembershipSignificance" Width="1.5" PointX="9.59078411645758" PointY="26.713025135320159" />
         <edmx:AssociationConnector Association="ATNModel.FK_MetaAnalysisMembership_TheoryMembershipSignificance" />
+        <edmx:EntityTypeShape EntityType="ATNModel.DataForAnalysisFinal" Width="1.5" PointX="0.75" PointY="0.75" />
+        <edmx:EntityTypeShape EntityType="ATNModel.KaiDirk" Width="1.5" PointX="2.75" PointY="0.75" />
+        <edmx:EntityTypeShape EntityType="ATNModel.KaiHeather" Width="1.5" PointX="2.75" PointY="3.75" />
         </edmx:Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

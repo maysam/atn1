@@ -18,7 +18,7 @@ namespace ATN.Crawler.WebCrawler
         private const int RetryDelayMilliseconds = 5000;
         private const int RetryLimit = 5;
         private const int MaxResultSize = 100;
-        private const string MASAppId = "d34a7152-9c60-4c50-80b3-24435cb20a27";
+        private const string MASAppId = "88e64815fa1d419299bb110f2696bb28";
         private RateLimit _limiter;
         APIServiceClient _client;
 
@@ -39,6 +39,8 @@ namespace ATN.Crawler.WebCrawler
         /// <param name="PublicationId">The MAS-specific unique identifier corresponding to the Publication to retrieve references for</param>
         /// <param name="Relationship">The type of references to retrieve; citations or references</param>
         /// <returns>A list of MAS-specific unique identifiers referencing or citing the Publication provided</returns>
+          
+
         private string[] GetReferences(string PublicationId, ReferenceRelationship Relationship)
         {
             List<uint> PublicationIdsCitingCanonicalPaper = new List<uint>();
@@ -107,6 +109,8 @@ namespace ATN.Crawler.WebCrawler
                     //Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
                     PublicationIdsCitingCanonicalPaper.Add(p.ID);
                 }
+                request.StartIdx += MaxResultSize;
+                request.EndIdx = request.StartIdx + MaxResultSize - 1;
 
                 while (AttemptCount < RetryLimit && PublicationIdsCitingCanonicalPaper.Count < ResultCount)
                 {
@@ -114,14 +118,6 @@ namespace ATN.Crawler.WebCrawler
                     {
 
                         response = _client.Search(request, _limiter);
-
-                        if (response.Publication.Result.Length == 0)
-                        {
-                            break;
-                        }
-
-                        request.StartIdx += MaxResultSize;
-                        request.EndIdx = request.StartIdx + MaxResultSize - 1;
                         break;
                     }
                     catch (Exception e)
@@ -256,7 +252,7 @@ namespace ATN.Crawler.WebCrawler
             return cs;
         }
     }
-    
+
     public static class MASReferenceExtensions
     {
         private const int WaitDelayMinutes = 10;

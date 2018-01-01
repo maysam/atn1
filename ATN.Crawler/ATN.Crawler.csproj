@@ -59,6 +59,24 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -93,12 +111,8 @@
     <Compile Include="CrawlRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebCrawler\ICrawler.cs" />
+    <Compile Include="WebCrawler\MAG.cs" />
     <Compile Include="WebCrawler\RateLimit.cs" />
-    <Compile Include="Service References\MAS\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="WebCrawler\MASCrawler.cs" />
     <Compile Include="WebCrawler\WOKCrawler.cs" />
   </ItemGroup>
@@ -107,20 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Service References\MAS\API.wsdl" />
-    <None Include="Service References\MAS\API.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MAS\API1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MAS\API2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MAS\API3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MAS\APIService.wsdl" />
     <None Include="Service References\WOKMWSAuthenticate\ATN.Crawler.WOKMWSAuthenticate.authenticateResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
@@ -180,34 +180,9 @@
     <None Include="Service References\WokSearch\WokSearchService.wsdl" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Service References\MAS\" />
     <WCFMetadataStorage Include="Service References\WOKMWSAuthenticate\" />
     <WCFMetadataStorage Include="Service References\WokSearchLite\" />
     <WCFMetadataStorage Include="Service References\WokSearch\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MAS\ATN.Crawler.MAS.AuthorResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MAS\ATN.Crawler.MAS.DomainResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MAS\ATN.Crawler.MAS.PublicationResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MAS\ATN.Crawler.MAS.Response.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MAS\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MAS\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MAS\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ATN.Data\ATN.Data.csproj">
