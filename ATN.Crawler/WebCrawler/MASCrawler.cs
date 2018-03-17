@@ -4,12 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Threading;
-using ATN.Crawler.MAS;
 using ATN.Data;
 using System.ServiceModel.Security;
+using System.Net.Http;
+using System.Web;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace ATN.Crawler.WebCrawler
 {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name = "ReferenceRelationship", Namespace = "http://schemas.datacontract.org/2004/07/Libra.Service.API")]
+    public enum ReferenceRelationship : int
+    {
+
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        None = 0,
+
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Reference = 1,
+
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Citation = 2,
+    }
+
     /// <summary>
     /// An implementation of the ICrawler interface which is capable of using Microsoft Academic Search as a data source
     /// </summary>
@@ -19,18 +38,33 @@ namespace ATN.Crawler.WebCrawler
         private const int RetryLimit = 5;
         private const int MaxResultSize = 100;
         private const string MASAppId = "88e64815fa1d419299bb110f2696bb28";
-        private RateLimit _limiter;
-        APIServiceClient _client;
+        HttpClient client = new HttpClient();
+        String uri = "https://westus.api.cognitive.microsoft.com/academic/v1.0/graph/search?mode=json";
+
+        async Task<JObject> callMAG(String jsonString)
+        {
+            byte[] byteData = Encoding.UTF8.GetBytes(jsonString);
+            var content = new ByteArrayContent(byteData);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpResponseMessage response = await client.PostAsync(uri, content);
+            string responseJsonText = await response.Content.ReadAsStringAsync();
+            JObject responseJson = JObject.Parse(responseJsonText);
+            return responseJson;
+        }
 
         public MASCrawler()
         {
-            _limiter = new RateLimit();
-            _client = new APIServiceClient();
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", MASAppId);
         }
 
         public CrawlerDataSource GetDataSource()
         {
             return CrawlerDataSource.MicrosoftAcademicSearch;
+        }
+
+        public int GetDataSourceId()
+        {
+            return (int) CrawlerDataSource.MicrosoftAcademicSearch;
         }
 
         /// <summary>
@@ -39,114 +73,27 @@ namespace ATN.Crawler.WebCrawler
         /// <param name="PublicationId">The MAS-specific unique identifier corresponding to the Publication to retrieve references for</param>
         /// <param name="Relationship">The type of references to retrieve; citations or references</param>
         /// <returns>A list of MAS-specific unique identifiers referencing or citing the Publication provided</returns>
-          
+
+        private JToken getObject(string id)
+        {
+            String jsonString = "{ \"path\": \"/paper\", \"paper\": { \"select\": [ \"*\" ], \"type\": \"*\", \"id\": ["+id+"]    }}";
+            JObject responseJson = callMAG(jsonString).Result;
+            JToken token = responseJson["Results"].First().First()["*"];
+            if (token.ToString() == "")
+            {
+                throw new Exception("Invalid Source");
+            }
+            return token;
+        }
 
         private string[] GetReferences(string PublicationId, ReferenceRelationship Relationship)
         {
-            List<uint> PublicationIdsCitingCanonicalPaper = new List<uint>();
-
-            Request request = new Request();
-            request.AppID = MASAppId;
-            request.OrderBy = OrderType.Year;
-
-            //Get publication data
-            request.ResultObjects = ObjectType.Publication;
-            request.ReferenceType = Relationship;
-
-            request.PublicationID = UInt32.Parse(PublicationId);
-            request.StartIdx = 1;
-            request.EndIdx = request.StartIdx + MaxResultSize - 1;
-
-            //Get response
-            int AttemptCount = 0;
-            bool InitialRequestSucceeded = false;
-            uint ResultCount = 0;
-            Response response = null;
-            while(!InitialRequestSucceeded && AttemptCount < RetryLimit)
-            {
-                try
-                {
-                    response = _client.Search(request, _limiter);
-                    ResultCount = response.Publication.TotalItem;
-                    InitialRequestSucceeded = true;
-                }
-                catch (MessageSecurityException e)
-                {
-                    Trace.WriteLine("Exception:", "Error");
-                    Trace.WriteLine(e.Message);
-                    Trace.WriteLine(e.Source);
-                    Trace.WriteLine(e.StackTrace);
-                    Trace.WriteLine(e.TargetSite);
-                    Trace.WriteLine(e.Data);
-                    //"Access Denied", meaning the MAS rate limiter is not happy. Abort immediately.
-                    throw e;
-                }
-                catch (Exception e)
-                {
-                    AttemptCount++;
-                    Trace.WriteLine("Exception:", "Error");
-                    Trace.WriteLine(e.Message);
-                    Trace.WriteLine(e.Source);
-                    Trace.WriteLine(e.StackTrace);
-                    Trace.WriteLine(e.TargetSite);
-                    Trace.WriteLine(e.Data);
-                    if (AttemptCount == RetryLimit)
-                    {
-                        throw e;
-                    }
-                    Thread.Sleep(AttemptCount * RetryDelayMilliseconds);
-                }
+            JToken paper = getObject(PublicationId);
+            if(Relationship == ReferenceRelationship.Citation) {
+                return paper["CitationIDs"].ToObject<String[]>();
+            } else {
+                return paper["ReferenceIDs"].ToObject<String[]>();
             }
-            Trace.WriteLine(string.Format("Received first response, {0} papers total.", ResultCount), "Informational");
-
-            AttemptCount = 0;
-            while (PublicationIdsCitingCanonicalPaper.Count < ResultCount)
-            {
-                
-                Trace.WriteLine(string.Format("Retrieving papers {0} through {1}", request.StartIdx, request.EndIdx), "Informational");
-                foreach (var p in response.Publication.Result)
-                {
-                    //Trace.WriteLine(string.Format("Added paper {0}", p.ID), "Informational");
-                    PublicationIdsCitingCanonicalPaper.Add(p.ID);
-                }
-                request.StartIdx += MaxResultSize;
-                request.EndIdx = request.StartIdx + MaxResultSize - 1;
-
-                while (AttemptCount < RetryLimit && PublicationIdsCitingCanonicalPaper.Count < ResultCount)
-                {
-                    try
-                    {
-
-                        response = _client.Search(request, _limiter);
-                        break;
-                    }
-                    catch (Exception e)
-                    {
-                        AttemptCount++;
-                        Trace.WriteLine("Exception:", "Error");
-                        Trace.WriteLine(e.Message);
-                        Trace.WriteLine(e.Source);
-                        Trace.WriteLine(e.StackTrace);
-                        Trace.Write(e.TargetSite);
-                        Trace.Write(e.Data);
-                        if (AttemptCount == RetryLimit)
-                        {
-                            throw e;
-                        }
-                        Thread.Sleep(AttemptCount * RetryDelayMilliseconds);
-                    }
-                }
-
-                if(response.Publication != null && response.Publication.Result != null && response.Publication.Result.Length == 0)
-                {
-                    //Not retrieving any results; there's something wrong with the request
-                    //Break so as to not continue using API requests to ask for data which
-                    //is not there
-                    break;
-                }
-            }
-
-            return PublicationIdsCitingCanonicalPaper.Select(val => val.ToString()).ToArray();
         }
         public string[] GetCitationsBySourceId(string PaperId)
         {
@@ -160,88 +107,57 @@ namespace ATN.Crawler.WebCrawler
             return GetReferences(PaperId, ReferenceRelationship.Reference);
         }
 
-        public CompleteSource GetSourceById(string PaperId)
+        public CompleteSource GetSourceById(string PublicationId)
         {
-            Request request = new Request();
-            request.AppID = MASAppId;
-            request.OrderBy = OrderType.Year;
-            request.StartIdx = 1;
-            request.EndIdx = 1;
-
-            request.PublicationID = UInt32.Parse(PaperId);
-
-            request.ResultObjects = ObjectType.Publication;
-            request.PublicationContent = new PublicationContentType[] { PublicationContentType.AllInfo };
-
-            Publication RetrievedPublication = null;
-            Response response = null;
-            for (int i = 1; i <= RetryLimit; i++)
-            {
-                try
-                {
-                    response = _client.Search(request, _limiter);
-                    RetrievedPublication = response.Publication.Result.SingleOrDefault();
-                    break;
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("Exception:", "Error");
-                    Trace.WriteLine(e.Message);
-                    Trace.WriteLine(e.Source);
-                    Trace.WriteLine(e.StackTrace);
-                    Trace.WriteLine(e.TargetSite);
-                    Trace.WriteLine(e.Data);
-                    if (i == RetryLimit)
-                    {
-                        throw e;
-                    }
-                    Thread.Sleep(i * RetryDelayMilliseconds);
-                }
-            }
-
-            Trace.WriteLine(string.Format("Retrieved source {0}", PaperId), "Informational");
-
+            JToken RetrievedPublication = getObject(PublicationId);
+             
             CompleteSource cs = new CompleteSource();
 
             Source CanonicalPaper = new Source();
-            CanonicalPaper.Abstract = RetrievedPublication.Abstract;
-            CanonicalPaper.ArticleTitle = RetrievedPublication.Title;
-            CanonicalPaper.DataSourceId = (int)CrawlerDataSource.MicrosoftAcademicSearch;
-            CanonicalPaper.DataSourceSpecificId = PaperId;
-            CanonicalPaper.Year = RetrievedPublication.Year;
-            CanonicalPaper.SerializedDataSourceResponse = XmlHelper.XmlSerialize(response);
-            CanonicalPaper.DOI = RetrievedPublication.DOI;
-            if(RetrievedPublication.FullVersionURL.Length > 0)
+            CanonicalPaper.Abstract = RetrievedPublication["OriginalTitle"].ToObject<String>(); // abstract missing
+            CanonicalPaper.ArticleTitle = RetrievedPublication["OriginalTitle"].ToObject<String>();
+            CanonicalPaper.DataSourceId = GetDataSourceId();
+            CanonicalPaper.DataSourceSpecificId = PublicationId;
+            CanonicalPaper.Year = RetrievedPublication["PublishYear"].ToObject<int>();
+            CanonicalPaper.SerializedDataSourceResponse = RetrievedPublication.ToString();
+            CanonicalPaper.DOI = RetrievedPublication["DOI"].ToString();
+            //if(RetrievedPublication.FullVersionURL.Length > 0)
             {
-                CanonicalPaper.ExternalURL = RetrievedPublication.FullVersionURL.FirstOrDefault();
+             //   CanonicalPaper.ExternalURL = RetrievedPublication.FullVersionURL.FirstOrDefault();
             }
 
-            List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication.Author.Length);
-            foreach (var Author in RetrievedPublication.Author)
+            List<ATN.Data.Author> Authors = new List<ATN.Data.Author>(RetrievedPublication["AuthorIDs"].ToObject<List<string>>().Count);
+            foreach (string AuthorId in RetrievedPublication["AuthorIDs"].ToObject<List<string>>())
             {
+                var Author = getObject(AuthorId);
                 var AuthorToAdd = new ATN.Data.Author();
-                AuthorToAdd.FirstName = Author.FirstName;
-                AuthorToAdd.LastName = Author.LastName;
-                AuthorToAdd.FullName = Author.FirstName + " " + Author.MiddleName + " " + Author.LastName;
-                AuthorToAdd.DataSourceSpecificId = Author.ID.ToString();
-                AuthorToAdd.DataSourceId = (int)CrawlerDataSource.MicrosoftAcademicSearch;
+                //AuthorToAdd.FirstName = Author.FirstName;
+                //AuthorToAdd.LastName = Author.LastName;
+                AuthorToAdd.FullName = Author["Name"].ToString();
+                AuthorToAdd.DataSourceSpecificId = AuthorId;
+                AuthorToAdd.DataSourceId = GetDataSourceId();
                 Authors.Add(AuthorToAdd);
             }
 
             ATN.Data.Journal Journal = new ATN.Data.Journal();
-            if (RetrievedPublication.Journal != null)
+            if (RetrievedPublication["OriginalVenue"].ToString() != "")
             {
-                Journal.JournalName = RetrievedPublication.Journal.FullName;
+                Journal.JournalId = RetrievedPublication["JournalID"].ToObject<int>();
+                if (Journal.JournalId == 0)
+                {
+                    Journal.JournalId = RetrievedPublication["ConferneceID"].ToObject<int>();
+                }
+                Journal.JournalName = RetrievedPublication["OriginalVenue"].ToString();
                 cs.Journal = Journal;
             }
 
             List<Subject> Subjects = new List<Subject>();
-            foreach (Keyword k in RetrievedPublication.Keyword)
+            foreach (string k in RetrievedPublication["Keywords"].ToObject<List<string>>())
             {
                 Subject s = new Subject();
-                s.DataSourceSpecificId = k.ID.ToString();
+                //s.DataSourceSpecificId = k;
                 s.DataSourceId = (int)GetDataSource();
-                s.SubjectText = k.Name;
+                s.SubjectText = k;
                 Subjects.Add(s);
             }
             cs.IsDetached = true;
@@ -250,41 +166,6 @@ namespace ATN.Crawler.WebCrawler
             cs.Source = CanonicalPaper;
 
             return cs;
-        }
-    }
-
-    public static class MASReferenceExtensions
-    {
-        private const int WaitDelayMinutes = 10;
-        private const int MillisecondsPerMinute = 60000;
-        public static Response Search(this APIServiceClient client, Request request, RateLimit limiter)
-        {
-            limiter.AddRequest();
-            Response response = client.Search(request);
-            HandleResultCode(response.ResultCode);
-            return response;
-        }
-        private static void HandleResultCode(uint ResultCode)
-        {
-            switch (ResultCode)
-            {
-                case 1:
-                    //AppID not authorized. MAS throws this when it is under heavly load, so cease further requests
-                    Thread.Sleep(MillisecondsPerMinute * 2 * WaitDelayMinutes);
-                    throw new Exception("MAS request failed; please try again.");
-                case 2:
-                    //Search parameter is incorrect; this means there is a bug in the crawler code
-                    Environment.Exit(1);
-                    break;
-                case 3:
-                    //MAS is temporarily unavailable; wait 10 minutes to continue
-                    Thread.Sleep(MillisecondsPerMinute * WaitDelayMinutes);
-                    throw new Exception("MAS request failed; please try again.");
-                case 4:
-                    //Search method unsupported; this means there is a bug in the crawler code
-                    Thread.Sleep(MillisecondsPerMinute * WaitDelayMinutes);
-                    throw new Exception("MAS request failed; please try again.");
-            }
         }
     }
 }

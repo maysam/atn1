@@ -24,8 +24,19 @@ namespace ATN.Test
         public void VerifyMASCrawl()
         {
             MASCrawler mas = new MASCrawler();
-            Assert.AreEqual(0, mas.GetReferencesBySourceId("4153206").Length);
-            Assert.AreEqual(116, mas.GetCitationsBySourceId("4153206").Length);
+            Assert.AreEqual(54, mas.GetReferencesBySourceId("2007996033").Length);
+            Assert.AreEqual(740, mas.GetCitationsBySourceId("2007996033").Length);
+            try
+            {
+                string problemID = "000253225600012";
+              //  problemID = "2007996033";
+                CompleteSource cs = mas.GetSourceById(problemID);
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "Invalid Source");
+            }
+
         }
 
         [TestMethod]
